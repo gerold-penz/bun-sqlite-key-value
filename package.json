@@ -1,11 +1,39 @@
 {
   "name": "bun-sqlite-key-value",
+  "description": "A key-value store with SQLite that uses bun:sqlite and v8 as a fast Json replacement.",
+  "version": "0.0.1",
+  "author": "Gerold Penz<gerold@gp-softwaretechnik.at>",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "test": "bun test --coverage",
+    "test:watch": "bun test --watch",
+    "increment_package_version": "npm version patch",
+    "prepublishOnly": "bun run test",
+    "publish": "npm publish --access public"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gerold-penz/bun-sqlite-key-value.git"
+  },
+  "keywords": [
+    "Bun",
+    "SQLite",
+    "Key-Value",
+    "KV",
+    "Store",
+    "Database",
+    "TypeScript"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gerold-penz/bun-sqlite-key-value/issues"
+  },
+  "homepage": "https://github.com/gerold-penz/bun-sqlite-key-value"
 }
