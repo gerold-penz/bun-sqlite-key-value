@@ -36,9 +36,7 @@ export class BunSqliteKeyValue {
     constructor(filename?: string, options?: Object | number) {
         // Open database
         this.db = new Database(filename, options)
-
-        // ToDo: PRAGMA
-        // this.db.run("")
+        this.db.run("PRAGMA journal_mode = WAL")
 
         // Create table and index
         this.db.run("CREATE TABLE IF NOT EXISTS items (key TEXT PRIMARY KEY, value BLOB, expires INT)")
