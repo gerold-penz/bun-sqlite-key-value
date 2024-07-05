@@ -55,6 +55,7 @@ console.log(settingItems)
 const languageValues = languagesStore.getAllValues()
 console.log(languageValues)  // -> [ "German", "English", "Italian" ]
 
+
 // Read current language
 const languageKey = settingsStore.get("language")
 const currentLanguage = languagesStore.get(languageKey)
