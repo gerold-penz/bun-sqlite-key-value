@@ -2,10 +2,6 @@ import { Database, Statement } from "bun:sqlite"
 import { serialize, deserialize } from "node:v8"
 
 
-// Returns current time as milliseconds since 1970-01-01T00:00:00Z.
-const getNow = () => new Date().getTime()
-
-
 export interface Item<T> {
     key: string
     value: T
@@ -57,7 +53,7 @@ export class BunSqliteKeyValue {
 
     // Delete all expired records
     deleteExpired() {
-        this.deleteExpiredStatement.run({$now: getNow()})
+        this.deleteExpiredStatement.run({$now: Date.now()})
     }
 
 
@@ -90,7 +86,7 @@ export class BunSqliteKeyValue {
     setValue<T = any>(key: string, value: T, ttlMs?: number) {
         let $expires: number | undefined
         if (ttlMs) {
-            $expires = getNow() + ttlMs
+            $expires = Date.now() + ttlMs
         }
         const $value = serialize(value)
         this.setItemStatement.run({$key: key, $value, $expires})
@@ -106,7 +102,7 @@ export class BunSqliteKeyValue {
         if (!record) return
         const {value, expires} = record as {value: any, expires: number | undefined | null}
         if (expires) {
-            if (expires < getNow()) {
+            if (expires < Date.now()) {
                 this.delete(key)
                 return
             }
@@ -130,7 +126,7 @@ export class BunSqliteKeyValue {
     getAllItems<T = any>(): Item<T>[] | undefined {
         const records = this.getAllItemsStatement.all()
         if (!records) return
-        const now = getNow()
+        const now = Date.now()
         const result: Item<T>[] = []
         for (const record of records) {
             const {key, value, expires} = record as {key: string, value: any, expires: number | undefined | null}
@@ -157,7 +153,7 @@ export class BunSqliteKeyValue {
     getItems<T = any>(startsWith: string): Item<T>[] | undefined {
         const records = this.getItemsStatement.all({$startsWith: startsWith + "%"})
         if (!records) return
-        const now = getNow()
+        const now = Date.now()
         const result: Item<T>[] = []
         for (const record of records) {
             const {key, value, expires} = record as {key: string, value: any, expires: number | undefined | null}
