@@ -1,7 +1,7 @@
 {
   "name": "bun-sqlite-key-value",
   "description": "A key-value store with SQLite that uses bun:sqlite and v8 as faster JSON replacement.",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "author": "Gerold Penz<gerold@gp-softwaretechnik.at>",
   "module": "src/index.ts",
   "type": "module",
