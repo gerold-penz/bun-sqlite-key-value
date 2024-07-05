@@ -249,7 +249,7 @@ languagesStore.set("en", "English")
 languagesStore.set("it", "Italian")
 
 // Read all settings
-const settingItems = settingsStore.getAllItems()
+const settingItems = settingsStore.getAllItemsArray()
 console.log(settingItems)
 // -> [
 //   {
