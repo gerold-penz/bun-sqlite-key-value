@@ -26,7 +26,7 @@ export class BunSqliteKeyValue {
         this.db.run("CREATE UNIQUE INDEX IF NOT EXISTS ix_items_key ON items (key)")
 
         // Prepare statements
-        this.deleteExpiredStatement = this.db.prepare("DELETE FROM items WHERE expired < $now")
+        this.deleteExpiredStatement = this.db.prepare("DELETE FROM items WHERE expires < $now")
         this.setStatement = this.db.prepare("INSERT INTO items (key, value, expires) VALUES ($key, $value, $expires)")
         this.getStatement = this.db.prepare("SELECT value, expires FROM items WHERE key = $key")
         this.getAllStatement = this.db.prepare("SELECT key, value, expires FROM items")

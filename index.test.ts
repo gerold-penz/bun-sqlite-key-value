@@ -1,7 +1,19 @@
-import {beforeAll, expect, test} from "bun:test"
-import {BunSqliteKeyValue} from "./index"
+import { beforeAll, expect, test } from "bun:test"
+import { BunSqliteKeyValue } from "./index"
 
 
-test("Global Usage Test", () => {
-    const memDb = new BunSqliteKeyValue(":memory:")
+let memDb: BunSqliteKeyValue
+
+
+beforeAll(() => {
+    memDb = new BunSqliteKeyValue(":memory:")
+    console.log("SERVUS")
 })
+
+
+test("Set and get value", () => {
+    const VALUE = "Hello World"
+    memDb.set<string>("key", VALUE)
+    expect(memDb.get<string>("key")?.value).toEqual(VALUE)
+})
+
