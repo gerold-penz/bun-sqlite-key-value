@@ -32,6 +32,8 @@ test("Insert values", () => {
     store.set<string>("addresses:2:aaa", STRING_VALUE_2)
     store.set<string>("addresses:2:bbb", STRING_VALUE_2)
 
+    expect(store.length).toEqual(6)
+
     store.db.close()
 })
 

@@ -1,5 +1,5 @@
 import { Database, Statement } from "bun:sqlite"
-import { serialize, deserialize } from "v8"
+import { serialize, deserialize } from "node:v8"
 
 
 // Returns current time as milliseconds since 1970-01-01T00:00:00Z.
@@ -77,6 +77,12 @@ export class BunSqliteKeyValue {
     // if you want to get the number of items that have not yet expired.
     getCount(): number {
         return (this.countStatement.get() as {count: number}).count
+    }
+
+
+    // Getter for getCount()
+    get length() {
+        return this.getCount()
     }
 
 
