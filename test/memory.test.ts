@@ -124,12 +124,12 @@ test("Map() values", () => {
 })
 
 
-test("getAllItems()", () => {
+test("getAllItemsArray()", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
     store.set<string>(KEY_1, STRING_VALUE_1)
     store.set<string>(KEY_2, STRING_VALUE_2)
 
-    expect(store.getAllItems()).toEqual([
+    expect(store.getAllItemsArray()).toEqual([
         {key: KEY_1, value: STRING_VALUE_1},
         {key: KEY_2, value: STRING_VALUE_2},
     ])
@@ -145,7 +145,7 @@ test("getAllValues()", () => {
 })
 
 
-test("getItems()", () => {
+test("getItemsArray()", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
     store.set<string>("addresses:1:aaa", STRING_VALUE_1)
@@ -153,15 +153,15 @@ test("getItems()", () => {
     store.set<string>("addresses:2:aaa", STRING_VALUE_2)
     store.set<string>("addresses:2:bbb", STRING_VALUE_2)
 
-    expect(store.getItems("addresses:1:")).toEqual([
+    expect(store.getItemsArray("addresses:1:")).toEqual([
         {key: "addresses:1:aaa", value: STRING_VALUE_1},
         {key: "addresses:1:bbb", value: STRING_VALUE_1},
     ])
-    expect(store.getItems("addresses:2:")).toEqual([
+    expect(store.getItemsArray("addresses:2:")).toEqual([
         {key: "addresses:2:aaa", value: STRING_VALUE_2},
         {key: "addresses:2:bbb", value: STRING_VALUE_2},
     ])
-    expect(store.getItems("addresses:3:")).toBeUndefined()
+    expect(store.getItemsArray("addresses:3:")).toBeUndefined()
 })
 
 

@@ -7,7 +7,7 @@ store.set("language:de", "German")
 store.set("language:en", "English")
 store.set("language:it", "Italian")
 
-const items = store.getItems("language:")
+const items = store.getItemsArray("language:")
 console.log(items)
 // --> [
 //     {key: "language:de", value: "German"},

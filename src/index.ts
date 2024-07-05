@@ -123,7 +123,7 @@ export class BunSqliteKeyValue {
     get = this.getValue
 
 
-    getAllItems<T = any>(): Item<T>[] | undefined {
+    getAllItemsArray<T = any>(): Item<T>[] | undefined {
         const records = this.getAllItemsStatement.all()
         if (!records) return
         const now = Date.now()
@@ -146,11 +146,11 @@ export class BunSqliteKeyValue {
 
 
     getAllValues<T = any>(): T[] | undefined {
-        return this.getAllItems<T>()?.map((result) => result.value) || undefined
+        return this.getAllItemsArray<T>()?.map((result) => result.value) || undefined
     }
 
 
-    getItems<T = any>(startsWith: string): Item<T>[] | undefined {
+    getItemsArray<T = any>(startsWith: string): Item<T>[] | undefined {
         const records = this.getItemsStatement.all({$startsWith: startsWith + "%"})
         if (!records) return
         const now = Date.now()
@@ -172,9 +172,16 @@ export class BunSqliteKeyValue {
     }
 
 
-    getValues<T = any>(keyStartsWith: string): T[] | undefined {
-        return this.getItems<T>(keyStartsWith)?.map((result) => result.value)
+    getItemsObject<T = any>(startsWith: string): {[key: string]: T} | undefined {
+        throw new Error("not implemented")
     }
+
+
+    getValues<T = any>(keyStartsWith: string): T[] | undefined {
+        return this.getItemsArray<T>(keyStartsWith)?.map((result) => result.value)
+    }
+
+
 
 
 }

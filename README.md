@@ -183,7 +183,7 @@ Returns all items (key, value) in an array whose keys begin with the passed stri
 If you plan the names of the keys well, more complex data can be stored.
 
 ```typescript
-store.getItems(startsWith)
+store.getItemsArray(startsWith)
 ```
 
 - `startsWith`:
@@ -204,7 +204,7 @@ store.set("language:de", "German")
 store.set("language:en", "English")
 store.set("language:it", "Italian")
 
-const items = store.getItems("language:")
+const items = store.getItemsArray("language:")
 console.log(items)
 // --> [
 //     {key: "language:de", value: "German"},
