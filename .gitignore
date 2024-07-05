@@ -177,3 +177,5 @@ dist
 
 bun.lockb
 .vscode
+
+filesystemtest.sqlite
