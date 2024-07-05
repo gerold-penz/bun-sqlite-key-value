@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gerold-penz/bun-sqlite-key-value.git"
+    "url": "git+https://github.com/gerold-penz/bun-sqlite-key-value.git"
   },
   "keywords": [
     "Bun",
