@@ -1,5 +1,5 @@
 import { beforeAll, expect, test } from "bun:test"
-import { BunSqliteKeyValue } from "./index"
+import { BunSqliteKeyValue } from "../src"
 
 
 let memDb: BunSqliteKeyValue
