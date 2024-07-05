@@ -228,7 +228,7 @@ import { exists, mkdir } from "node:fs/promises"
 
 const dbDir = join(__dirname, "databases")
 if (!(await exists(dbDir))) {
-    await mkdir(dbDir, {recursive: true})
+    await mkdir(dbDir)
 }
 
 const settingsPath = join(dbDir, "settings.sqlite")
@@ -277,4 +277,10 @@ console.log(settingItems)
 // Read all languages
 const languageValues = languagesStore.getAllValues()
 console.log(languageValues)  // -> [ "German", "English", "Italian" ]
+
+
+// Read current language
+const languageKey = settingsStore.get("language")
+const currentLanguage = languagesStore.get(languageKey)
+console.log(`Current language: "${currentLanguage}"`)  // -> Current language: "German"
 ```
