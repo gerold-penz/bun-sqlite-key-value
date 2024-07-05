@@ -117,7 +117,7 @@ export class BunSqliteKeyValue {
         }
         return {
             key,
-            value: deserialize(Buffer.from(value)) as T
+            value: deserialize(value) as T
         }
     }
 
@@ -158,7 +158,7 @@ export class BunSqliteKeyValue {
             } else {
                 result.push({
                     key,
-                    value: deserialize(Buffer.from(value)) as T
+                    value: deserialize(value) as T
                 })
             }
         }
