@@ -18,8 +18,9 @@ export class BunSqliteKeyValue {
     private countStatement: Statement
     private setItemStatement: Statement
     private getItemStatement: Statement
-    private getAllItemsStatement: Statement
     private getItemsStatement: Statement
+    private getAllItemsStatement: Statement
+    private getItemsStartsWithStatement: Statement
 
 
     // @param filename: The full path of the SQLite database to open.
@@ -38,13 +39,12 @@ export class BunSqliteKeyValue {
         this.getAllItemsStatement = this.db.query("SELECT key, value, expires FROM items")
         this.clearStatement = this.db.query("DELETE FROM items")
         this.countStatement = this.db.query("SELECT COUNT(*) AS count FROM items")
-
-        // Prepare dynamic statements
-        this.deleteExpiredStatement = this.db.prepare("DELETE FROM items WHERE expires < $now")
-        this.setItemStatement = this.db.prepare("INSERT OR REPLACE INTO items (key, value, expires) VALUES ($key, $value, $expires)")
-        this.getItemStatement = this.db.prepare("SELECT value, expires FROM items WHERE key = $key")
-        this.getItemsStatement = this.db.prepare("SELECT key, value, expires FROM items WHERE key LIKE $startsWith")
-        this.deleteStatement = this.db.prepare("DELETE FROM items WHERE key = $key")
+        this.deleteExpiredStatement = this.db.query("DELETE FROM items WHERE expires < $now")
+        this.setItemStatement = this.db.query("INSERT OR REPLACE INTO items (key, value, expires) VALUES ($key, $value, $expires)")
+        this.getItemStatement = this.db.query("SELECT value, expires FROM items WHERE key = $key")
+        this.getItemsStatement = this.db.query("SELECT key, value, expires FROM items WHERE key IN ($keys)")
+        this.getItemsStartsWithStatement = this.db.query("SELECT key, value, expires FROM items WHERE key LIKE $startsWith")
+        this.deleteStatement = this.db.query("DELETE FROM items WHERE key = $key")
 
         // Delete expired items
         this.deleteExpired()
@@ -123,8 +123,18 @@ export class BunSqliteKeyValue {
     get = this.getValue
 
 
-    getAllItemsArray<T = any>(): Item<T>[] | undefined {
-        const records = this.getAllItemsStatement.all()
+    getItemsArray<T = any>(startsWithOrKeys?: string | string[]): Item<T>[] | undefined {
+        let records: ReturnType<any>[]
+        if (startsWithOrKeys && typeof startsWithOrKeys === "string") {
+            // Filtered items (startsWith)
+            records = this.getItemsStartsWithStatement.all({$startsWith: startsWithOrKeys + "%"})
+        } else if (startsWithOrKeys) {
+            // Filtered items (array with keys)
+            records = this.getItemsStatement.all({$keys: startsWithOrKeys})
+        } else {
+            // All items
+            records = this.getAllItemsStatement.all()
+        }
         if (!records) return
         const now = Date.now()
         const result: Item<T>[] = []
@@ -145,43 +155,19 @@ export class BunSqliteKeyValue {
     }
 
 
-    getAllValues<T = any>(): T[] | undefined {
-        return this.getAllItemsArray<T>()?.map((result) => result.value) || undefined
+    getValues<T = any>(startsWithOrKeys?: string | string[]): T[] | undefined {
+        return this.getItemsArray<T>(startsWithOrKeys)?.map((result) => result.value)
     }
 
 
-    getItemsArray<T = any>(startsWith: string): Item<T>[] | undefined {
-        const records = this.getItemsStatement.all({$startsWith: startsWith + "%"})
-        if (!records) return
-        const now = Date.now()
-        const result: Item<T>[] = []
-        for (const record of records) {
-            const {key, value, expires} = record as {key: string, value: any, expires: number | undefined | null}
-            if (expires && expires < now) {
-                this.delete(key)
-            } else {
-                result.push({
-                    key,
-                    value: deserialize(Buffer.from(value)) as T
-                })
-            }
+    getItemsObject<T = any>(startsWithOrKeys?: string | string[]): {[key: string]: T} | undefined {
+        const items = this.getItemsArray(startsWithOrKeys)
+        if (!items) return
+        const result: {[key: string]: T} = {}
+        for (const item of items) {
+            result[item.key] = item.value
         }
-        if (result.length) {
-            return result
-        }
+        return result
     }
-
-
-    getItemsObject<T = any>(startsWith: string): {[key: string]: T} | undefined {
-        throw new Error("not implemented")
-    }
-
-
-    getValues<T = any>(keyStartsWith: string): T[] | undefined {
-        return this.getItemsArray<T>(keyStartsWith)?.map((result) => result.value)
-    }
-
-
-
 
 }

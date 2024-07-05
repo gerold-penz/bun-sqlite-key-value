@@ -45,7 +45,7 @@ test("get()", () => {
 })
 
 
-test("getValues()", () => {
+test("Get values as array", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue(dbPath)
 
     expect(store.getValues("addresses:1:")).toEqual([STRING_VALUE_1, STRING_VALUE_1])

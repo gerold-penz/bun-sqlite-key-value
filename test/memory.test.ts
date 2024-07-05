@@ -42,15 +42,16 @@ test("Replace existing item", () => {
 })
 
 
-test("Count", () => {
+test("Count/length", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
     expect(store.getCount()).toEqual(0)
     store.set<string>(KEY_1, STRING_VALUE_1)
     expect(store.getCount()).toEqual(1)
+    expect(store.length).toEqual(1)
 })
 
 
-test("deleteExpired()", async () => {
+test("Delete expired items", async () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
     store.set<string>(KEY_1, STRING_VALUE_1, 50)
@@ -62,7 +63,7 @@ test("deleteExpired()", async () => {
 })
 
 
-test("get expired", async () => {
+test("Get expired item", async () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
     store.set<string>(KEY_1, STRING_VALUE_1, 50)
@@ -106,7 +107,7 @@ test("Array values", () => {
 })
 
 
-test("Set() values", () => {
+test("Set and get Set() values", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
     const value = new Set([1, 2, "A", "B", "C"])
     store.set(KEY_1, value)
@@ -115,7 +116,7 @@ test("Set() values", () => {
 })
 
 
-test("Map() values", () => {
+test("Set and get Map() values", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
     const value = new Map<string, any>([["a", 1], ["b", 2]])
     store.set(KEY_1, value)
@@ -124,28 +125,28 @@ test("Map() values", () => {
 })
 
 
-test("getAllItemsArray()", () => {
+test("Get all items as array", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
     store.set<string>(KEY_1, STRING_VALUE_1)
     store.set<string>(KEY_2, STRING_VALUE_2)
 
-    expect(store.getAllItemsArray()).toEqual([
+    expect(store.getItemsArray()).toEqual([
         {key: KEY_1, value: STRING_VALUE_1},
         {key: KEY_2, value: STRING_VALUE_2},
     ])
 })
 
 
-test("getAllValues()", () => {
+test("Get all values as array", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
     store.set<string>(KEY_1, STRING_VALUE_1)
     store.set<string>(KEY_2, STRING_VALUE_2)
 
-    expect(store.getAllValues()).toEqual([STRING_VALUE_1, STRING_VALUE_2])
+    expect(store.getValues()).toEqual([STRING_VALUE_1, STRING_VALUE_2])
 })
 
 
-test("getItemsArray()", () => {
+test("Get items as array", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
     store.set<string>("addresses:1:aaa", STRING_VALUE_1)
@@ -165,7 +166,7 @@ test("getItemsArray()", () => {
 })
 
 
-test("getValues()", () => {
+test("Get values as array", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
     store.set<string>("addresses:1:aaa", STRING_VALUE_1)
