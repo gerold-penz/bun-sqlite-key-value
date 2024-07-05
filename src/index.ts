@@ -1,10 +1,17 @@
-import { Database, Statement } from "bun:sqlite"
+import { Database, type Statement } from "bun:sqlite"
 import { serialize, deserialize } from "node:v8"
 
 
 export interface Item<T> {
     key: string
     value: T
+}
+
+
+interface RawItem {
+    key: string
+    value: Buffer,
+    expires: number | null
 }
 
 
@@ -15,12 +22,11 @@ export class BunSqliteKeyValue {
     private deleteExpiredStatement: Statement
     private deleteStatement: Statement
     private clearStatement: Statement
-    private countStatement: Statement
+    private countStatement: Statement<{count: number}>
     private setItemStatement: Statement
-    private getItemStatement: Statement
-    private getItemsStatement: Statement
-    private getAllItemsStatement: Statement
-    private getItemsStartsWithStatement: Statement
+    private getItemStatement: Statement<Omit<RawItem, "key">>
+    private getAllItemsStatement: Statement<RawItem>
+    private getItemsStartsWithStatement: Statement<RawItem>
 
 
     // @param filename: The full path of the SQLite database to open.
@@ -30,6 +36,9 @@ export class BunSqliteKeyValue {
     constructor(filename?: string, options?: Object | number) {
         // Open database
         this.db = new Database(filename, options)
+
+        // ToDo: PRAGMA
+        // this.db.run("")
 
         // Create table and index
         this.db.run("CREATE TABLE IF NOT EXISTS items (key TEXT PRIMARY KEY, value BLOB, expires INT)")
@@ -42,7 +51,6 @@ export class BunSqliteKeyValue {
         this.deleteExpiredStatement = this.db.query("DELETE FROM items WHERE expires < $now")
         this.setItemStatement = this.db.query("INSERT OR REPLACE INTO items (key, value, expires) VALUES ($key, $value, $expires)")
         this.getItemStatement = this.db.query("SELECT value, expires FROM items WHERE key = $key")
-        this.getItemsStatement = this.db.query("SELECT key, value, expires FROM items WHERE key IN ($keys)")
         this.getItemsStartsWithStatement = this.db.query("SELECT key, value, expires FROM items WHERE key LIKE $startsWith")
         this.deleteStatement = this.db.query("DELETE FROM items WHERE key = $key")
 
@@ -100,7 +108,7 @@ export class BunSqliteKeyValue {
     getItem<T = any>(key: string): Item<T> | undefined {
         const record = this.getItemStatement.get({$key: key})
         if (!record) return
-        const {value, expires} = record as {value: any, expires: number | undefined | null}
+        const {value, expires} = record
         if (expires) {
             if (expires < Date.now()) {
                 this.delete(key)
@@ -124,13 +132,18 @@ export class BunSqliteKeyValue {
 
 
     getItemsArray<T = any>(startsWithOrKeys?: string | string[]): Item<T>[] | undefined {
-        let records: ReturnType<any>[]
+        let records: RawItem[]
         if (startsWithOrKeys && typeof startsWithOrKeys === "string") {
             // Filtered items (startsWith)
             records = this.getItemsStartsWithStatement.all({$startsWith: startsWithOrKeys + "%"})
         } else if (startsWithOrKeys) {
             // Filtered items (array with keys)
-            records = this.getItemsStatement.all({$keys: startsWithOrKeys})
+            records = this.db.transaction(() => {
+                return (startsWithOrKeys as string[]).map((key: string) => {
+                    const record = this.getItemStatement.get({$key: key})
+                    return {...record, key}
+                })
+            })()
         } else {
             // All items
             records = this.getAllItemsStatement.all()
@@ -139,7 +152,7 @@ export class BunSqliteKeyValue {
         const now = Date.now()
         const result: Item<T>[] = []
         for (const record of records) {
-            const {key, value, expires} = record as {key: string, value: any, expires: number | undefined | null}
+            const {key, value, expires} = record
             if (expires && expires < now) {
                 this.delete(key)
             } else {
