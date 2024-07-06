@@ -38,10 +38,10 @@ test("Insert values", () => {
 })
 
 
-test("get()", () => {
+test("Get value", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue(dbPath)
     expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_1)
-    expect(store.get<string>(KEY_2)).toEqual(STRING_VALUE_2)
+    expect(store.getValue<string>(KEY_2)).toEqual(STRING_VALUE_2)
 })
 
 

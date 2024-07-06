@@ -38,9 +38,10 @@ export class BunSqliteKeyValue {
         this.db = new Database(filename, options)
         this.db.run("PRAGMA journal_mode = WAL")
 
-        // Create table and index
+        // Create table and indexes
         this.db.run("CREATE TABLE IF NOT EXISTS items (key TEXT PRIMARY KEY, value BLOB, expires INT)")
         this.db.run("CREATE UNIQUE INDEX IF NOT EXISTS ix_items_key ON items (key)")
+        this.db.run("CREATE INDEX IF NOT EXISTS ix_items_expires ON items (expires)")
 
         // Prepare and cache statements
         this.getAllItemsStatement = this.db.query("SELECT key, value, expires FROM items")
