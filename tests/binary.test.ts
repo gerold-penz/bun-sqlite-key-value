@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, expect, test } from "bun:test"
 import { BunSqliteKeyValue } from "../src"
-import { join } from "node:path"
+import { join, resolve } from "node:path"
 import { tmpdir } from 'node:os'
 import { mkdtemp } from 'node:fs/promises'
 import { rm, exists } from "node:fs/promises"
@@ -13,7 +13,7 @@ let dbPath: string
 
 
 beforeAll(async () => {
-    sourceImagePath = join(__dirname, "assets", "bun.png")
+    sourceImagePath = resolve(join(__dirname, "..", "assets", "bun.png"))
     tmpDirname = await mkdtemp(join(tmpdir(), "bun-sqlite-key-value"))
     targetImagePath = join(tmpDirname, "bun.png")
     dbPath = join(tmpDirname, "filesystemtest.sqlite")

@@ -4,6 +4,7 @@ import { BunSqliteKeyValue } from "../src"
 
 const KEY_1: string = "test-key-1"
 const KEY_2: string = "test-key-2"
+const KEY_3: string = "test-key-3"
 const STRING_VALUE_1: string = "Hello world!"
 const STRING_VALUE_2: string = "Hello moon!"
 
@@ -237,4 +238,25 @@ test("Get values as array", () => {
     expect(store.getValues(["addresses:3:aaa", "addresses:3:bbb"])).toEqual([undefined, undefined])
     expect(store.getValuesArray(["addresses:3:aaa", "addresses:3:bbb"])).toEqual([undefined, undefined])
 
+})
+
+
+test("Get items as Object", () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue()
+
+    store.set<string>(KEY_1, STRING_VALUE_1)
+    store.set<string>(KEY_2, STRING_VALUE_2)
+    store.set(KEY_3, null)
+
+    expect(store.getItemsObject([
+        KEY_1,
+        KEY_2,
+        KEY_3,
+        "unknown-key"
+    ])).toEqual({
+        [KEY_1]: STRING_VALUE_1,
+        [KEY_2]: STRING_VALUE_2,
+        [KEY_3]: null,
+        "unknown-key": undefined
+    })
 })
