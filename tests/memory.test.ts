@@ -7,6 +7,7 @@ const KEY_2: string = "test-key-2"
 const KEY_3: string = "test-key-3"
 const STRING_VALUE_1: string = "Hello world!"
 const STRING_VALUE_2: string = "Hello moon!"
+const STRING_VALUE_3: string = "Hello Tyrol!"
 
 
 test("Set and get value", () => {
@@ -82,10 +83,11 @@ test("Default expiration ttlMs", async () => {
 
     store.set<string>(KEY_1, STRING_VALUE_1)
     store.set<string>(KEY_2, STRING_VALUE_2)
+    store.set<string>(KEY_3, STRING_VALUE_3, 0) // explicitly disable TTL
 
     await Bun.sleep(100)
     store.deleteExpired()
-    expect(store.length).toEqual(0)
+    expect(store.length).toEqual(1)
 })
 
 
