@@ -19,6 +19,8 @@ export class BunSqliteKeyValue {
 
     db: Database
 
+    ttlMs: number | undefined
+
     private deleteExpiredStatement: Statement
     private deleteStatement: Statement
     private clearStatement: Statement
@@ -32,9 +34,28 @@ export class BunSqliteKeyValue {
     // @param filename: The full path of the SQLite database to open.
     //      Pass an empty string (`""`) or `":memory:"` or undefined for an in-memory database.
     // @param options: defaults to `{readwrite: true, create: true}`.
-    constructor(filename?: string, options?: Object) {
+    constructor(
+        filename?: string,
+        options: {
+            readonly?: boolean
+            create?: boolean
+            readwrite?: boolean
+            safeInteger?: boolean
+            strict?: boolean
+            ttlMs?: number  // Default TTL milliseconds
+        } = {
+            readwrite: true,
+            create: true
+        }
+    ) {
+        // Options and ttlMs
+        const {ttlMs, ...dbOptions} = options
+        if (ttlMs !== undefined) {
+            this.ttlMs = ttlMs
+        }
+
         // Open database
-        this.db = new Database(filename, options)
+        this.db = new Database(filename, dbOptions)
         this.db.run("PRAGMA journal_mode = WAL")
 
         // Create table and indexes
@@ -95,11 +116,17 @@ export class BunSqliteKeyValue {
     }
 
 
-    // @param ttlMs: Time to live in milliseconds
+    // @param ttlMs:
+    // Time to live in milliseconds.
+    // Set ttlMs to 0 if you explicitly want to disable expiration.
     setValue<T = any>(key: string, value: T, ttlMs?: number) {
         let $expires: number | undefined
-        if (ttlMs) {
-            $expires = Date.now() + ttlMs
+        if (ttlMs !== undefined) {
+            if (ttlMs > 0) {
+                $expires = Date.now() + ttlMs
+            }
+        } else if (this.ttlMs && this.ttlMs > 0) {
+             $expires = Date.now() + this.ttlMs
         }
         const $value = serialize(value)
         this.setItemStatement.run({$key: key, $value, $expires})
