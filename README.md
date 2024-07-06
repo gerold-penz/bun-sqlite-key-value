@@ -153,6 +153,7 @@ If you plan the names of the keys well, more complex data can be stored.
 
 ```typescript
 getValues(startsWithOrKeys: string | string[]): any[]
+getValuesArray(startsWithOrKeys: string | string[]): any[]
 ```
 
 - `startsWithOrKeys`:
@@ -187,6 +188,7 @@ If you plan the names of the keys well, more complex data can be stored.
 
 ```typescript
 getItems(startsWithOrKeys: string | string[]): {key: string, value: any}[]
+getItemsArray(startsWithOrKeys: string | string[]): {key: string, value: any}[]
 ```
 
 - `startsWithOrKeys`:
