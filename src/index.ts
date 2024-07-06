@@ -32,8 +32,7 @@ export class BunSqliteKeyValue {
     // @param filename: The full path of the SQLite database to open.
     //      Pass an empty string (`""`) or `":memory:"` or undefined for an in-memory database.
     // @param options: defaults to `{readwrite: true, create: true}`.
-    //      If a number, then it's treated as `SQLITE_OPEN_*` constant flags.
-    constructor(filename?: string, options?: Object | number) {
+    constructor(filename?: string, options?: Object) {
         // Open database
         this.db = new Database(filename, options)
         this.db.run("PRAGMA journal_mode = WAL")
