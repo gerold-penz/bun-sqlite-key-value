@@ -4,13 +4,13 @@ import { serialize, deserialize } from "node:v8"
 
 export interface Item<T> {
     key: string
-    value: T
+    value: T | undefined
 }
 
 
 interface RawItem {
     key: string
-    value: Buffer,
+    value: Buffer | null,
     expires: number | null
 }
 
@@ -122,7 +122,7 @@ export class BunSqliteKeyValue {
         }
         return {
             key,
-            value: deserialize(value) as T
+            value: value ? deserialize(value) as T : undefined
         }
     }
 
@@ -136,7 +136,7 @@ export class BunSqliteKeyValue {
     get = this.getValue
 
 
-    getItemsArray<T = any>(startsWithOrKeys?: string | string[]): Item<T>[] | undefined {
+    getItems<T = any>(startsWithOrKeys?: string | string[]): Item<T>[] | undefined {
         let records: RawItem[]
         if (startsWithOrKeys && typeof startsWithOrKeys === "string") {
             // Filtered items (startsWith)
@@ -163,7 +163,7 @@ export class BunSqliteKeyValue {
             } else {
                 result.push({
                     key,
-                    value: deserialize(value) as T
+                    value: value ? deserialize(value) as T : undefined
                 })
             }
         }
@@ -173,13 +173,21 @@ export class BunSqliteKeyValue {
     }
 
 
-    getValues<T = any>(startsWithOrKeys?: string | string[]): T[] | undefined {
-        return this.getItemsArray<T>(startsWithOrKeys)?.map((result) => result.value)
+    // Alias for getItems
+    getItemsArray = this.getItems
+
+
+    getValues<T = any>(startsWithOrKeys?: string | string[]): (T | undefined)[] | undefined {
+        return this.getItems<T>(startsWithOrKeys)?.map((result) => result.value)
     }
 
 
+    // Alias for getValues
+    getValuesArray = this.getValues
+
+
     getItemsObject<T = any>(startsWithOrKeys?: string | string[]): {[key: string]: T} | undefined {
-        const items = this.getItemsArray(startsWithOrKeys)
+        const items = this.getItems(startsWithOrKeys)
         if (!items) return
         const result: {[key: string]: T} = {}
         for (const item of items) {

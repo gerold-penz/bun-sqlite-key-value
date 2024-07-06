@@ -63,8 +63,8 @@ const store = new BunSqliteKeyValue()
 ### Write Value
 
 ```typescript
-store.set(key, value, [ttlMs]) or
-store.setValue(key, value, [ttlMs])
+set(key: string, value: any, [ttlMs: number]): void
+setValue(key: string, value: any, [ttlMs: number])  // alias for set()
 ```
 
 - `key`:
@@ -101,8 +101,8 @@ store.set("my-key-2", "item-with-ttl", 30000)
 ### Read Value
 
 ```typescript
-store.get(key) or
-store.getValue(key)
+get(key: string): any
+getValue(key: string)  // alias for get()
 ```
 
 - `key`:
@@ -125,7 +125,7 @@ console.log(value)  // --> "my-value"
 ### Read Item
 
 ```typescript
-store.getItem(key)
+getItem(key: string): {key: string, value: any}
 ```
 
 - `key`:
@@ -151,15 +151,17 @@ Returns all values in an array whose keys begin with the passed string.
 If you plan the names of the keys well, more complex data can be stored.
 
 ```typescript
-store.getValues(startsWith)
+getValues(startsWithOrKeys: string | string[]): any[]
 ```
 
-- `startsWith`:
-String with which the keys whose values are to be returned begin.
-It is advisable to divide keys into ranges using separators.
-For example `"language:de"`, `"language:en"`, `"language:it"`.
-A search for `"language:"` would return all languages.
-
+- `startsWithOrKeys`:
+    - **string**: String with which the keys whose values are to be returned begin.
+      It is advisable to divide keys into ranges using separators.
+      For example `"language:de"`, `"language:en"`, `"language:it"`.
+      A search for `"language:"` would return all languages.
+    - **string[]**: Array with keys. The returned array is exactly 
+      the same size as the passed array.
+      Entries that are not found are returned as `undefined`.
 
 #### Example
 
@@ -183,14 +185,17 @@ Returns all items (key, value) in an array whose keys begin with the passed stri
 If you plan the names of the keys well, more complex data can be stored.
 
 ```typescript
-store.getItemsArray(startsWith)
+getItemsArray(startsWithOrKeys: string | string[]): {key: string, value: any}[]
 ```
 
-- `startsWith`:
-String with which the keys whose items are to be returned begin.
-It is advisable to divide keys into ranges using separators.
-For example `"language:de"`, `"language:en"`, `"language:it"`.
-A search for `"language:"` would return all languages.
+- `startsWithOrKeys`:
+    - **string**: String with which the keys whose items are to be returned begin.
+      It is advisable to divide keys into ranges using separators.
+      For example `"language:de"`, `"language:en"`, `"language:it"`.
+      A search for `"language:"` would return all languages.
+    - **string[]**: Array with keys. The returned array is exactly 
+      the same size as the passed array.
+      Entries that are not found are returned as `undefined`.
 
 
 #### Example
@@ -249,7 +254,7 @@ languagesStore.set("en", "English")
 languagesStore.set("it", "Italian")
 
 // Read all settings
-const settingItems = settingsStore.getItemsArray()
+const settingItems = settingsStore.getItems()
 console.log(settingItems)
 // -> [
 //   {

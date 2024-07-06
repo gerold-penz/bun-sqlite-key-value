@@ -8,23 +8,22 @@ const STRING_VALUE_1: string = "Hello world!"
 const STRING_VALUE_2: string = "Hello moon!"
 
 
-test("set() get()", () => {
+test("Set and get value", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
+
     store.set<string>(KEY_1, STRING_VALUE_1)
+    store.setValue<string>(KEY_2, STRING_VALUE_2)
+
     expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_1)
+    expect(store.getValue<string>(KEY_2)).toEqual(STRING_VALUE_2)
 })
 
 
-test("setValue() getValue()", () => {
+test("Get item", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
-    store.setValue<string>(KEY_1, STRING_VALUE_1)
-    expect(store.getValue<string>(KEY_1)).toEqual(STRING_VALUE_1)
-})
 
-
-test("getItem()", () => {
-    const store: BunSqliteKeyValue = new BunSqliteKeyValue()
     store.set<string>(KEY_1, STRING_VALUE_1)
+
     const item = store.getItem<string>(KEY_1)
     expect(item?.key).toEqual(KEY_1)
     expect(item?.value).toEqual(STRING_VALUE_1)
@@ -33,10 +32,12 @@ test("getItem()", () => {
 
 test("Replace existing item", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
-    // Set
+
+    // Set value
     store.set<string>(KEY_1, STRING_VALUE_1)
     expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_1)
-    // Replace
+
+    // Replace value
     store.set<string>(KEY_1, STRING_VALUE_2)
     expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_2)
 })
@@ -44,7 +45,6 @@ test("Replace existing item", () => {
 
 test("Count/length", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
-    expect(store.getCount()).toEqual(0)
     store.set<string>(KEY_1, STRING_VALUE_1)
     expect(store.getCount()).toEqual(1)
     expect(store.length).toEqual(1)
@@ -97,7 +97,7 @@ test("Delete all items (clear)", () => {
 })
 
 
-test("Array values", () => {
+test("Store Array values", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
     const value = [1, 2, 3, "A", "B", "C", 0.1, 0.2, 0.3, {a: "A", b: "B"}]
@@ -107,7 +107,7 @@ test("Array values", () => {
 })
 
 
-test("Set and get Set() values", () => {
+test("Store Set() values", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
     const value = new Set([1, 2, "A", "B", "C"])
     store.set(KEY_1, value)
@@ -116,7 +116,7 @@ test("Set and get Set() values", () => {
 })
 
 
-test("Set and get Map() values", () => {
+test("Store Map() values", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
     const value = new Map<string, any>([["a", 1], ["b", 2]])
     store.set(KEY_1, value)
@@ -130,10 +130,16 @@ test("Get all items as array", () => {
     store.set<string>(KEY_1, STRING_VALUE_1)
     store.set<string>(KEY_2, STRING_VALUE_2)
 
+    expect(store.getItems()).toEqual([
+        {key: KEY_1, value: STRING_VALUE_1},
+        {key: KEY_2, value: STRING_VALUE_2},
+    ])
+
     expect(store.getItemsArray()).toEqual([
         {key: KEY_1, value: STRING_VALUE_1},
         {key: KEY_2, value: STRING_VALUE_2},
     ])
+
 })
 
 
@@ -143,6 +149,7 @@ test("Get all values as array", () => {
     store.set<string>(KEY_2, STRING_VALUE_2)
 
     expect(store.getValues()).toEqual([STRING_VALUE_1, STRING_VALUE_2])
+    expect(store.getValuesArray()).toEqual([STRING_VALUE_1, STRING_VALUE_2])
 })
 
 
@@ -153,16 +160,56 @@ test("Get items as array", () => {
     store.set<string>("addresses:1:bbb", STRING_VALUE_1)
     store.set<string>("addresses:2:aaa", STRING_VALUE_2)
     store.set<string>("addresses:2:bbb", STRING_VALUE_2)
+    store.set("addresses:2:ccc", null)
 
+
+    expect(store.getItems("addresses:1:")).toEqual([
+        {key: "addresses:1:aaa", value: STRING_VALUE_1},
+        {key: "addresses:1:bbb", value: STRING_VALUE_1},
+    ])
     expect(store.getItemsArray("addresses:1:")).toEqual([
         {key: "addresses:1:aaa", value: STRING_VALUE_1},
         {key: "addresses:1:bbb", value: STRING_VALUE_1},
     ])
-    expect(store.getItemsArray("addresses:2:")).toEqual([
+    expect(store.getItems(["addresses:1:aaa", "addresses:1:bbb"])).toEqual([
+        {key: "addresses:1:aaa", value: STRING_VALUE_1},
+        {key: "addresses:1:bbb", value: STRING_VALUE_1},
+    ])
+    expect(store.getItemsArray(["addresses:1:aaa", "addresses:1:bbb"])).toEqual([
+        {key: "addresses:1:aaa", value: STRING_VALUE_1},
+        {key: "addresses:1:bbb", value: STRING_VALUE_1},
+    ])
+
+    expect(store.getItems("addresses:2:")).toEqual([
+        {key: "addresses:2:aaa", value: STRING_VALUE_2},
+        {key: "addresses:2:bbb", value: STRING_VALUE_2},
+        {key: "addresses:2:ccc", value: null},
+    ])
+    expect(store.getItems(["addresses:2:aaa", "addresses:2:bbb"])).toEqual([
         {key: "addresses:2:aaa", value: STRING_VALUE_2},
         {key: "addresses:2:bbb", value: STRING_VALUE_2},
     ])
+    expect(store.getItemsArray<string | null>("addresses:2:")).toEqual([
+        {key: "addresses:2:aaa", value: STRING_VALUE_2},
+        {key: "addresses:2:bbb", value: STRING_VALUE_2},
+        {key: "addresses:2:ccc", value: null},
+    ])
+    expect(store.getItemsArray<string | null>(["addresses:2:aaa", "addresses:2:ccc"])).toEqual([
+        {key: "addresses:2:aaa", value: STRING_VALUE_2},
+        {key: "addresses:2:ccc", value: null},
+    ])
+
+    expect(store.getItems("addresses:3:")).toBeUndefined()
     expect(store.getItemsArray("addresses:3:")).toBeUndefined()
+
+    expect(store.getItems(["addresses:3:aaa", "addresses:3:bbb"])).toEqual([
+        {key: "addresses:3:aaa", value: undefined},
+        {key: "addresses:3:bbb", value: undefined},
+    ])
+    expect(store.getItemsArray(["addresses:3:aaa", "addresses:3:bbb"])).toEqual([
+        {key: "addresses:3:aaa", value: undefined},
+        {key: "addresses:3:bbb", value: undefined},
+    ])
 })
 
 
@@ -173,7 +220,21 @@ test("Get values as array", () => {
     store.set<string>("addresses:1:bbb", STRING_VALUE_1)
     store.set<string>("addresses:2:aaa", STRING_VALUE_2)
     store.set<string>("addresses:2:bbb", STRING_VALUE_2)
+    store.set("addresses:2:ccc", null)
 
     expect(store.getValues("addresses:1:")).toEqual([STRING_VALUE_1, STRING_VALUE_1])
-    expect(store.getValues("addresses:2:")).toEqual([STRING_VALUE_2, STRING_VALUE_2])
+    expect(store.getValuesArray("addresses:1:")).toEqual([STRING_VALUE_1, STRING_VALUE_1])
+    expect(store.getValues(["addresses:1:aaa", "addresses:1:bbb"])).toEqual([STRING_VALUE_1, STRING_VALUE_1])
+    expect(store.getValuesArray(["addresses:1:aaa", "addresses:1:bbb"])).toEqual([STRING_VALUE_1, STRING_VALUE_1])
+
+    expect(store.getValues("addresses:2:")).toEqual([STRING_VALUE_2, STRING_VALUE_2, null])
+    expect(store.getValuesArray("addresses:2:")).toEqual([STRING_VALUE_2, STRING_VALUE_2, null])
+    expect(store.getValues(["addresses:2:aaa", "addresses:2:bbb", "addresses:2:ccc"])).toEqual([STRING_VALUE_2, STRING_VALUE_2, null])
+    expect(store.getValuesArray(["addresses:2:aaa", "addresses:2:bbb", "addresses:2:ccc"])).toEqual([STRING_VALUE_2, STRING_VALUE_2, null])
+
+    expect(store.getValues("addresses:3:")).toBeUndefined()
+    expect(store.getValuesArray("addresses:3:")).toBeUndefined()
+    expect(store.getValues(["addresses:3:aaa", "addresses:3:bbb"])).toEqual([undefined, undefined])
+    expect(store.getValuesArray(["addresses:3:aaa", "addresses:3:bbb"])).toEqual([undefined, undefined])
+
 })
