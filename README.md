@@ -1,11 +1,12 @@
 # Bun SQLite Key Value
 
-A super fast key-value store with SQLite that uses bun:sqlite 
+A super fast key-value store with SQLite that uses **bun:sqlite** 
 and v8 as a fast JSON replacement.
 
 [Bun's](https://bun.sh/) lightning-fast 
 [SQLite implementation](https://bun.sh/docs/api/sqlite) makes Bun-SQLite-Key-Value 
 perfect for a fast storage and cache solution with TTL support.
+*You need [Bun](https://bun.sh/) to be able to use this package.*
 
 The ideas for the implementation come from 
 [bun-sqlite-cache](https://github.com/notskamr/bun-sqlite-cache) and 
