@@ -121,12 +121,9 @@ export class BunSqliteKeyValue {
     // Set ttlMs to 0 if you explicitly want to disable expiration.
     setValue<T = any>(key: string, value: T, ttlMs?: number) {
         let $expires: number | undefined
-        if (ttlMs !== undefined) {
-            if (ttlMs > 0) {
-                $expires = Date.now() + ttlMs
-            }
-        } else if (this.ttlMs && this.ttlMs > 0) {
-             $expires = Date.now() + this.ttlMs
+        ttlMs = ttlMs ?? this.ttlMs
+        if (ttlMs !== undefined && ttlMs > 0) {
+            $expires = Date.now() + ttlMs
         }
         const $value = serialize(value)
         this.setItemStatement.run({$key: key, $value, $expires})
