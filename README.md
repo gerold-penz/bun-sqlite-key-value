@@ -10,10 +10,13 @@ perfect for a fast storage and cache solution with TTL support.
 
 Please give this [GitHub project](https://github.com/gerold-penz/bun-sqlite-key-value) 
 a ⭐ if this project is useful to you. Thank you very much!
+And if you speak German, here is my business homepage:
+[GP-Softwaretechnik](https://gp-softwaretechnik.at/)
+Maybe you will find something interesting for you there. 😃
 
 The ideas for the implementation come from 
 [bun-sqlite-cache](https://github.com/notskamr/bun-sqlite-cache) and 
-[bun-kv](https://github.com/kirill-dev-pro/bun-kv).
+[bun-kv](https://github.com/kirill-dev-pro/bun-kv). Thank you very much!
 
 
 ## Installation
