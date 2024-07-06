@@ -77,6 +77,18 @@ test("Get expired item", async () => {
 })
 
 
+test("Default expiration ttlMs", async () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue(undefined, {ttlMs: 50})
+
+    store.set<string>(KEY_1, STRING_VALUE_1)
+    store.set<string>(KEY_2, STRING_VALUE_2)
+
+    await Bun.sleep(100)
+    store.deleteExpired()
+    expect(store.length).toEqual(0)
+})
+
+
 test("Delete item", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
     store.set<string>(KEY_1, STRING_VALUE_1)

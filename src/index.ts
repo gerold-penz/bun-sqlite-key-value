@@ -18,7 +18,6 @@ interface RawItem {
 export class BunSqliteKeyValue {
 
     db: Database
-
     ttlMs: number | undefined
 
     private deleteExpiredStatement: Statement
@@ -33,26 +32,25 @@ export class BunSqliteKeyValue {
 
     // @param filename: The full path of the SQLite database to open.
     //      Pass an empty string (`""`) or `":memory:"` or undefined for an in-memory database.
-    // @param options: defaults to `{readwrite: true, create: true}`.
     constructor(
         filename?: string,
-        options: {
+        options?: {
             readonly?: boolean
-            create?: boolean
-            readwrite?: boolean
+            create?: boolean  // Defaults to true
+            readwrite?: boolean  // Defaults to true
             safeInteger?: boolean
-            strict?: boolean
+            strict?: boolean  // Defaults to true
             ttlMs?: number  // Default TTL milliseconds
-        } = {
-            readwrite: true,
-            create: true
         }
     ) {
         // Options and ttlMs
+        options = options ?? {}
+        options.readwrite = options.readwrite ?? true
+        options.create = options.create ?? true
+        options.strict = options.strict ?? true
+
         const {ttlMs, ...dbOptions} = options
-        if (ttlMs !== undefined) {
-            this.ttlMs = ttlMs
-        }
+        this.ttlMs = ttlMs
 
         // Open database
         this.db = new Database(filename, dbOptions)
@@ -80,12 +78,12 @@ export class BunSqliteKeyValue {
 
     // Delete all expired records
     deleteExpired() {
-        this.deleteExpiredStatement.run({$now: Date.now()})
+        this.deleteExpiredStatement.run({now: Date.now()})
     }
 
 
     delete(key: string) {
-        this.deleteStatement.run({$key: key})
+        this.deleteStatement.run({key})
     }
 
 
@@ -120,13 +118,12 @@ export class BunSqliteKeyValue {
     // Time to live in milliseconds.
     // Set ttlMs to 0 if you explicitly want to disable expiration.
     setValue<T = any>(key: string, value: T, ttlMs?: number) {
-        let $expires: number | undefined
+        let expires: number | undefined
         ttlMs = ttlMs ?? this.ttlMs
         if (ttlMs !== undefined && ttlMs > 0) {
-            $expires = Date.now() + ttlMs
+            expires = Date.now() + ttlMs
         }
-        const $value = serialize(value)
-        this.setItemStatement.run({$key: key, $value, $expires})
+        this.setItemStatement.run({key, value: serialize(value), expires})
     }
 
 
@@ -135,7 +132,7 @@ export class BunSqliteKeyValue {
 
 
     getItem<T = any>(key: string): Item<T> | undefined {
-        const record = this.getItemStatement.get({$key: key})
+        const record = this.getItemStatement.get({key})
         if (!record) return
         const {value, expires} = record
         if (expires) {
@@ -164,12 +161,12 @@ export class BunSqliteKeyValue {
         let records: RawItem[]
         if (startsWithOrKeys && typeof startsWithOrKeys === "string") {
             // Filtered items (startsWith)
-            records = this.getItemsStartsWithStatement.all({$startsWith: startsWithOrKeys + "%"})
+            records = this.getItemsStartsWithStatement.all({startsWith: startsWithOrKeys + "%"})
         } else if (startsWithOrKeys) {
             // Filtered items (array with keys)
             records = this.db.transaction(() => {
                 return (startsWithOrKeys as string[]).map((key: string) => {
-                    const record = this.getItemStatement.get({$key: key})
+                    const record = this.getItemStatement.get({key})
                     return {...record, key}
                 })
             })()
