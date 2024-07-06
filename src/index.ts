@@ -42,7 +42,7 @@ export class BunSqliteKeyValue {
         this.db.run("CREATE TABLE IF NOT EXISTS items (key TEXT PRIMARY KEY, value BLOB, expires INT)")
         this.db.run("CREATE UNIQUE INDEX IF NOT EXISTS ix_items_key ON items (key)")
 
-        // Prepare cached statements
+        // Prepare and cache statements
         this.getAllItemsStatement = this.db.query("SELECT key, value, expires FROM items")
         this.clearStatement = this.db.query("DELETE FROM items")
         this.countStatement = this.db.query("SELECT COUNT(*) AS count FROM items")
@@ -71,6 +71,13 @@ export class BunSqliteKeyValue {
     // Delete all items
     clear() {
         this.clearStatement.run()
+    }
+
+
+    // Explicitly close database
+    // Removes .sqlite-shm and .sqlite-wal files
+    close() {
+        this.db.close()
     }
 
 

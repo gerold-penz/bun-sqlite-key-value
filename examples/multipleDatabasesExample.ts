@@ -61,3 +61,7 @@ const languageKey = settingsStore.get("language")
 const currentLanguage = languagesStore.get(languageKey)
 console.log(`Current language: "${currentLanguage}"`)  // -> Current language: "German"
 
+
+// Explicitly close DBs
+settingsStore.close()
+languagesStore.close()
