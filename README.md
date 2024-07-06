@@ -186,7 +186,7 @@ Returns all items (key, value) in an array whose keys begin with the passed stri
 If you plan the names of the keys well, more complex data can be stored.
 
 ```typescript
-getItemsArray(startsWithOrKeys: string | string[]): {key: string, value: any}[]
+getItems(startsWithOrKeys: string | string[]): {key: string, value: any}[]
 ```
 
 - `startsWithOrKeys`:
@@ -210,7 +210,7 @@ store.set("language:de", "German")
 store.set("language:en", "English")
 store.set("language:it", "Italian")
 
-const items = store.getItemsArray("language:")
+const items = store.getItems("language:")
 console.log(items)
 // --> [
 //     {key: "language:de", value: "German"},
