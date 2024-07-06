@@ -8,6 +8,9 @@ and v8 as a fast JSON replacement.
 perfect for a fast storage and cache solution with TTL support.
 *You need [Bun](https://bun.sh/) to be able to use this package.*
 
+Please give this [GitHub project](https://github.com/gerold-penz/bun-sqlite-key-value) 
+a ⭐ if this project is useful to you. Thank you very much!
+
 The ideas for the implementation come from 
 [bun-sqlite-cache](https://github.com/notskamr/bun-sqlite-cache) and 
 [bun-kv](https://github.com/kirill-dev-pro/bun-kv).
