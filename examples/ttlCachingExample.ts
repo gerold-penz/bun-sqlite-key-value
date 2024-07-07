@@ -1,7 +1,7 @@
 import { BunSqliteKeyValue } from "../src"
 
 
-const store: BunSqliteKeyValue = new BunSqliteKeyValue(undefined, {ttlMs: 1000})
+const store = new BunSqliteKeyValue(undefined, {ttlMs: 1000})
 
 const KEY = "cache-key"
 store.set(KEY, 12345)
