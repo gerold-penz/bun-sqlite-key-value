@@ -42,10 +42,7 @@ const value = store.get("my-key")
 console.log(value)  // -> [ 1, 2, 3, 4 ]
 ```
 
-## Documentation
-
-
-### Open Database
+## Open Database
 
 ```typescript
 const store = new BunSqliteKeyValue([filename], [options])
@@ -53,12 +50,12 @@ const store = new BunSqliteKeyValue([filename], [options])
 
 Opens and creates the SQLite database either in memory or on the file system.
 
-#### filename (optional)
+### filename (optional)
 
 The full path of the SQLite database to open.
 Pass an empty string (`""`) or `":memory:"` or undefined for an in-memory database.
 
-#### options (optional)
+### options (optional)
 
 `readonly?: boolean`: 
   Open the database as read-only (default: false).
@@ -73,7 +70,7 @@ Pass an empty string (`""`) or `":memory:"` or undefined for an in-memory databa
   Standard time period in milliseconds before
   an entry written to the DB becomes invalid.
 
-#### Example
+### Example
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
@@ -87,7 +84,7 @@ const store3 = new BunSqliteKeyValue("./store3.sqlite")
 ```
 
 
-### Write Value
+## Write Value
 
 ```typescript
 set(key: string, value: any, [ttlMs: number]): void
@@ -95,11 +92,11 @@ set(key: string, value: any, [ttlMs: number]): void
 
 Writes a value into the database.
 
-#### key
+### key
 
 The key must be a string.
 
-#### value
+### value
 
 The value can be any object that can be serialized with
 [v8](https://github.com/nodejs/node/blob/main/doc/api/v8.md#serialization-api).
@@ -108,14 +105,14 @@ but also more complex types such as sets or maps.
 You can find a list of the
 [supported data types](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#supported_types) here. 
 
-#### ttlMs (optional)
+### ttlMs (optional)
 
 "Time to live" in milliseconds. After this time, 
 the item becomes invalid and is deleted from the database 
 the next time it is accessed or when the application is started.
 Set the value to 0 if you want to explicitly deactivate the process.
 
-#### Example
+### Example
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
@@ -131,7 +128,7 @@ store.set("my-key-2", "item-with-ttl", 30000)
 ```
 
 
-### Read Value
+## Read Value
 
 ```typescript
 get(key: string): any
@@ -139,11 +136,11 @@ get(key: string): any
 
 Reads a value from the database.
 
-#### key
+### key
 
 The key must be a string.
 
-#### Example
+### Example
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
@@ -156,7 +153,7 @@ console.log(value)  // --> "my-value"
 ```
 
 
-### Read Item
+## Read Item
 
 Reads the key and the value from the database.
 
@@ -164,11 +161,11 @@ Reads the key and the value from the database.
 getItem(key: string): {key: string, value: any}
 ```
 
-#### key
+### key
 
 The key must be a string.
 
-#### Example
+### Example
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
@@ -181,7 +178,7 @@ console.log(item)  // --> {key: "my-key", value: "my-value"}
 ```
 
 
-### Read Values
+## Read Values
 
 ```typescript
 getValues(startsWithOrKeys: string | string[]): any[]
@@ -189,7 +186,7 @@ getValues(startsWithOrKeys: string | string[]): any[]
 
 Reads the data from the database and returns an array with the values.
 
-#### startsWithOrKeys
+### startsWithOrKeys
 
 `string`: Returns all values in an array whose keys begin with the passed string.
   If you plan the names of the keys well, more complex data can be stored.
@@ -202,7 +199,7 @@ Reads the data from the database and returns an array with the values.
   Entries that are not found are returned as `undefined`.
   Only exact matches with the keys are returned.
 
-#### Example
+### Example
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
@@ -218,14 +215,14 @@ console.log(values)  // --> [ "German", "English", "Italian" ]
 ```
 
 
-### Read Items
+## Read Items
 
 ```typescript
 getItems(startsWithOrKeys: string | string[]): {key: string, value: any}[]
 ```
 Reads the data from the database and returns entries in an array as key-value pairs.
 
-#### startsWithOrKeys
+### startsWithOrKeys
 
 `string`: Returns all items (key, value) in an array whose keys begin with 
   the passed string.
@@ -239,7 +236,7 @@ Reads the data from the database and returns entries in an array as key-value pa
   Entries that are not found are returned as `undefined`.
   Only exact matches with the keys are returned.
 
-#### Example
+### Example
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
@@ -260,11 +257,11 @@ console.log(items)
 ```
 
 
-### Multiple Databases
+## Multiple Databases
 
 It is no problem at all to use several databases and access them at the same time.
 
-#### Example
+### Example
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
@@ -317,13 +314,12 @@ languagesStore.close()
 ```
 
 
-### Read and write binary files (images)
+## Read and write binary files (images)
 
 SQLite has no problem with images and other binaries.
 The maximum size of a binary file in SQLite is 2 GB.
 
-
-#### Example
+### Example
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
@@ -343,14 +339,14 @@ const targetArrayBuffer = store.get("my-image")
 await Bun.write(Bun.file("<Target File Path>"), targetArrayBuffer)
 ```
 
-### Cache values with TTL
+## Cache values with TTL
 
 You can specify a caching period when you open the database. 
 This period in milliseconds is then added with each write. 
 If you read the value within this period, the value is returned. 
 If the value is read after this period, `undefined` is returned.
 
-#### Example
+### Example
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
