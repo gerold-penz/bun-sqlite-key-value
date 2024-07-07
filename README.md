@@ -35,10 +35,11 @@ import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
 const store = new BunSqliteKeyValue()
 
-store.set("my-key", {foo: "bar", baz: [1, 2, 3, 4]})
+store.set("my-key", [1, 2, 3, 4])
+
 const value = store.get("my-key")
 
-console.log(value)  // -> {foo: "bar", baz: [ 1, 2, 3, 4 ]}
+console.log(value)  // -> [ 1, 2, 3, 4 ]
 ```
 
 ## Documentation
@@ -50,34 +51,55 @@ console.log(value)  // -> {foo: "bar", baz: [ 1, 2, 3, 4 ]}
 const store = new BunSqliteKeyValue([filename], [options])
 ```
 
-- `filename`:
+Opens and creates the SQLite database either in memory or on the file system.
+
+#### filename (optional)
+
 The full path of the SQLite database to open.
 Pass an empty string (`""`) or `":memory:"` or undefined for an in-memory database.
 
-- `options`:
-Defaults to `{readwrite: true, create: true}`.
-If a number, then it's treated as `SQLITE_OPEN_*` constant flags.
+#### options (optional)
 
+`readonly?: boolean`: 
+  Open the database as read-only (default: false).
+
+`create?: boolean`:
+  Allow creating a new database (default: true)
+
+`readwrite?: boolean`: 
+  Open the database as read-write (default: true)
+
+`ttlMs?: boolean`:
+  Standard time period in milliseconds before
+  an entry written to the DB becomes invalid.
 
 #### Example
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
-const store = new BunSqliteKeyValue()
+// In-memory
+const store1 = new BunSqliteKeyValue()
+// In-memory with 30 seconds default expiration timeout
+const store2 = new BunSqliteKeyValue(undefined, {ttlMs: 30000})
+// Store items in file system
+const store3 = new BunSqliteKeyValue("./store3.sqlite")
 ```
 
 ### Write Value
 
+Writes a value into the database.
+
 ```typescript
 set(key: string, value: any, [ttlMs: number]): void
-setValue(key: string, value: any, [ttlMs: number])  // alias for set()
 ```
 
-- `key`:
+#### key
+
 The key must be a string.
 
-- `value`:
+#### value
+
 The value can be any object that can be serialized with
 [v8](https://github.com/nodejs/node/blob/main/doc/api/v8.md#serialization-api).
 This means that not only simple data types (string, number) are possible,
@@ -85,10 +107,12 @@ but also more complex types such as sets or maps.
 You can find a list of the
 [supported data types](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#supported_types) here. 
 
-- `ttlMs` (optional):
+#### ttlMs (optional)
+
 "Time to live" in milliseconds. After this time, 
 the item becomes invalid and is deleted from the database 
 the next time it is accessed or when the application is started.
+Set the value to 0 if you want to explicitly deactivate the process.
 
 #### Example
 
@@ -109,12 +133,13 @@ store.set("my-key-2", "item-with-ttl", 30000)
 
 ```typescript
 get(key: string): any
-getValue(key: string)  // alias for get()
 ```
 
-- `key`:
-The key must be a string.
+Returns the requested value.
 
+#### key
+
+The key must be a string.
 
 #### Example
 
@@ -128,16 +153,15 @@ const value = store.get("my-key")
 console.log(value)  // --> "my-value"
 ```
 
-
 ### Read Item
 
 ```typescript
 getItem(key: string): {key: string, value: any}
 ```
 
-- `key`:
-The key must be a string.
+#### key
 
+The key must be a string.
 
 #### Example
 

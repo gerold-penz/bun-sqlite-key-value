@@ -15,6 +15,19 @@ interface RawItem {
 }
 
 
+interface Options {
+    readonly?: boolean
+    create?: boolean  // Defaults to true
+    readwrite?: boolean  // Defaults to true
+    ttlMs?: number  // Default TTL milliseconds
+}
+
+
+interface DbOptions extends Omit<Options, "ttlMs"> {
+    strict: boolean
+}
+
+
 export class BunSqliteKeyValue {
 
     db: Database
@@ -30,27 +43,22 @@ export class BunSqliteKeyValue {
     private getItemsStartsWithStatement: Statement<RawItem>
 
 
-    // @param filename: The full path of the SQLite database to open.
-    //      Pass an empty string (`""`) or `":memory:"` or undefined for an in-memory database.
-    constructor(
-        filename?: string,
-        options?: {
-            readonly?: boolean
-            create?: boolean  // Defaults to true
-            readwrite?: boolean  // Defaults to true
-            safeInteger?: boolean
-            strict?: boolean  // Defaults to true
-            ttlMs?: number  // Default TTL milliseconds
-        }
-    ) {
-        // Options and ttlMs
-        options = options ?? {}
-        options.readwrite = options.readwrite ?? true
-        options.create = options.create ?? true
-        options.strict = options.strict ?? true
-
-        const {ttlMs, ...dbOptions} = options
+    // - `filename`: The full path of the SQLite database to open.
+    //    Pass an empty string (`""`) or `":memory:"` or undefined for an in-memory database.
+    // - `options`:
+    //    - ...
+    //    - `ttlMs?: boolean`: Standard time period in milliseconds before
+    //       an entry written to the DB becomes invalid.
+    constructor(filename?: string, options?: Options) {
+        // Parse options
+        const {ttlMs, ...otherOptions} = options ?? {}
         this.ttlMs = ttlMs
+        const dbOptions: DbOptions = {
+            ...otherOptions,
+            strict: true,
+            readwrite: otherOptions?.readwrite ?? true,
+            create: otherOptions?.create ?? true,
+        }
 
         // Open database
         this.db = new Database(filename, dbOptions)
