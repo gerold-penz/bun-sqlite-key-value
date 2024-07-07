@@ -220,26 +220,24 @@ console.log(values)  // --> [ "German", "English", "Italian" ]
 
 ### Read Items
 
-
 ```typescript
 getItems(startsWithOrKeys: string | string[]): {key: string, value: any}[]
 ```
-
 Reads the data from the database and returns entries in an array as key-value pairs.
 
+#### startsWithOrKeys
 
-xxx Returns all items (key, value) in an array whose keys begin with the passed string.
-xxx If you plan the names of the keys well, more complex data can be stored.
+`string`: Returns all items (key, value) in an array whose keys begin with 
+  the passed string.
+  If you plan the names of the keys well, more complex data can be stored.
+  It is advisable to divide keys into ranges using separators.
+  For example `"language:de"`, `"language:en"`, `"language:it"`.
+  A search for `"language:"` would return all languages.
 
-
-- `startsWithOrKeys`:
-    - **string**: String with which the keys whose items are to be returned begin.
-      It is advisable to divide keys into ranges using separators.
-      For example `"language:de"`, `"language:en"`, `"language:it"`.
-      A search for `"language:"` would return all languages.
-    - **string[]**: Array with keys. The returned array is exactly 
-      the same size as the passed array.
-      Entries that are not found are returned as `undefined`.
+`string[]`: Array with keys. The returned array is exactly 
+  the same size as the passed array.
+  Entries that are not found are returned as `undefined`.
+  Only exact matches with the keys are returned.
 
 #### Example
 
@@ -339,9 +337,10 @@ languagesStore.close()
 ```
 
 
-### Read and write binary files
+### Read and write binary files (images)
 
-SQLite has no problem with large images/binaries.
+SQLite has no problem with images and other binaries.
+The maximum size of a binary file in SQLite is 2 GB.
 
 
 #### Example
