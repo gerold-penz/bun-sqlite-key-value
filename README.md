@@ -86,13 +86,14 @@ const store2 = new BunSqliteKeyValue(undefined, {ttlMs: 30000})
 const store3 = new BunSqliteKeyValue("./store3.sqlite")
 ```
 
-### Write Value
 
-Writes a value into the database.
+### Write Value
 
 ```typescript
 set(key: string, value: any, [ttlMs: number]): void
 ```
+
+Writes a value into the database.
 
 #### key
 
@@ -129,13 +130,14 @@ store.set("my-key-2", "item-with-ttl", 30000)
 
 ```
 
+
 ### Read Value
 
 ```typescript
 get(key: string): any
 ```
 
-Returns the requested value.
+Reads a value from the database.
 
 #### key
 
@@ -153,7 +155,10 @@ const value = store.get("my-key")
 console.log(value)  // --> "my-value"
 ```
 
+
 ### Read Item
+
+Reads the key and the value from the database.
 
 ```typescript
 getItem(key: string): {key: string, value: any}
@@ -178,21 +183,24 @@ console.log(item)  // --> {key: "my-key", value: "my-value"}
 
 ### Read Values
 
-Returns all values in an array whose keys begin with the passed string.
-If you plan the names of the keys well, more complex data can be stored.
-
 ```typescript
 getValues(startsWithOrKeys: string | string[]): any[]
 ```
 
-- `startsWithOrKeys`:
-    - **string**: String with which the keys whose values are to be returned begin.
-      It is advisable to divide keys into ranges using separators.
-      For example `"language:de"`, `"language:en"`, `"language:it"`.
-      A search for `"language:"` would return all languages.
-    - **string[]**: Array with keys. The returned array is exactly 
-      the same size as the passed array.
-      Entries that are not found are returned as `undefined`.
+Reads the data from the database and returns an array with the values.
+
+#### startsWithOrKeys
+
+`string`: Returns all values in an array whose keys begin with the passed string.
+  If you plan the names of the keys well, more complex data can be stored.
+  It is advisable to divide keys into ranges using separators.
+  For example `"language:de"`, `"language:en"`, `"language:it"`.
+  A search for `"language:"` would return all languages.
+
+`string[]`: Array with keys. The returned array is exactly 
+  the same size as the passed array.
+  Entries that are not found are returned as `undefined`.
+  Only exact matches with the keys are returned.
 
 #### Example
 
@@ -212,12 +220,17 @@ console.log(values)  // --> [ "German", "English", "Italian" ]
 
 ### Read Items
 
-Returns all items (key, value) in an array whose keys begin with the passed string.
-If you plan the names of the keys well, more complex data can be stored.
 
 ```typescript
 getItems(startsWithOrKeys: string | string[]): {key: string, value: any}[]
 ```
+
+Reads the data from the database and returns entries in an array as key-value pairs.
+
+
+xxx Returns all items (key, value) in an array whose keys begin with the passed string.
+xxx If you plan the names of the keys well, more complex data can be stored.
+
 
 - `startsWithOrKeys`:
     - **string**: String with which the keys whose items are to be returned begin.
@@ -227,7 +240,6 @@ getItems(startsWithOrKeys: string | string[]): {key: string, value: any}[]
     - **string[]**: Array with keys. The returned array is exactly 
       the same size as the passed array.
       Entries that are not found are returned as `undefined`.
-
 
 #### Example
 
@@ -249,10 +261,10 @@ console.log(items)
 // ]
 ```
 
+
 ### Multiple Databases
 
 It is no problem at all to use several databases and access them at the same time.
-
 
 #### Example
 
@@ -358,7 +370,6 @@ You can specify a caching period when you open the database.
 This period in milliseconds is then added with each write. 
 If you read the value within this period, the value is returned. 
 If the value is read after this period, `undefined` is returned.
-
 
 #### Example
 
