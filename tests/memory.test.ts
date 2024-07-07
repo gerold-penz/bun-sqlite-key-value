@@ -274,3 +274,17 @@ test("Get items as Object", () => {
         "unknown-key": undefined
     })
 })
+
+
+test("Caching with implicite TTL", async () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue(undefined, {ttlMs: 40})
+
+    store.set(KEY_1, STRING_VALUE_1)
+    store.set(KEY_2, STRING_VALUE_2)
+    store.set(KEY_3, STRING_VALUE_3)
+    await Bun.sleep(60)
+    expect(store.get(KEY_1)).toBeUndefined()
+    expect(store.get(KEY_2)).toBeUndefined()
+    expect(store.get(KEY_3)).toBeUndefined()
+})
+
