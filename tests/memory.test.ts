@@ -333,3 +333,12 @@ test("Get values as Set", () => {
         STRING_VALUE_1, STRING_VALUE_2, null, undefined
     ]))
 })
+
+
+test("Has key", () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue()
+
+    store.set<string>(KEY_1, STRING_VALUE_1)
+    expect(store.has(KEY_1)).toEqual(true)
+    expect(store.has(KEY_2)).toEqual(false)
+})

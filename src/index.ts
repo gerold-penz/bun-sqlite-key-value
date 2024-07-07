@@ -41,6 +41,9 @@ export class BunSqliteKeyValue {
     private getItemStatement: Statement<Omit<RawItem, "key">>
     private getAllItemsStatement: Statement<RawItem>
     private getItemsStartsWithStatement: Statement<RawItem>
+    private getKeyStatement:  Statement<Omit<RawItem, "value">>
+    // private getAllKeysStatement: Statement<Omit<RawItem, "value">>
+    // private getKeysStartsWithStatement: Statement<Omit<RawItem, "value">>
 
 
     // - `filename`: The full path of the SQLite database to open.
@@ -78,6 +81,9 @@ export class BunSqliteKeyValue {
         this.getItemStatement = this.db.query("SELECT value, expires FROM items WHERE key = $key")
         this.getItemsStartsWithStatement = this.db.query("SELECT key, value, expires FROM items WHERE key LIKE $startsWith")
         this.deleteStatement = this.db.query("DELETE FROM items WHERE key = $key")
+        this.getKeyStatement = this.db.query("SELECT key, expires FROM items WHERE key = $key")
+        // this.getAllKeysStatement = this.db.query("SELECT key, expires FROM items")
+        // this.getKeysStartsWithStatement = this.db.query("SELECT key, expires FROM items WHERE key LIKE $startsWith")
 
         // Delete expired items
         this.deleteExpired()
@@ -251,5 +257,18 @@ export class BunSqliteKeyValue {
         return new Set(values)
     }
 
+
+    // Checks if key exists
+    has(key: string): boolean {
+        const record = this.getKeyStatement.get({key})
+        if (!record) return false
+        if (record.expires) {
+            if (record.expires < Date.now()) {
+                this.delete(key)
+                return false
+            }
+        }
+        return true
+    }
 
 }
