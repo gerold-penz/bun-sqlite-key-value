@@ -90,6 +90,7 @@ export class BunSqliteKeyValue {
     }
 
 
+    // Delete one or multiple items
     delete(keyOrKeys: string | string[]) {
         if (typeof keyOrKeys === "string") {
             this.deleteStatement.run({key: keyOrKeys})
@@ -147,6 +148,7 @@ export class BunSqliteKeyValue {
     setValue = this.set
 
 
+    // Get one value
     get<T = any>(key: string): T | undefined {
         const record = this.getItemStatement.get({key})
         if (!record) return
@@ -165,6 +167,7 @@ export class BunSqliteKeyValue {
     getValue = this.get
 
 
+    // Get one item (key, value)
     getItem<T = any>(key: string): Item<T> | undefined {
         return {
             key,
@@ -173,6 +176,7 @@ export class BunSqliteKeyValue {
     }
 
 
+    // Get multiple items (key-value array)
     getItems<T = any>(startsWithOrKeys?: string | string[]): Item<T>[] | undefined {
         let records: RawItem[]
         if (startsWithOrKeys && typeof startsWithOrKeys === "string") {
@@ -214,6 +218,7 @@ export class BunSqliteKeyValue {
     getItemsArray = this.getItems
 
 
+    // Get multiple values as array
     getValues<T = any>(startsWithOrKeys?: string | string[]): (T | undefined)[] | undefined {
         return this.getItems<T>(startsWithOrKeys)?.map((result) => result.value)
     }
@@ -223,6 +228,7 @@ export class BunSqliteKeyValue {
     getValuesArray = this.getValues
 
 
+    // Get multiple items as object
     getItemsObject<T = any>(startsWithOrKeys?: string | string[]): {[key: string]: T | undefined} | undefined {
         const items = this.getItems(startsWithOrKeys)
         if (!items) return
@@ -230,6 +236,7 @@ export class BunSqliteKeyValue {
     }
 
 
+    // Get multiple items as Map()
     getItemsMap<T = any>(startsWithOrKeys?: string | string[]): Map<string, T | undefined> | undefined {
         const items = this.getItems(startsWithOrKeys)
         if (!items) return
@@ -237,6 +244,7 @@ export class BunSqliteKeyValue {
     }
 
 
+    // Get multiple values as Set()
     getValuesSet<T = any>(startsWithOrKeys?: string | string[]): Set<T> | undefined {
         const values = this.getValues(startsWithOrKeys)
         if (!values) return
