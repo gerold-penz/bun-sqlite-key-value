@@ -360,3 +360,67 @@ console.log(store.get(KEY))  // --> 12345
 await Bun.sleep(1000)
 console.log(store.get(KEY))  // --> undefined
 ```
+
+
+## All Methods
+
+### Database
+- `new BunSqliteKeyValue()` --> Open database
+- `close()` --> Close database
+
+### Set value
+- `set(key: string, value: any)`
+- `setValue(key: string, value: any)` --> alias for set()
+
+### Get value
+- `get(key: string)`
+- `getValue(key: string)` --> alias for get()
+
+### Get item
+- `getItem(key: string)` --> Object
+
+### Get items as Array
+- `getItems()` --> Array with all items
+- `getItems(startsWith: string)` --> Array
+- `getItems(keys: string[])` --> Array
+- `getItemsArray()` --> alias for getItems()
+- `getItemsArray(startsWith: string)` --> alias for getItems()
+- `getItemsArray(keys: string[])` --> alias for getItems()
+
+### Get items as Object
+- `getItemsObject()` --> Object with all items
+- `getItemsObject(startsWith: string)` --> Object
+- `getItemsObject(keys: string[])` --> Object
+
+### Get items as Map()
+- `getItemsMap()` --> Map with all items
+- `getItemsMap(startsWith: string)` --> Map
+- `getItemsMap(keys: string[])` --> Map
+
+### Get values as Array
+- `getValues()` --> Array with all values
+- `getValues(startsWith: string)` --> Array
+- `getValues(keys: string[])` --> Array
+- `getValuesArray()` --> alias for getValues()
+- `getValuesArray(startsWith: string)` --> alias for getValues()
+- `getValuesArray(keys: string[])` --> alias for getValues()
+
+
+### Get values as Set()
+- `getValuesSet()` --> Set with all values
+- `getValuesSet(startsWith: string)` --> Set
+- `getValuesSet(keys: string[])` --> Set
+
+### Delete
+- `clear()` --> Delete all items
+- `delete(key: string)` --> Delete item
+- `delete(keys: string[])` --> Delete items
+
+### Count
+- `getCount()` --> Number
+- `length` --> alias for getCount()
+
+### Get keys
+- `has(key: string)` --> Boolean
+- [ ] getKeys() --> Array with all Keys
+- [ ] getKeys(startsWith: string) --> Array
