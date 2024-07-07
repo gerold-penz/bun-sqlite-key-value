@@ -1,3 +1,5 @@
 [test]
+# The root directory to run tests from.
 root = "./tests"
+# Enables coverage reporting.
 coverage = true
