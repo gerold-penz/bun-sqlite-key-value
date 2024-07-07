@@ -90,8 +90,16 @@ export class BunSqliteKeyValue {
     }
 
 
-    delete(key: string) {
-        this.deleteStatement.run({key})
+    delete(keyOrKeys: string | string[]) {
+        if (typeof keyOrKeys === "string") {
+            this.deleteStatement.run({key: keyOrKeys})
+        } else {
+            this.db.transaction(() => {
+                keyOrKeys.forEach((key) => {
+                    this.deleteStatement.run({key})
+                })
+            })()
+        }
     }
 
 
@@ -125,7 +133,7 @@ export class BunSqliteKeyValue {
     // @param ttlMs:
     // Time to live in milliseconds.
     // Set ttlMs to 0 if you explicitly want to disable expiration.
-    setValue<T = any>(key: string, value: T, ttlMs?: number) {
+    set<T = any>(key: string, value: T, ttlMs?: number) {
         let expires: number | undefined
         ttlMs = ttlMs ?? this.ttlMs
         if (ttlMs !== undefined && ttlMs > 0) {
@@ -135,11 +143,11 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Alias for `setValue`
-    set = this.setValue
+    // Alias for `set`
+    setValue = this.set
 
 
-    getItem<T = any>(key: string): Item<T> | undefined {
+    get<T = any>(key: string): T | undefined {
         const record = this.getItemStatement.get({key})
         if (!record) return
         const {value, expires} = record
@@ -149,20 +157,20 @@ export class BunSqliteKeyValue {
                 return
             }
         }
+        return value ? deserialize(value) as T : undefined
+    }
+
+
+    // Alias for `get`
+    getValue = this.get
+
+
+    getItem<T = any>(key: string): Item<T> | undefined {
         return {
             key,
-            value: value ? deserialize(value) as T : undefined
+            value: this.get<T>(key)
         }
     }
-
-
-    getValue<T = any>(key: string): T | undefined {
-        return this.getItem<T>(key)?.value || undefined
-    }
-
-
-    // Alias for getValue
-    get = this.getValue
 
 
     getItems<T = any>(startsWithOrKeys?: string | string[]): Item<T>[] | undefined {
@@ -215,14 +223,25 @@ export class BunSqliteKeyValue {
     getValuesArray = this.getValues
 
 
-    getItemsObject<T = any>(startsWithOrKeys?: string | string[]): {[key: string]: T} | undefined {
+    getItemsObject<T = any>(startsWithOrKeys?: string | string[]): {[key: string]: T | undefined} | undefined {
         const items = this.getItems(startsWithOrKeys)
         if (!items) return
-        const result: {[key: string]: T} = {}
-        for (const item of items) {
-            result[item.key] = item.value
-        }
-        return result
+        return Object.fromEntries(items.map(item => [item.key, item.value as T | undefined]))
     }
+
+
+    getItemsMap<T = any>(startsWithOrKeys?: string | string[]): Map<string, T | undefined> | undefined {
+        const items = this.getItems(startsWithOrKeys)
+        if (!items) return
+        return new Map(items.map(item => [item.key, item.value as T | undefined]))
+    }
+
+
+    getValuesSet<T = any>(startsWithOrKeys?: string | string[]): Set<T> | undefined {
+        const values = this.getValues(startsWithOrKeys)
+        if (!values) return
+        return new Set(values)
+    }
+
 
 }

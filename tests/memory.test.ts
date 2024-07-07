@@ -91,12 +91,35 @@ test("Default expiration ttlMs", async () => {
 })
 
 
-test("Delete item", () => {
+test("Caching with implicite TTL", async () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue(undefined, {ttlMs: 40})
+
+    store.set(KEY_1, STRING_VALUE_1)
+    store.set(KEY_2, STRING_VALUE_2)
+    store.set(KEY_3, STRING_VALUE_3)
+    await Bun.sleep(60)
+    expect(store.get(KEY_1)).toBeUndefined()
+    expect(store.get(KEY_2)).toBeUndefined()
+    expect(store.get(KEY_3)).toBeUndefined()
+})
+
+
+test("Delete one item", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
     store.set<string>(KEY_1, STRING_VALUE_1)
     expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_1)
     store.delete(KEY_1)
     expect(store.get<string>(KEY_1)).toBeUndefined()
+})
+
+
+test("Delete multiple items", () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue()
+    store.set<string>(KEY_1, STRING_VALUE_1)
+    store.set<string>(KEY_2, STRING_VALUE_2)
+    store.set<string>(KEY_3, STRING_VALUE_3)
+    store.delete([KEY_1, KEY_2])
+    expect(store.length).toEqual(1)
 })
 
 
@@ -276,15 +299,37 @@ test("Get items as Object", () => {
 })
 
 
-test("Caching with implicite TTL", async () => {
-    const store: BunSqliteKeyValue = new BunSqliteKeyValue(undefined, {ttlMs: 40})
+test("Get items as Map", () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
-    store.set(KEY_1, STRING_VALUE_1)
-    store.set(KEY_2, STRING_VALUE_2)
-    store.set(KEY_3, STRING_VALUE_3)
-    await Bun.sleep(60)
-    expect(store.get(KEY_1)).toBeUndefined()
-    expect(store.get(KEY_2)).toBeUndefined()
-    expect(store.get(KEY_3)).toBeUndefined()
+    store.set<string>(KEY_1, STRING_VALUE_1)
+    store.set<string>(KEY_2, STRING_VALUE_2)
+    store.set(KEY_3, null)
+
+    expect(store.getItemsMap([
+        KEY_1,
+        KEY_2,
+        KEY_3,
+        "unknown-key"
+    ])).toEqual(new Map([
+        [KEY_1, STRING_VALUE_1],
+        [KEY_2, STRING_VALUE_2],
+        [KEY_3, null],
+        ["unknown-key", undefined],
+    ]))
 })
 
+
+test("Get values as Set", () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue()
+
+    store.set<string>(KEY_1, STRING_VALUE_1)
+    store.set<string>(KEY_2, STRING_VALUE_2)
+    store.set(KEY_3, null)
+
+    expect(store.getValuesSet([
+        KEY_1, KEY_2, KEY_3, "unknown-key"
+    ])).toEqual(new Set([
+        STRING_VALUE_1, STRING_VALUE_2, null, undefined
+    ]))
+})
