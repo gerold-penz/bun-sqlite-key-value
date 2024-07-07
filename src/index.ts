@@ -8,7 +8,7 @@ export interface Item<T> {
 }
 
 
-interface RawItem {
+interface Record {
     key: string
     value: Buffer | null,
     expires: number | null
@@ -38,12 +38,12 @@ export class BunSqliteKeyValue {
     private clearStatement: Statement
     private countStatement: Statement<{count: number}>
     private setItemStatement: Statement
-    private getItemStatement: Statement<Omit<RawItem, "key">>
-    private getAllItemsStatement: Statement<RawItem>
-    private getItemsStartsWithStatement: Statement<RawItem>
-    private getKeyStatement:  Statement<Omit<RawItem, "value">>
-    // private getAllKeysStatement: Statement<Omit<RawItem, "value">>
-    // private getKeysStartsWithStatement: Statement<Omit<RawItem, "value">>
+    private getItemStatement: Statement<Omit<Record, "key">>
+    private getAllItemsStatement: Statement<Record>
+    private getItemsStartsWithStatement: Statement<Record>
+    private getKeyStatement:  Statement<Omit<Record, "value">>
+    // private getAllKeysStatement: Statement<Omit<Record, "value">>
+    // private getKeysStartsWithStatement: Statement<Omit<Record, "value">>
 
 
     // - `filename`: The full path of the SQLite database to open.
@@ -184,7 +184,7 @@ export class BunSqliteKeyValue {
 
     // Get multiple items (key-value array)
     getItems<T = any>(startsWithOrKeys?: string | string[]): Item<T>[] | undefined {
-        let records: RawItem[]
+        let records: Record[]
         if (startsWithOrKeys && typeof startsWithOrKeys === "string") {
             // Filtered items (startsWith)
             records = this.getItemsStartsWithStatement.all({startsWith: startsWithOrKeys + "%"})
