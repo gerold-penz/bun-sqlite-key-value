@@ -1,6 +1,6 @@
 {
   "name": "bun-sqlite-key-value",
-  "version": "1.3.10",
+  "version": "1.3.11",
   "author": "Gerold Penz<gerold@gp-softwaretechnik.at>",
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   "homepage": "https://github.com/gerold-penz/bun-sqlite-key-value",
   "keywords": [
     "Bun",
+    "Bun.js",
     "SQLite",
     "Key-Value",
     "KV",
