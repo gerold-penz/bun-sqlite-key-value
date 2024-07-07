@@ -268,7 +268,6 @@ It is no problem at all to use several databases and access them at the same tim
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
-
 import { join } from "node:path"
 import { exists, mkdir } from "node:fs/promises"
 
