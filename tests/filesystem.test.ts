@@ -53,10 +53,48 @@ test("Get values as array", () => {
 })
 
 
+
+
+
+
+
+test("Get items as array (extended tests)", () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue(dbPath)
+
+    store.set<string>("a:1:", STRING_VALUE_1)
+    store.set<string>("a:1:" + String.fromCodePoint(2), STRING_VALUE_1)
+    store.set<string>("a:1:" + String.fromCodePoint(1_000_000), STRING_VALUE_1)
+    store.set<string>("a:1:a", STRING_VALUE_1)
+    store.set<string>("a:1:1", STRING_VALUE_1)
+    store.set<string>("a:1:*", STRING_VALUE_1)
+    store.set<string>("a:2:a", STRING_VALUE_1)
+
+    // Add many records
+    const items = []
+    for (let i = 0; i < 100_000; i++) {
+        items.push({key: "a:1:" + String(i), value: STRING_VALUE_1})
+    }
+    store.setItems(items)
+
+
+
+    // expect(store.getItems("a:1:")).toEqual([
+    //     {key: "addresses:1:aaa", value: STRING_VALUE_1},
+    //     {key: "addresses:1:bbb", value: STRING_VALUE_1},
+    // ])
+})
+
+
+
+
+
+
+
 afterAll(async () => {
     // Remove test database
     if (await exists(dbPath)) {
         await rm(dbPath)
     }
 })
+
 

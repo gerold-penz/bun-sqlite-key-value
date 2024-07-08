@@ -27,6 +27,9 @@ interface DbOptions extends Omit<Options, "ttlMs"> {
     strict: boolean
 }
 
+const MIN_UTF8_CHAR: string = String.fromCodePoint(1)
+const MAX_UTF8_CHAR: string = String.fromCodePoint(1_114_111)
+
 
 export class BunSqliteKeyValue {
 
@@ -41,7 +44,7 @@ export class BunSqliteKeyValue {
     private getItemStatement: Statement<Omit<Record, "key">>
     private getAllItemsStatement: Statement<Record>
     private getItemsStartsWithStatement: Statement<Record>
-    private getKeyStatement:  Statement<Omit<Record, "value">>
+    private getKeyStatement: Statement<Omit<Record, "value">>
     // private getAllKeysStatement: Statement<Omit<Record, "value">>
     // private getKeysStartsWithStatement: Statement<Omit<Record, "value">>
 
@@ -79,7 +82,7 @@ export class BunSqliteKeyValue {
         this.deleteExpiredStatement = this.db.query("DELETE FROM items WHERE expires < $now")
         this.setItemStatement = this.db.query("INSERT OR REPLACE INTO items (key, value, expires) VALUES ($key, $value, $expires)")
         this.getItemStatement = this.db.query("SELECT value, expires FROM items WHERE key = $key")
-        this.getItemsStartsWithStatement = this.db.query("SELECT key, value, expires FROM items WHERE key LIKE $startsWith")
+        this.getItemsStartsWithStatement = this.db.query("SELECT key, value, expires FROM items WHERE key = $key OR key >= $gte AND key < $lt")
         this.deleteStatement = this.db.query("DELETE FROM items WHERE key = $key")
         this.getKeyStatement = this.db.query("SELECT key, expires FROM items WHERE key = $key")
         // this.getAllKeysStatement = this.db.query("SELECT key, expires FROM items")
@@ -154,6 +157,17 @@ export class BunSqliteKeyValue {
     setValue = this.set
 
 
+    // Adds a large number of entries to the database and takes only
+    // a small fraction of the time that `set()` would take individually.
+    setItems<T = any>(items: {key: string, value: T, ttlMs?: number}[]) {
+        this.db.transaction(() => {
+            items.forEach(({key, value, ttlMs}) => {
+                this.set<T>(key, value, ttlMs)
+            })
+        })()
+    }
+
+
     // Get one value
     get<T = any>(key: string): T | undefined {
         const record = this.getItemStatement.get({key})
@@ -187,7 +201,15 @@ export class BunSqliteKeyValue {
         let records: Record[]
         if (startsWithOrKeys && typeof startsWithOrKeys === "string") {
             // Filtered items (startsWith)
-            records = this.getItemsStartsWithStatement.all({startsWith: startsWithOrKeys + "%"})
+            //   key = "addresses:"
+            //   gte = key + MIN_UTF8_CHAR
+            //   "addresses:aaa"
+            //   "addresses:xxx"
+            // lt = key + MAX_UTF8_CHAR
+            const key: string = startsWithOrKeys
+            const gte: string = key + MIN_UTF8_CHAR
+            const lt: string = key + MAX_UTF8_CHAR
+            records = this.getItemsStartsWithStatement.all({key, gte, lt})
         } else if (startsWithOrKeys) {
             // Filtered items (array with keys)
             records = this.db.transaction(() => {
