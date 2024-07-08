@@ -43,7 +43,8 @@
     "test:watch": "bun test --watch",
     "increment_package_version": "npm version patch --no-git-tag-version",
     "prepublishOnly": "bun run test && bun run increment_package_version",
-    "npm:publish": "npm publish --access public"
+    "npm:publish": "npm publish --access public",
+    "jsr:publish": "bunx jsr publish"
   },
   "type": "module"
 }
