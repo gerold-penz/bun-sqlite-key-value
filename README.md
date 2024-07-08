@@ -53,7 +53,7 @@ Opens and creates the SQLite database either in memory or on the file system.
 ### filename (optional)
 
 The full path of the SQLite database to open.
-Pass an empty string (`""`) or `":memory:"` or undefined for an in-memory database.
+Pass an empty string (`""`) or `":memory:"` or `undefined` for an in-memory database.
 
 ### options (optional)
 
