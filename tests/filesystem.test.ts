@@ -2,7 +2,7 @@ import { beforeAll, afterAll, expect, test } from "bun:test"
 import { join } from "node:path"
 import { tmpdir } from 'node:os'
 import { mkdtemp } from 'node:fs/promises'
-import { rm, exists } from "node:fs/promises"
+import { rm, rmdir, exists } from "node:fs/promises"
 import { BunSqliteKeyValue } from "../src"
 
 
@@ -11,12 +11,13 @@ const KEY_2: string = "test-key-2"
 const STRING_VALUE_1: string = "Hello world!"
 const STRING_VALUE_2: string = "Hello moon!"
 
+let dbDir: string
 let dbPath: string
 
 
 beforeAll(async () => {
-    const dirname = await mkdtemp(join(tmpdir(), "bun-sqlite-key-value"))
-    dbPath = join(dirname, "filesystemtest.sqlite")
+    dbDir = await mkdtemp(join(tmpdir(), "bun-sqlite-key-value"))
+    dbPath = join(dbDir, "filesystemtest.sqlite")
     console.log("SQLite database path:", dbPath)
 })
 
@@ -79,10 +80,13 @@ test("Get items as array (extended tests)", () => {
 
 
 afterAll(async () => {
-    // Remove test database
-    if (await exists(dbPath)) {
-        await rm(dbPath)
+    // Remove all
+    const glob = new Bun.Glob("*")
+    for await (const fileName of glob.scan({cwd: dbDir})) {
+        const filePath = join(dbDir, fileName)
+        await rm(filePath)
+    }
+    if (await exists(dbDir)) {
+        await rmdir(dbDir)
     }
 })
-
-

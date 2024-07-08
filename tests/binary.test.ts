@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, expect, test } from "bun:test"
-import { BunSqliteKeyValue } from "../src"
 import { join, resolve } from "node:path"
 import { tmpdir } from 'node:os'
-import { mkdtemp } from 'node:fs/promises'
+import { mkdtemp, rmdir } from 'node:fs/promises'
 import { rm, exists } from "node:fs/promises"
+import { BunSqliteKeyValue } from "../src"
 
 
 let tmpDirname: string
@@ -55,11 +55,13 @@ test("Write an read binary (async)", async () => {
 
 
 afterAll(async () => {
-    // Remove temp files
-    if (await exists(dbPath)) {
-        await rm(dbPath)
+    // Remove all
+    const glob = new Bun.Glob("*")
+    for await (const fileName of glob.scan({cwd: tmpDirname})) {
+        const filePath = join(tmpDirname, fileName)
+        await rm(filePath)
     }
-    if (await exists(targetImagePath)) {
-        await rm(targetImagePath)
+    if (await exists(tmpDirname)) {
+        await rmdir(tmpDirname)
     }
 })
