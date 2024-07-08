@@ -372,6 +372,9 @@ console.log(store.get(KEY))  // --> undefined
 - `set(key: string, value: any)`
 - `setValue(key: string, value: any)` --> alias for set()
 
+### Set items
+- `setItems({key: string, value: any}[])`
+
 ### Get value
 - `get(key: string)`
 - `getValue(key: string)` --> alias for get()
@@ -422,5 +425,7 @@ console.log(store.get(KEY))  // --> undefined
 
 ### Get keys
 - `has(key: string)` --> Boolean
-- [ ] getKeys() --> Array with all Keys
-- [ ] getKeys(startsWith: string) --> Array
+- [ ] `getKeys()` --> Array with all Keys
+- [ ] `getKeys(startsWith: string)` --> Array
+- [ ] `getKeys(keys: string[])` --> Array
+
