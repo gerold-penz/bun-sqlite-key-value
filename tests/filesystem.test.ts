@@ -53,41 +53,29 @@ test("Get values as array", () => {
 })
 
 
-
-
-
-
-
 test("Get items as array (extended tests)", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue(dbPath)
 
     store.set<string>("a:1:", STRING_VALUE_1)
     store.set<string>("a:1:" + String.fromCodePoint(2), STRING_VALUE_1)
     store.set<string>("a:1:" + String.fromCodePoint(1_000_000), STRING_VALUE_1)
-    store.set<string>("a:1:a", STRING_VALUE_1)
-    store.set<string>("a:1:1", STRING_VALUE_1)
     store.set<string>("a:1:*", STRING_VALUE_1)
     store.set<string>("a:2:a", STRING_VALUE_1)
 
     // Add many records
     const items = []
-    for (let i = 0; i < 100_000; i++) {
+    for (let i = 0; i < 1_000; i++) {
         items.push({key: "a:1:" + String(i), value: STRING_VALUE_1})
     }
     store.setItems(items)
 
-
-
-    // expect(store.getItems("a:1:")).toEqual([
-    //     {key: "addresses:1:aaa", value: STRING_VALUE_1},
-    //     {key: "addresses:1:bbb", value: STRING_VALUE_1},
-    // ])
+    // Tests
+    expect(store.getItems("a:1:*")).toHaveLength(1)
+    expect(store.getItems("a:1:" + String.fromCodePoint(2))).toHaveLength(1)
+    expect(store.getItems("a:1:" + String.fromCodePoint(1_000_000))).toHaveLength(1)
+    expect(store.getValues("a:1:")).toHaveLength(1_004)
+    expect(store.getValues("a:1:55")).toHaveLength(11)
 })
-
-
-
-
-
 
 
 afterAll(async () => {
