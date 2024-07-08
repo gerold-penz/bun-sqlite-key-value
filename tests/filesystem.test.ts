@@ -62,7 +62,7 @@ test("Get items as array (extended tests)", () => {
     store.set<string>("a:1:*", STRING_VALUE_1)
     store.set<string>("a:2:a", STRING_VALUE_1)
 
-    // Add many records
+    // Add many additional records
     const items = []
     for (let i = 0; i < 1_000; i++) {
         items.push({key: "a:1:" + String(i), value: STRING_VALUE_1})

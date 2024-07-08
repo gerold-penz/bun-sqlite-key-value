@@ -45,7 +45,7 @@ console.log(value)  // -> [ 1, 2, 3, 4 ]
 ## Open Database
 
 ```typescript
-const store = new BunSqliteKeyValue([filename], [options])
+const store = new BunSqliteKeyValue(filename?, options?)
 ```
 
 Opens and creates the SQLite database either in memory or on the file system.
@@ -87,7 +87,7 @@ const store3 = new BunSqliteKeyValue("./store3.sqlite")
 ## Write Value
 
 ```typescript
-set(key: string, value: any, [ttlMs: number]): void
+set(key: string, value: any, ttlMs?: number)
 ```
 
 Writes a value into the database.
@@ -124,7 +124,31 @@ store.set("my-key", "my-value")
 
 // Becomes invalid after 30 seconds
 store.set("my-key-2", "item-with-ttl", 30000)
+```
 
+
+## Write Multiple Items
+
+```typescript
+setItems(items: {key: string, value: T, ttlMs?: number}[]) {
+```
+
+Adds a large number of items to the database and takes only
+a small fraction of the time that `set()` would take individually.
+
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+// Add many records
+store.setItems([
+    {key: "a:1", value: "test-value-1"},
+    {key: "a:2", value: "test-value-2"},
+])
 ```
 
 
@@ -314,7 +338,7 @@ languagesStore.close()
 ```
 
 
-## Read and write binary files (images)
+## Read and Write Binary Files (Images)
 
 SQLite has no problem with images and other binaries.
 The maximum size of a binary file in SQLite is 2 GB.
@@ -339,7 +363,7 @@ const targetArrayBuffer = store.get("my-image")
 await Bun.write(Bun.file("<Target File Path>"), targetArrayBuffer)
 ```
 
-## Cache values with TTL
+## Cache Values with TTL
 
 You can specify a caching period when you open the database. 
 This period in milliseconds is then added with each write. 
@@ -360,6 +384,26 @@ console.log(store.get(KEY))  // --> 12345
 await Bun.sleep(1000)
 console.log(store.get(KEY))  // --> undefined
 ```
+
+
+## Has (key)
+
+```typescript
+has(key: string): boolean
+```
+
+Checks if key exists. Returns `false` if the item is expired.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.has("my-key") --> false
+```
+
 
 
 ## All Methods
