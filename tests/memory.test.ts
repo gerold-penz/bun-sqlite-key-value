@@ -342,3 +342,17 @@ test("Has key", () => {
     expect(store.has(KEY_1)).toEqual(true)
     expect(store.has(KEY_2)).toEqual(false)
 })
+
+
+test("Get keys", async () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue()
+
+    store.set<string>(KEY_1, STRING_VALUE_1)
+    store.set<string>(KEY_2, STRING_VALUE_2, 50)
+
+    // All keys
+    expect(store.getKeys()).toHaveLength(2)
+    await Bun.sleep(100)
+    expect(store.getKeys()).toEqual([KEY_1])
+})
+

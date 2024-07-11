@@ -405,6 +405,26 @@ store.has("my-key") --> false
 ```
 
 
+## Read Keys
+
+```typescript
+getKeys(): string[]
+```
+
+Returns the unexpired keys as array.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.getKeys() --> ["key1", "key2"]
+```
+
+
+
 
 ## All Methods
 
@@ -469,7 +489,7 @@ store.has("my-key") --> false
 
 ### Get keys
 - `has(key: string)` --> Boolean
-- [ ] `getKeys()` --> Array with all Keys
+- `getKeys()` --> Array with all Keys
 - [ ] `getKeys(startsWith: string)` --> Array
 - [ ] `getKeys(keys: string[])` --> Array
 

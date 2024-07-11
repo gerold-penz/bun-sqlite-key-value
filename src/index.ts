@@ -27,6 +27,7 @@ interface DbOptions extends Omit<Options, "ttlMs"> {
     strict: boolean
 }
 
+
 const MIN_UTF8_CHAR: string = String.fromCodePoint(1)
 const MAX_UTF8_CHAR: string = String.fromCodePoint(1_114_111)
 
@@ -45,7 +46,7 @@ export class BunSqliteKeyValue {
     private getAllItemsStatement: Statement<Record>
     private getItemsStartsWithStatement: Statement<Record>
     private getKeyStatement: Statement<Omit<Record, "value">>
-    // private getAllKeysStatement: Statement<Omit<Record, "value">>
+    private getAllKeysStatement: Statement<{key: string}>
     // private getKeysStartsWithStatement: Statement<Omit<Record, "value">>
 
 
@@ -85,7 +86,7 @@ export class BunSqliteKeyValue {
         this.getItemsStartsWithStatement = this.db.query("SELECT key, value, expires FROM items WHERE key = $key OR key >= $gte AND key < $lt")
         this.deleteStatement = this.db.query("DELETE FROM items WHERE key = $key")
         this.getKeyStatement = this.db.query("SELECT key, expires FROM items WHERE key = $key")
-        // this.getAllKeysStatement = this.db.query("SELECT key, expires FROM items")
+        this.getAllKeysStatement = this.db.query("SELECT key FROM items WHERE expires IS NULL OR expires > $now")
         // this.getKeysStartsWithStatement = this.db.query("SELECT key, expires FROM items WHERE key LIKE $startsWith")
 
         // Delete expired items
@@ -291,6 +292,14 @@ export class BunSqliteKeyValue {
             }
         }
         return true
+    }
+
+
+    // Returns all unexpired keys as an Array
+    getKeys(): string[] | undefined {
+        const records = this.getAllKeysStatement.all({now: Date.now()})
+        if (!records?.length) return
+        return records.map((record) => record.key)
     }
 
 }
