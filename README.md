@@ -571,9 +571,10 @@ console.log(store.getKeys("dynamic:"))
 - `getValuesSet(keys: string[])` --> Set
 
 ### Delete
-- `clear()` --> Delete all items
+- `delete()` --> Delete all items
 - `delete(key: string)` --> Delete item
 - `delete(keys: string[])` --> Delete items
+- `clear()` --> alias for delete()
 - `deleteOldestExpiringItems(maxExpiringItemsInDb: number)` --> Delete items
 
 ### Count
