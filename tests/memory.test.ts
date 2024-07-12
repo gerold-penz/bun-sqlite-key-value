@@ -56,10 +56,10 @@ test("Count/length", () => {
 test("Delete expired items", async () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
-    store.set<string>(KEY_1, STRING_VALUE_1, 50)
+    store.set<string>(KEY_1, STRING_VALUE_1, 30)
     expect(store.getCount()).toEqual(1)
 
-    await Bun.sleep(100)
+    await Bun.sleep(40)
     store.deleteExpired()
     expect(store.getCount()).toEqual(0)
 })
@@ -68,24 +68,24 @@ test("Delete expired items", async () => {
 test("Get expired item", async () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
-    store.set<string>(KEY_1, STRING_VALUE_1, 50)
+    store.set<string>(KEY_1, STRING_VALUE_1, 30)
     expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_1)
     expect(store.getCount()).toEqual(1)
 
-    await Bun.sleep(100)
+    await Bun.sleep(40)
     expect(store.get(KEY_1)).toBeUndefined()
     expect(store.getCount()).toEqual(0)
 })
 
 
 test("Default expiration ttlMs", async () => {
-    const store: BunSqliteKeyValue = new BunSqliteKeyValue(undefined, {ttlMs: 50})
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue(undefined, {ttlMs: 30})
 
     store.set<string>(KEY_1, STRING_VALUE_1)
     store.set<string>(KEY_2, STRING_VALUE_2)
     store.set<string>(KEY_3, STRING_VALUE_3, 0) // explicitly disable TTL
 
-    await Bun.sleep(100)
+    await Bun.sleep(40)
     store.deleteExpired()
     expect(store.length).toEqual(1)
 })
@@ -335,24 +335,40 @@ test("Get values as Set", () => {
 })
 
 
-test("Has key", () => {
+test("Has key", async () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
-    store.set<string>(KEY_1, STRING_VALUE_1)
+    store.set<string>(KEY_1, STRING_VALUE_1, 30)
     expect(store.has(KEY_1)).toEqual(true)
     expect(store.has(KEY_2)).toEqual(false)
+    await Bun.sleep(40)
+    expect(store.has(KEY_1)).toEqual(false)
 })
 
 
-test("Get keys", async () => {
+test("Get all keys", async () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
     store.set<string>(KEY_1, STRING_VALUE_1)
-    store.set<string>(KEY_2, STRING_VALUE_2, 50)
+    store.set<string>(KEY_2, STRING_VALUE_2, 30)
 
     // All keys
     expect(store.getKeys()).toHaveLength(2)
-    await Bun.sleep(100)
+    await Bun.sleep(40)
     expect(store.getKeys()).toEqual([KEY_1])
 })
 
+
+test("Get keys as array", () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue()
+
+    store.set("addresses:1:aaa", STRING_VALUE_1)
+    store.set("addresses:1:bbb", STRING_VALUE_1)
+    store.set("addresses:2:aaa", STRING_VALUE_2)
+    store.set("addresses:2:bbb", STRING_VALUE_2)
+
+    expect(store.getKeys("addresses:1:")).toEqual(["addresses:1:aaa", "addresses:1:bbb"])
+    expect(store.getKeys(["addresses:1:aaa", "addresses:1:bbb"])).toEqual(["addresses:1:aaa", "addresses:1:bbb"])
+    expect(store.getKeys("addresses:2:")).toEqual(["addresses:2:aaa", "addresses:2:bbb"])
+    expect(store.getKeys(["addresses:2:aaa", "addresses:2:bbb", "addresses:2:ccc"])).toEqual(["addresses:2:aaa", "addresses:2:bbb"])
+})

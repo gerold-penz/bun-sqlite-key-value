@@ -408,10 +408,21 @@ store.has("my-key") --> false
 ## Read Keys
 
 ```typescript
-getKeys(): string[]
+getKeys(startsWithOrKeys: string | string[]): string[]
 ```
 
-Returns the unexpired keys as array.
+Reads the keys from the database and returns an array.
+
+### startsWithOrKeys
+
+`string`: Returns an array with the keys that begin with the passed string.
+  If you plan the names of the keys well, more complex data can be stored.
+  It is advisable to divide keys into ranges using separators.
+  For example `"language:de"`, `"language:en"`, `"language:it"`.
+  A search for `"language:"` would return all languages.
+
+`string[]`: Array with keys. 
+  Only exact matches with the keys are returned.
 
 ### Example
 
@@ -420,10 +431,21 @@ import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
 const store = new BunSqliteKeyValue()
 
-store.getKeys() --> ["key1", "key2"]
+store.set("language:de", "German")
+store.set("language:en", "English")
+store.set("language:es", "Esperanto")
+
+let keys
+
+keys = store.getKeys()
+console.log(keys)  // --> ["language:de", "language:en", "language:es"]
+
+keys = store.getKeys("language:e")
+console.log(keys)  // --> ["language:en", "language:es"]
+
+keys = store.getKeys(["language:de", "language:fr"])
+console.log(keys)  // --> ["language:de"]
 ```
-
-
 
 
 ## All Methods
@@ -490,6 +512,6 @@ store.getKeys() --> ["key1", "key2"]
 ### Get keys
 - `has(key: string)` --> Boolean
 - `getKeys()` --> Array with all Keys
-- [ ] `getKeys(startsWith: string)` --> Array
-- [ ] `getKeys(keys: string[])` --> Array
+- `getKeys(startsWith: string)` --> Array
+- `getKeys(keys: string[])` --> Array
 

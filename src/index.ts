@@ -45,9 +45,9 @@ export class BunSqliteKeyValue {
     private getItemStatement: Statement<Omit<Record, "key">>
     private getAllItemsStatement: Statement<Record>
     private getItemsStartsWithStatement: Statement<Record>
-    private getKeyStatement: Statement<Omit<Record, "value">>
-    private getAllKeysStatement: Statement<{key: string}>
-    // private getKeysStartsWithStatement: Statement<Omit<Record, "value">>
+    private getKeyStatement: Statement<Omit<Record, "key" | "value">>
+    private getAllKeysStatement: Statement<Omit<Record, "value">>
+    private getKeysStartsWithStatement: Statement<Omit<Record, "value">>
 
 
     // - `filename`: The full path of the SQLite database to open.
@@ -77,17 +77,20 @@ export class BunSqliteKeyValue {
         this.db.run("CREATE INDEX IF NOT EXISTS ix_items_expires ON items (expires)")
 
         // Prepare and cache statements
-        this.getAllItemsStatement = this.db.query("SELECT key, value, expires FROM items")
         this.clearStatement = this.db.query("DELETE FROM items")
-        this.countStatement = this.db.query("SELECT COUNT(*) AS count FROM items")
+        this.deleteStatement = this.db.query("DELETE FROM items WHERE key = $key")
         this.deleteExpiredStatement = this.db.query("DELETE FROM items WHERE expires < $now")
+
         this.setItemStatement = this.db.query("INSERT OR REPLACE INTO items (key, value, expires) VALUES ($key, $value, $expires)")
+        this.countStatement = this.db.query("SELECT COUNT(*) AS count FROM items")
+
+        this.getAllItemsStatement = this.db.query("SELECT key, value, expires FROM items")
         this.getItemStatement = this.db.query("SELECT value, expires FROM items WHERE key = $key")
         this.getItemsStartsWithStatement = this.db.query("SELECT key, value, expires FROM items WHERE key = $key OR key >= $gte AND key < $lt")
-        this.deleteStatement = this.db.query("DELETE FROM items WHERE key = $key")
-        this.getKeyStatement = this.db.query("SELECT key, expires FROM items WHERE key = $key")
-        this.getAllKeysStatement = this.db.query("SELECT key FROM items WHERE expires IS NULL OR expires > $now")
-        // this.getKeysStartsWithStatement = this.db.query("SELECT key, expires FROM items WHERE key LIKE $startsWith")
+
+        this.getAllKeysStatement = this.db.query("SELECT key, expires FROM items")
+        this.getKeyStatement = this.db.query("SELECT expires FROM items WHERE key = $key")
+        this.getKeysStartsWithStatement = this.db.query("SELECT key, expires FROM items WHERE (key = $key OR key >= $gte AND key < $lt)")
 
         // Delete expired items
         this.deleteExpired()
@@ -223,7 +226,7 @@ export class BunSqliteKeyValue {
             // All items
             records = this.getAllItemsStatement.all()
         }
-        if (!records) return
+        if (!records.length) return
         const now = Date.now()
         const result: Item<T>[] = []
         for (const record of records) {
@@ -295,11 +298,41 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Returns all unexpired keys as an Array
-    getKeys(): string[] | undefined {
-        const records = this.getAllKeysStatement.all({now: Date.now()})
+    // Get multiple keys as array
+    getKeys(startsWithOrKeys?: string | string[]): string[] | undefined {
+        let records: Omit<Record, "value">[]
+        if (startsWithOrKeys && typeof startsWithOrKeys === "string") {
+            const key: string = startsWithOrKeys
+            const gte: string = key + MIN_UTF8_CHAR
+            const lt: string = key + MAX_UTF8_CHAR
+            records = this.getKeysStartsWithStatement.all({key, gte, lt})
+        } else if (startsWithOrKeys) {
+            // Filtered items (array with keys)
+            records = this.db.transaction(() => {
+                return (startsWithOrKeys as string[]).map((key: string) => {
+                    const record = this.getKeyStatement.get({key})
+                    return record ? {...record, key} : undefined
+                })
+            })()
+        } else {
+            // All items
+            records = this.getAllKeysStatement.all()
+        }
         if (!records?.length) return
-        return records.map((record) => record.key)
+        const now = Date.now()
+        const result: string[] = []
+        for (const record of records) {
+            if (!record) continue
+            const {key, expires} = record
+            if (expires && expires < now) {
+                this.delete(key)
+            } else {
+                result.push(key)
+            }
+        }
+        if (result.length) {
+            return result
+        }
     }
 
 }
