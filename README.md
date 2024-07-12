@@ -3,6 +3,13 @@
 A super fast key-value store with SQLite that uses **bun:sqlite** 
 and v8 as a fast JSON replacement.
 
+SQLite provides a solid and well-tested foundation.
+SQLite reliably takes care of saving and reading data - 
+both for short strings and for larger BLOBs. 
+It provides a robust foundation on which to build.
+Even if SQLite is not fully utilized and no relations between tables are required,
+this is not a disadvantage.
+
 [Bun's](https://bun.sh/) lightning-fast 
 [SQLite implementation](https://bun.sh/docs/api/sqlite) makes Bun-SQLite-Key-Value 
 perfect for a fast storage and cache solution with TTL support.
