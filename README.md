@@ -455,6 +455,51 @@ console.log(keys)  // --> ["language:de"]
 ```
 
 
+## Delete Items
+
+```typescript
+delete()
+delete(key: string)
+delete(keys: string[])
+clear()  // --> alias for `delete()`
+```
+
+Deletes all items if no parameter was passed.
+
+`key: string`: Deletes the entry whose key was passed as a string.
+
+`keys: string[]`: Deletes the entries whose keys were passed in an array.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+// Delete all items
+store.delete()
+store.clear()
+
+// Delete one item
+store.delete("my-key")
+
+// Delete multiple items
+store.delete(["key1", "key2"])
+```
+
+
+## Delete Old Items
+
+```typescript
+deleteOldestExpiringItems(maxExpiringItemsInDb: number)
+```
+
+If there are more expiring items in the database than `maxExpiringItemsInDb`,
+the oldest items are deleted until there are only `maxExpiringItemsInDb` items with
+an expiration date in the database.
+
+
 ## All Methods
 
 ### Database
@@ -511,6 +556,7 @@ console.log(keys)  // --> ["language:de"]
 - `clear()` --> Delete all items
 - `delete(key: string)` --> Delete item
 - `delete(keys: string[])` --> Delete items
+- `deleteOldestExpiringItems(maxExpiringItemsInDb: number)` --> Delete items
 
 ### Count
 - `getCount()` --> Number

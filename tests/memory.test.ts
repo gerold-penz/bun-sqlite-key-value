@@ -106,8 +106,8 @@ test("Caching with implicite TTL", async () => {
 
 test("Delete one item", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
+
     store.set<string>(KEY_1, STRING_VALUE_1)
-    expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_1)
     store.delete(KEY_1)
     expect(store.get<string>(KEY_1)).toBeUndefined()
 })
@@ -115,22 +115,25 @@ test("Delete one item", () => {
 
 test("Delete multiple items", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
+
     store.set<string>(KEY_1, STRING_VALUE_1)
     store.set<string>(KEY_2, STRING_VALUE_2)
     store.set<string>(KEY_3, STRING_VALUE_3)
-    store.delete([KEY_1, KEY_2])
+
+    store.delete([KEY_2, KEY_3])
     expect(store.length).toEqual(1)
 })
 
 
-test("Delete all items (clear)", () => {
+test("Delete all items", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
     store.set<string>(KEY_1, STRING_VALUE_1)
-    store.set<string>(KEY_2, STRING_VALUE_2)
-    expect(store.getCount()).toEqual(2)
-
     store.clear()
+    expect(store.getCount()).toEqual(0)
+
+    store.set<string>(KEY_1, STRING_VALUE_1)
+    store.delete()
     expect(store.getCount()).toEqual(0)
 })
 
@@ -372,3 +375,21 @@ test("Get keys as array", () => {
     expect(store.getKeys("addresses:2:")).toEqual(["addresses:2:aaa", "addresses:2:bbb"])
     expect(store.getKeys(["addresses:2:aaa", "addresses:2:bbb", "addresses:2:ccc"])).toEqual(["addresses:2:aaa", "addresses:2:bbb"])
 })
+
+
+test("Delete oldest expiring items", () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue()
+
+    store.set("static:1", STRING_VALUE_1)
+    store.set("static:2", STRING_VALUE_1)
+    store.set("dynamic:1", STRING_VALUE_1, 40)
+    store.set("dynamic:2", STRING_VALUE_1, 45)
+    store.set("dynamic:3", STRING_VALUE_1, 50)
+    store.set("dynamic:4", STRING_VALUE_1, 55)
+    store.set("dynamic:5", STRING_VALUE_1, 60)
+    store.set("dynamic:6", STRING_VALUE_1, 65)
+
+    store.deleteOldestExpiringItems(4)
+    expect(store.getKeys("dynamic:")?.length).toEqual(4)
+})
+

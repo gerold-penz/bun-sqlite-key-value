@@ -48,6 +48,8 @@ export class BunSqliteKeyValue {
     private getKeyStatement: Statement<Omit<Record, "key" | "value">>
     private getAllKeysStatement: Statement<Omit<Record, "value">>
     private getKeysStartsWithStatement: Statement<Omit<Record, "value">>
+    private countExpiringStatement: Statement<{count: number}>
+    private deleteExpiringStatement: Statement
 
 
     // - `filename`: The full path of the SQLite database to open.
@@ -92,6 +94,16 @@ export class BunSqliteKeyValue {
         this.getKeyStatement = this.db.query("SELECT expires FROM items WHERE key = $key")
         this.getKeysStartsWithStatement = this.db.query("SELECT key, expires FROM items WHERE (key = $key OR key >= $gte AND key < $lt)")
 
+        this.countExpiringStatement = this.db.query("SELECT COUNT(*) as count FROM items WHERE expires IS NOT NULL")
+        this.deleteExpiringStatement = this.db.query(`
+        DELETE FROM items
+        WHERE key IN (
+            SELECT key FROM items
+            WHERE expires IS NOT NULL
+            ORDER BY expires ASC
+            LIMIT $limit
+        )`)
+
         // Delete expired items
         this.deleteExpired()
     }
@@ -104,22 +116,27 @@ export class BunSqliteKeyValue {
 
 
     // Delete one or multiple items
-    delete(keyOrKeys: string | string[]) {
+    delete(keyOrKeys?: string | string[]) {
         if (typeof keyOrKeys === "string") {
+            // Delete one
             this.deleteStatement.run({key: keyOrKeys})
-        } else {
+        } else if (keyOrKeys?.length) {
+            // Delete multiple items
             this.db.transaction(() => {
                 keyOrKeys.forEach((key) => {
                     this.deleteStatement.run({key})
                 })
             })()
+        } else {
+            // Delete all
+            this.clearStatement.run()
         }
     }
 
 
     // Delete all items
     clear() {
-        this.clearStatement.run()
+        this.delete()
     }
 
 
@@ -334,5 +351,23 @@ export class BunSqliteKeyValue {
             return result
         }
     }
+
+
+    getExpiringItemsCount() {
+        return this.countExpiringStatement.get()!.count
+    }
+
+
+    // If there are more expiring items in the database than `maxExpiringItemsInDb`,
+    // the oldest items are deleted until there are only `maxExpiringItemsInDb` items with
+    // an expiration date in the database.
+    deleteOldestExpiringItems(maxExpiringItemsInDb: number) {
+        const count = this.getExpiringItemsCount()
+        if (count <= maxExpiringItemsInDb) return
+
+        const limit = count - maxExpiringItemsInDb
+        this.deleteExpiringStatement.run({limit})
+    }
+
 
 }
