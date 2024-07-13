@@ -492,7 +492,7 @@ store.delete(["key1", "key2"])
 ## Delete Old Expiring Items
 
 ```typescript
-deleteOldestExpiringItems(maxExpiringItemsInDb: number)
+deleteOldExpiringItems(maxExpiringItemsInDb: number)
 ```
 
 If there are more expiring items in the database than `maxExpiringItemsInDb`,
@@ -512,7 +512,7 @@ store.set("dynamic:1", "my-value", 40)
 store.set("dynamic:2", "my-value", 45)
 store.set("dynamic:3", "my-value", 50)
 
-store.deleteOldestExpiringItems(2)
+store.deleteOldExpiringItems(2)
 console.log(store.getKeys("dynamic:"))
 // --> [ "dynamic:2", "dynamic:3" ]
 ```
@@ -575,7 +575,7 @@ console.log(store.getKeys("dynamic:"))
 - `delete(key: string)` --> Delete item
 - `delete(keys: string[])` --> Delete items
 - `clear()` --> alias for delete()
-- `deleteOldestExpiringItems(maxExpiringItemsInDb: number)` --> Delete items
+- `deleteOldExpiringItems(maxExpiringItemsInDb: number)` --> Delete items
 
 ### Count
 - `getCount()` --> Number

@@ -377,7 +377,7 @@ test("Get keys as array", () => {
 })
 
 
-test("Delete oldest expiring items", () => {
+test("Delete old expiring items", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
     store.set("static:1", STRING_VALUE_1)
@@ -389,7 +389,7 @@ test("Delete oldest expiring items", () => {
     store.set("dynamic:5", STRING_VALUE_1, 60)
     store.set("dynamic:6", STRING_VALUE_1, 65)
 
-    store.deleteOldestExpiringItems(4)
+    store.deleteOldExpiringItems(4)
     expect(store.getKeys("dynamic:")?.length).toEqual(4)
 })
 
