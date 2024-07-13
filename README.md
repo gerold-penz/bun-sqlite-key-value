@@ -70,11 +70,11 @@ If the database folder does not exist, it will be created.
   The database folder will not be created.
 
 `create?: boolean`:
-  Allow creating a new database (default: true)
+  Allow creating a new database (default: true).
   If the database folder does not exist, it will be created.
 
 `readwrite?: boolean`: 
-  Open the database as read-write (default: true)
+  Open the database as read-write (default: true).
 
 `ttlMs?: boolean`:
   Standard time period in milliseconds before
