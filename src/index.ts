@@ -75,8 +75,8 @@ export class BunSqliteKeyValue {
         if (filename?.length && filename.toLowerCase() !== ":memory:" && dbOptions.create && !dbOptions.readonly) {
             const dbDir = dirname(resolve(filename))
             if (!existsSync(dbDir)) {
-                console.debug(`The "${dbDir}" folder is created.`)
-                mkdirSync(dbDir)
+                console.log(`The "${dbDir}" folder is created.`)
+                mkdirSync(dbDir, {recursive: true})
             }
         }
 
