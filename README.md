@@ -61,13 +61,11 @@ Opens and creates the SQLite database either in memory or on the file system.
 
 The full path of the SQLite database to open.
 Pass an empty string (`""`) or `":memory:"` or `undefined` for an in-memory database.
-If the database folder does not exist, it will be created.
 
 ### options (optional)
 
 `readonly?: boolean`: 
   Open the database as read-only (default: false).
-  The database folder will not be created.
 
 `create?: boolean`:
   Allow creating a new database (default: true).
