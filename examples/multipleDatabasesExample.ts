@@ -1,13 +1,8 @@
 import { BunSqliteKeyValue } from "../src"
 import { join } from "node:path"
-import { exists, mkdir } from "node:fs/promises"
 
 
 const dbDir = join(__dirname, "databases")
-if (!(await exists(dbDir))) {
-    await mkdir(dbDir)
-}
-
 const settingsPath = join(dbDir, "settings.sqlite")
 const languagesPath = join(dbDir, "languages.sqlite")
 

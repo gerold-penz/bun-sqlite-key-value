@@ -1,5 +1,7 @@
 import { Database, type Statement } from "bun:sqlite"
 import { serialize, deserialize } from "node:v8"
+import { dirname, resolve } from "node:path"
+import { existsSync, mkdirSync } from "node:fs"
 
 
 export interface Item<T> {
@@ -67,6 +69,15 @@ export class BunSqliteKeyValue {
             strict: true,
             readwrite: otherOptions?.readwrite ?? true,
             create: otherOptions?.create ?? true,
+        }
+
+        // Create database directory
+        if (filename && dbOptions.create && !dbOptions.readonly) {
+            const dbDir = dirname(resolve(filename))
+            if (!existsSync(dbDir)) {
+                console.debug(`The "${dbDir}" folder is created.`)
+                mkdirSync(dbDir)
+            }
         }
 
         // Open database
