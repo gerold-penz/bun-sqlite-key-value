@@ -1,6 +1,6 @@
 {
   "name": "bun-sqlite-key-value",
-  "version": "1.3.16",
+  "version": "1.3.17",
   "author": "Gerold Penz<gerold@gp-softwaretechnik.at>",
   "repository": {
     "type": "git",
@@ -43,8 +43,7 @@
     "test:watch": "bun test --watch",
     "increment_package_version": "npm version patch --no-git-tag-version",
     "prepublishOnly": "bun run test && bun run increment_package_version",
-    "npm:publish": "npm publish --access public",
-    "jsr:publish": "bunx jsr publish"
+    "npm:publish": "npm publish --access public"
   },
   "type": "module"
 }
