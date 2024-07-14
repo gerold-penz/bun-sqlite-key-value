@@ -187,6 +187,7 @@ export class BunSqliteKeyValue {
 
     // Alias for `set`
     setValue = this.set
+    put = this.set
 
 
     // Adds a large number of entries to the database and takes only
