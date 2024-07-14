@@ -1,0 +1,5 @@
+{
+  "name": "@gp/bun-sqlite-key-value",
+  "version": "1.4.20",
+  "exports": "./src/index.ts"
+}

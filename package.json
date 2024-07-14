@@ -48,6 +48,7 @@
     "test:watch": "bun test --watch",
     "increment_package_version": "npm version patch --no-git-tag-version",
     "prepublishOnly": "bun run test && bun run increment_package_version",
+    "jsr:publish": "npx jsr publish",
     "npm:publish": "npm publish --access public"
   },
   "type": "module",
