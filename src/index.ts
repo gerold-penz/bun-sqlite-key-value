@@ -329,7 +329,7 @@ export class BunSqliteKeyValue {
 
     // Get multiple keys as array
     getKeys(startsWithOrKeys?: string | string[]): string[] | undefined {
-        let records: Omit<Record, "value">[]
+        let records: (Omit<Record, "value"> | undefined)[]
         if (startsWithOrKeys && typeof startsWithOrKeys === "string") {
             const key: string = startsWithOrKeys
             const gte: string = key + MIN_UTF8_CHAR
