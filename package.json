@@ -46,11 +46,10 @@
   "license": "MIT",
   "scripts": {
     "test": "bun test",
-    "test:watch": "bun test --watch",
     "increment_package_version": "npm version patch --no-git-tag-version",
     "prepublishOnly": "bun run test",
     "npm:publish": "bun run increment_package_version && npm publish --access public",
-    "jsr:publish": "npx jsr publish"
+    "jsr:publish": "bunx jsr publish"
   },
   "type": "module",
   "files": [
