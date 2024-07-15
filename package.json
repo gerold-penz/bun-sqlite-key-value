@@ -38,6 +38,7 @@
     "NoSql-Database",
     "Db",
     "Storage",
+    "Key-Value-Store",
     "Key-Value-Storage",
     "TTL",
     "Time To Live"
