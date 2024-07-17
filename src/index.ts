@@ -416,4 +416,8 @@ export class BunSqliteKeyValue {
         })
     }
 
+    get dataObject() {
+        return this.getDataObject()
+    }
+
 }

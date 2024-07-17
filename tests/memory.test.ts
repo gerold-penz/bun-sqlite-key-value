@@ -395,8 +395,7 @@ test("Delete old expiring items", () => {
 
 
 test("Proxy-Object: set, get and delete values", () => {
-    const store: BunSqliteKeyValue = new BunSqliteKeyValue()
-    const data = store.getDataObject()
+    const data = new BunSqliteKeyValue().dataObject
 
     // Key 1
     data[KEY_1] = STRING_VALUE_1
