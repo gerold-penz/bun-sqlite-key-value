@@ -408,9 +408,6 @@ test("Proxy-Object: set, get and delete values", () => {
     // Length
     expect(data.length).toEqual(2)
 
-    // Get all
-    console.log(Array.from(Object.keys(data)))
-
     // Delete
     delete data[KEY_1]
     expect(data[KEY_1]).toBeUndefined()
