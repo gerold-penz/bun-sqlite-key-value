@@ -393,3 +393,28 @@ test("Delete old expiring items", () => {
     expect(store.getKeys("dynamic:")?.length).toEqual(4)
 })
 
+
+test("Proxy-Object: set, get and delete values", () => {
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue()
+    const data = store.getDataObject()
+
+    // Key 1
+    data[KEY_1] = STRING_VALUE_1
+    expect(data[KEY_1]).toEqual(STRING_VALUE_1)
+
+    // Key 2
+    data.myKey2 = STRING_VALUE_2
+    expect(data.myKey2).toEqual(STRING_VALUE_2)
+
+    // Length
+    expect(data.length).toEqual(2)
+
+    // Get all
+    console.log(Array.from(Object.keys(data)))
+
+    // Delete
+    delete data[KEY_1]
+    expect(data[KEY_1]).toBeUndefined()
+    delete data.myKey2
+    expect(data.myKey2).toBeUndefined()
+})

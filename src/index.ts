@@ -386,4 +386,34 @@ export class BunSqliteKeyValue {
     deleteOldestExpiringItems = this.deleteOldExpiringItems
 
 
+    // Proxy
+    getDataObject(): {[key: string]: any} {
+        const self = this
+        return new Proxy({}, {
+
+            get(target, property: string, receiver) {
+                if (property === "length") {
+                    return self.length
+                } else {
+                    return self.get(property)
+                }
+            },
+
+            set(target, property: string, value: any) {
+                self.set(property, value)
+                return true
+            },
+
+            has(target, property: string) {
+                return self.has(property)
+            },
+
+            deleteProperty(target: {}, property: string) {
+                self.delete(property)
+                return true
+            }
+
+        })
+    }
+
 }
