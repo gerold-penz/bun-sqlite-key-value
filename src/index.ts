@@ -10,14 +10,14 @@ export interface Item<T> {
 }
 
 
-interface Record {
+export interface Record {
     key: string
     value: Buffer | null,
     expires: number | null
 }
 
 
-interface Options {
+export interface Options {
     readonly?: boolean
     create?: boolean  // Defaults to true
     readwrite?: boolean  // Defaults to true
@@ -255,7 +255,7 @@ export class BunSqliteKeyValue {
             // All items
             records = this.getAllItemsStatement.all()
         }
-        if (!records.length) return
+        if (!records?.length) return
         const now = Date.now()
         const result: Item<T>[] = []
         for (const record of records) {
