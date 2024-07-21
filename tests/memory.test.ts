@@ -390,11 +390,12 @@ test("Delete old expiring items", () => {
     store.set("dynamic:6", STRING_VALUE_1, 65)
 
     store.deleteOldExpiringItems(4)
+    store.deleteOldestExpiringItems(4)
     expect(store.getKeys("dynamic:")?.length).toEqual(4)
 })
 
 
-test("Proxy-Object: set, get and delete values", () => {
+test("ALPHA: Proxy-Object: set, get and delete values", () => {
     const data = new BunSqliteKeyValue().dataObject
 
     // Key 1

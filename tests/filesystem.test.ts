@@ -35,7 +35,7 @@ test("Insert values", () => {
 
     expect(store.length).toEqual(6)
 
-    store.db.close()
+    store.close()
 })
 
 

@@ -386,6 +386,7 @@ export class BunSqliteKeyValue {
     deleteOldestExpiringItems = this.deleteOldExpiringItems
 
 
+    // ALPHA BEGIN
     // Proxy
     getDataObject(): {[key: string]: any} {
         const self = this
@@ -419,5 +420,6 @@ export class BunSqliteKeyValue {
     get dataObject() {
         return this.getDataObject()
     }
+    // ALPHA END
 
 }
