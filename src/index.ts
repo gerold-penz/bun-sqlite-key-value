@@ -100,6 +100,8 @@ export class BunSqliteKeyValue {
         this.getAllItemsStatement = this.db.query("SELECT key, value, expires FROM items")
         this.getItemStatement = this.db.query("SELECT value, expires FROM items WHERE key = $key")
         this.getItemsStartsWithStatement = this.db.query("SELECT key, value, expires FROM items WHERE key = $key OR key >= $gte AND key < $lt")
+        // gte = key + MIN_UTF8_CHAR
+        // lt = key + MAX_UTF8_CHAR
 
         this.getAllKeysStatement = this.db.query("SELECT key, expires FROM items")
         this.getKeyStatement = this.db.query("SELECT expires FROM items WHERE key = $key")
@@ -233,12 +235,6 @@ export class BunSqliteKeyValue {
     getItems<T = any>(startsWithOrKeys?: string | string[]): Item<T>[] | undefined {
         let records: Record[]
         if (startsWithOrKeys && typeof startsWithOrKeys === "string") {
-            // Filtered items (startsWith)
-            //   key = "addresses:"
-            //   gte = key + MIN_UTF8_CHAR
-            //   "addresses:aaa"
-            //   "addresses:xxx"
-            // lt = key + MAX_UTF8_CHAR
             const key: string = startsWithOrKeys
             const gte: string = key + MIN_UTF8_CHAR
             const lt: string = key + MAX_UTF8_CHAR
@@ -258,10 +254,12 @@ export class BunSqliteKeyValue {
         if (!records?.length) return
         const now = Date.now()
         const result: Item<T>[] = []
+        const keysToDelete: string[] = []
         for (const record of records) {
             const {key, value, expires} = record
             if (expires && expires < now) {
-                this.delete(key)
+                // Mark key for deletion
+                keysToDelete.push(key)
             } else {
                 result.push({
                     key,
@@ -269,6 +267,13 @@ export class BunSqliteKeyValue {
                 })
             }
         }
+        // Delete expired keys
+        if (keysToDelete.length === 1) {
+            this.delete(keysToDelete[0])
+        } else if (keysToDelete.length > 1) {
+            this.delete(keysToDelete)
+        }
+        // Return result
         if (result.length) {
             return result
         }
@@ -350,15 +355,24 @@ export class BunSqliteKeyValue {
         if (!records?.length) return
         const now = Date.now()
         const result: string[] = []
+        const keysToDelete: string[] = []
         for (const record of records) {
             if (!record) continue
             const {key, expires} = record
             if (expires && expires < now) {
-                this.delete(key)
+                // Mark key for deletion
+                keysToDelete.push(key)
             } else {
                 result.push(key)
             }
         }
+        // Delete expired keys
+        if (keysToDelete.length === 1) {
+            this.delete(keysToDelete[0])
+        } else if (keysToDelete.length > 1) {
+            this.delete(keysToDelete)
+        }
+        // Return result
         if (result.length) {
             return result
         }
@@ -417,9 +431,12 @@ export class BunSqliteKeyValue {
         })
     }
 
+
     get dataObject() {
         return this.getDataObject()
     }
+
+
     // ALPHA END
 
 }

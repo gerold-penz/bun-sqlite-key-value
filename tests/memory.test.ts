@@ -166,7 +166,7 @@ test("Store Map() values", () => {
 })
 
 
-test("Get all items as array", () => {
+test("Get all items as array", async () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
     store.set<string>(KEY_1, STRING_VALUE_1)
     store.set<string>(KEY_2, STRING_VALUE_2)
@@ -354,9 +354,10 @@ test("Get all keys", async () => {
 
     store.set<string>(KEY_1, STRING_VALUE_1)
     store.set<string>(KEY_2, STRING_VALUE_2, 30)
+    store.set<string>(KEY_3, STRING_VALUE_3, 30)
 
     // All keys
-    expect(store.getKeys()).toHaveLength(2)
+    expect(store.getKeys()).toHaveLength(3)
     await Bun.sleep(40)
     expect(store.getKeys()).toEqual([KEY_1])
 })
