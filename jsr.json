@@ -1,5 +1,13 @@
 {
   "name": "@gp/bun-sqlite-key-value",
   "version": "1.4.6",
-  "exports": "./src/index.ts"
+  "exports": "./src/index.ts",
+  "publish": {
+    "include": [
+      "LICENSE",
+      "README.md",
+      "SQLITE.md",
+      "src/**/*.ts"
+    ]
+  }
 }
