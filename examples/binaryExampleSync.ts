@@ -1,5 +1,6 @@
 import { BunSqliteKeyValue } from "../src"
-import {readFileSync, writeFileSync} from "node:fs"
+import { readFileSync, writeFileSync } from "node:fs"
+
 
 const store = new BunSqliteKeyValue()
 

@@ -336,7 +336,7 @@ languagesStore.close()
 ## Read and Write Binary Files (Images)
 
 SQLite has no problem with images and other binaries.
-The maximum size of a binary file in SQLite is 2 GB.
+The maximum size of a binary file is 2 GB.
 
 ### Example (async)
 
@@ -362,7 +362,7 @@ await Bun.write(Bun.file("<Target File Path>"), targetArrayBuffer)
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
-import {readFileSync, writeFileSync} from "node:fs"
+import { readFileSync, writeFileSync } from "node:fs"
 
 const store = new BunSqliteKeyValue()
 
