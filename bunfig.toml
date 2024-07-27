@@ -3,3 +3,5 @@
 root = "./tests"
 # Enables coverage reporting.
 coverage = true
+
+[build]

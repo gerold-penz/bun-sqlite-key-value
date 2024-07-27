@@ -10,10 +10,10 @@
     "type": "git",
     "url": "git+https://github.com/gerold-penz/bun-sqlite-key-value.git"
   },
-  "module": "src/index.ts",
-  "main": "src/index.ts",
+  "main": "dist/index.ts",
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "bun-plugin-dts": "^0.2.3"
   },
   "peerDependencies": {
     "typescript": "^5.5.3"
@@ -46,13 +46,14 @@
   "license": "MIT",
   "scripts": {
     "test": "bun test",
+    "build": "bun run build.ts",
     "increment_package_version": "npm version patch --no-git-tag-version",
-    "prepublishOnly": "bun run test",
+    "prepublishOnly": "bun run test && bun run build",
     "npm:publish": "bun run increment_package_version && npm publish --access public",
     "jsr:publish": "bunx jsr publish"
   },
   "type": "module",
   "files": [
-    "src"
+    "dist"
   ]
 }
