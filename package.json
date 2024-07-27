@@ -1,6 +1,6 @@
 {
   "name": "bun-sqlite-key-value",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "author": {
     "name": "Gerold Penz",
     "email": "gerold@gp-softwaretechnik.at",
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/gerold-penz/bun-sqlite-key-value.git"
   },
-  "main": "dist/index.ts",
+  "main": "dist/index.js",
   "devDependencies": {
     "@types/bun": "latest",
     "bun-plugin-dts": "^0.2.3"
