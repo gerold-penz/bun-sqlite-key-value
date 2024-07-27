@@ -62,7 +62,10 @@ export class BunSqliteKeyValue {
     //       an entry written to the DB becomes invalid.
     constructor(filename?: string, options?: Options) {
         // Parse options
-        const {ttlMs, ...otherOptions} = options ?? {}
+        const {
+            ttlMs,
+            ...otherOptions
+        } = options ?? {}
         this.ttlMs = ttlMs
         const dbOptions: DbOptions = {
             ...otherOptions,
@@ -401,6 +404,8 @@ export class BunSqliteKeyValue {
 
 
     // ALPHA BEGIN
+    // ---------------------------------------------------
+
     // Proxy
     getDataObject(): {[key: string]: any} {
         const self = this
@@ -437,6 +442,7 @@ export class BunSqliteKeyValue {
     }
 
 
+    // ---------------------------------------------------
     // ALPHA END
 
 }

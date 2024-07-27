@@ -1,6 +1,6 @@
 {
   "name": "@gp/bun-sqlite-key-value",
-  "version": "1.5.2",
+  "version": "1.6.3",
   "exports": "./src/index.ts",
   "publish": {
     "include": [
