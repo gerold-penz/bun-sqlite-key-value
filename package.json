@@ -11,6 +11,7 @@
     "url": "git+https://github.com/gerold-penz/bun-sqlite-key-value.git"
   },
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "devDependencies": {
     "@types/bun": "latest",
     "bun-plugin-dts": "^0.2.3"
