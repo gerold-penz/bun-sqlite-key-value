@@ -38,11 +38,15 @@ export class BunSqliteKeyValue {
 
     db: Database
     ttlMs: number | undefined
+    data = this.getDataObject()
+    // Alias for `data`
+    d = this.data
 
     private deleteExpiredStatement: Statement
     private deleteStatement: Statement
     private clearStatement: Statement
     private countStatement: Statement<{count: number}>
+    private countValidStatement: Statement<{count: number}>
     private setItemStatement: Statement
     private getItemStatement: Statement<Omit<Record, "key">>
     private getAllItemsStatement: Statement<Record>
@@ -99,6 +103,7 @@ export class BunSqliteKeyValue {
 
         this.setItemStatement = this.db.query("INSERT OR REPLACE INTO items (key, value, expires) VALUES ($key, $value, $expires)")
         this.countStatement = this.db.query("SELECT COUNT(*) AS count FROM items")
+        this.countValidStatement = this.db.query("SELECT COUNT(*) AS count FROM items WHERE expires IS NULL OR expires < $now")
 
         this.getAllItemsStatement = this.db.query("SELECT key, value, expires FROM items")
         this.getItemStatement = this.db.query("SELECT value, expires FROM items WHERE key = $key")
@@ -156,16 +161,15 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Explicitly close database
+    // Close database
     // Removes .sqlite-shm and .sqlite-wal files
     close() {
         this.db.close()
     }
 
 
-    // Returns the number of all items, including those that have already expired.
-    // First delete the expired items with `deleteExpired()`
-    // if you want to get the number of items that have not yet expired.
+    // Returns the number of all items in the database, including those that have already expired.
+    // Use `getCountValid()` if you want to get the number of items that have not yet expired.
     getCount(): number {
         return (this.countStatement.get() as {count: number}).count
     }
@@ -175,6 +179,26 @@ export class BunSqliteKeyValue {
     get length() {
         return this.getCount()
     }
+
+
+    // ALPHA BEGIN ------------------------------------
+
+
+    // Returns the number of all valid (non-expired) items in the database.
+    // Use `getCount()` if you want the fastet possible method.
+    getCountValid(deleteExpired?: boolean) {
+        if (deleteExpired === true) {
+            return this.db.transaction(() => {
+                this.deleteExpiredStatement.run({now: Date.now()})
+                return (this.countStatement.get() as {count: number}).count
+            })()
+        } else {
+            return (this.countValidStatement.get({now: Date.now()}) as {count: number}).count
+        }
+    }
+
+
+    // ALPHA END ------------------------------------
 
 
     // @param ttlMs:
@@ -287,6 +311,12 @@ export class BunSqliteKeyValue {
     getItemsArray = this.getItems
 
 
+    // Alias for getItems
+    get items() {
+        return this.getItems()
+    }
+
+
     // Get multiple values as array
     getValues<T = any>(startsWithOrKeys?: string | string[]): (T | undefined)[] | undefined {
         return this.getItems<T>(startsWithOrKeys)?.map((result) => result.value)
@@ -295,6 +325,12 @@ export class BunSqliteKeyValue {
 
     // Alias for getValues
     getValuesArray = this.getValues
+
+
+    // Alias for getValues
+    get values() {
+        return this.getValues()
+    }
 
 
     // Get multiple items as object
@@ -382,6 +418,12 @@ export class BunSqliteKeyValue {
     }
 
 
+    // Alias for getKeys
+    get keys() {
+        return this.getKeys()
+    }
+
+
     getExpiringItemsCount() {
         return this.countExpiringStatement.get()!.count
     }
@@ -403,20 +445,13 @@ export class BunSqliteKeyValue {
     deleteOldestExpiringItems = this.deleteOldExpiringItems
 
 
-    // ALPHA BEGIN
-    // ---------------------------------------------------
-
-    // Proxy
-    getDataObject(): {[key: string]: any} {
+    // Proxy for data object
+    private getDataObject(): {[key: string]: any} {
         const self = this
         return new Proxy({}, {
 
             get(target, property: string, receiver) {
-                if (property === "length") {
-                    return self.length
-                } else {
-                    return self.get(property)
-                }
+                return self.get(property)
             },
 
             set(target, property: string, value: any) {
@@ -435,14 +470,5 @@ export class BunSqliteKeyValue {
 
         })
     }
-
-
-    get dataObject() {
-        return this.getDataObject()
-    }
-
-
-    // ---------------------------------------------------
-    // ALPHA END
 
 }

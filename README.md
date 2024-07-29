@@ -29,11 +29,17 @@ import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
 const store = new BunSqliteKeyValue()
 
-store.set("my-key", [1, 2, 3, 4])
+// Regular methods
+store.set("myKey", [1, 2, 3, 4])
+store.get("myKey") // --> [ 1, 2, 3, 4 ]
 
-const value = store.get("my-key")
+// Data proxy object
+store.data.myKey = "Hello world!"
+store.data.myKey // --> "Hello World"
 
-console.log(value)  // -> [ 1, 2, 3, 4 ]
+// Data proxy object (short version)
+store.d.myKey = 123456789
+store.d.myKey // --> 123456789
 ```
 
 ## Open Database
@@ -83,6 +89,10 @@ const store3 = new BunSqliteKeyValue("./store3.sqlite")
 
 ```typescript
 set(key: string, value: any, ttlMs?: number)
+data.<key> = "value"
+data["key"] = "value"
+d.<key> = "value"
+d["key"] = "value"
 ```
 
 Writes a value into the database.
@@ -115,10 +125,13 @@ import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 const store = new BunSqliteKeyValue()
 
 // Stays in database
-store.set("my-key", "my-value")
+store.set("myKey1", "my-value")
+store.data.myKey2 = "my-value"
+store.data["myKey3"] = "my-value"
+store.d.myKey4 = "my-value"
 
 // Becomes invalid after 30 seconds
-store.set("my-key-2", "item-with-ttl", 30000)
+store.set("myKey5", "item-with-ttl", 30000)
 ```
 
 
@@ -151,6 +164,10 @@ store.setItems([
 
 ```typescript
 get(key: string): any
+data.<key>: any
+data["key"]: any
+d.<key>: any
+d["key"]: any
 ```
 
 Reads a value from the database.
@@ -165,10 +182,13 @@ The key must be a string.
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
 const store = new BunSqliteKeyValue()
-store.set("my-key", "my-value")
 
-const value = store.get("my-key")
-console.log(value)  // --> "my-value"
+store.set("myKey", "my-value")
+
+store.get("myKey") // --> "my-value"
+store.data.myKey // --> "my-value"
+store.data["myKey"] // --> "my-value"
+store.d.myKey // --> "my-value"
 ```
 
 
@@ -201,6 +221,8 @@ console.log(item)  // --> {key: "my-key", value: "my-value"}
 
 ```typescript
 getValues(startsWithOrKeys?: string | string[]): any[]
+
+<store>.values
 ```
 
 Reads the data from the database and returns an array with the values.
@@ -231,8 +253,9 @@ store.set("language:de", "German")
 store.set("language:en", "English")
 store.set("language:it", "Italian")
 
-const values = store.getValues("language:")
-console.log(values)  // --> [ "German", "English", "Italian" ]
+store.getValues() // --> [ "German", "English", "Italian" ]
+store.getValues("language:") // --> [ "German", "English", "Italian" ]
+store.values // --> [ "German", "English", "Italian" ]
 ```
 
 
@@ -240,6 +263,8 @@ console.log(values)  // --> [ "German", "English", "Italian" ]
 
 ```typescript
 getItems(startsWithOrKeys?: string | string[]): {key: string, value: any}[]
+
+<store>.items
 ```
 Reads the data from the database and returns entries in an array as key-value pairs.
 
@@ -270,13 +295,18 @@ store.set("language:de", "German")
 store.set("language:en", "English")
 store.set("language:it", "Italian")
 
-const items = store.getItems("language:")
-console.log(items)
-// --> [
+store.getItems("language:") // --> [
 //     {key: "language:de", value: "German"},
 //     {key: "language:en", value: "English"},
 //     {key: "language:it", value: "Italian"}
 // ]
+
+store.items // --> [
+//     {key: "language:de", value: "German"},
+//     {key: "language:en", value: "English"},
+//     {key: "language:it", value: "Italian"}
+// ]
+
 ```
 
 
@@ -315,8 +345,7 @@ languagesStore.set("it", "Italian")
 
 // Read all settings
 const settingItems = settingsStore.getItems()
-console.log(settingItems)
-// -> [
+console.log(settingItems) // -> [
 //   {key: "language", value: "de"},
 //   {key: "page-size", value: "A4"},
 //   {key: "screen-position", value: {top: 100, left: 100}},
@@ -400,9 +429,9 @@ const store = new BunSqliteKeyValue(undefined, {ttlMs: 1000})
 const KEY = "cache-key"
 store.set(KEY, 12345)
 await Bun.sleep(500)
-console.log(store.get(KEY))  // --> 12345
+console.log(store.get(KEY)) // --> 12345
 await Bun.sleep(1000)
-console.log(store.get(KEY))  // --> undefined
+console.log(store.get(KEY)) // --> undefined
 ```
 
 
@@ -410,6 +439,9 @@ console.log(store.get(KEY))  // --> undefined
 
 ```typescript
 has(key: string): boolean
+
+"key" in <store>.data
+"key" in <store>.d
 ```
 
 Checks if key exists. Returns `false` if the item is expired.
@@ -421,7 +453,8 @@ import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
 const store = new BunSqliteKeyValue()
 
-store.has("my-key") --> false
+store.has("my-key") // --> false
+console.log("my-key" in store.data) // --> false 
 ```
 
 
@@ -429,6 +462,8 @@ store.has("my-key") --> false
 
 ```typescript
 getKeys(startsWithOrKeys?: string | string[]): string[]
+
+<store>.keys
 ```
 
 Reads the keys from the database and returns an array.
@@ -457,16 +492,14 @@ store.set("language:de", "German")
 store.set("language:en", "English")
 store.set("language:es", "Esperanto")
 
-let keys
+store.getKeys() // --> ["language:de", "language:en", "language:es"]
 
-keys = store.getKeys()
-console.log(keys)  // --> ["language:de", "language:en", "language:es"]
+store.keys // --> ["language:de", "language:en", "language:es"]
 
-keys = store.getKeys("language:e")
-console.log(keys)  // --> ["language:en", "language:es"]
+store.getKeys("language:e") // --> ["language:en", "language:es"]
 
-keys = store.getKeys(["language:de", "language:fr"])
-console.log(keys)  // --> ["language:de"]
+store.getKeys(["language:de", "language:fr"]) // --> ["language:de"]
+
 ```
 
 
@@ -477,6 +510,9 @@ delete()
 delete(key: string)
 delete(keys: string[])
 clear()  // --> alias for `delete()`
+
+delete <store>.data.<key>
+delete <store>.d.<key>
 ```
 
 Deletes all items if no parameter was passed.
@@ -533,7 +569,36 @@ console.log(store.getKeys("dynamic:"))
 ```
 
 
-## All Methods
+## Count Items
+
+```typescript
+getCount()
+
+length  // --> alias for `getCount()`
+```
+
+Returns the number of all items, including those that have already expired.
+The fact that possibly expired entries are also counted is for reasons of speed.
+First delete the expired items with `deleteExpired()`
+if you want to get the number of items that have not yet expired.
+
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.set("my-key1", "my-value1")
+store.set("my-key2", "my-value2")
+
+store.getCount() // --> 2
+store.length // --> 2
+```
+
+
+## All Functions
 
 ### Database
 - `new BunSqliteKeyValue()` --> Open database
@@ -542,6 +607,8 @@ console.log(store.getKeys("dynamic:"))
 ### Set value
 - `set(key: string, value: any)`
 - `setValue(key: string, value: any)` --> alias for set()
+- `<store>.data.<key> = <value>`
+- `<store>.d.<key> = <value>`
 
 ### Set items
 - `setItems({key: string, value: any}[])`
@@ -549,6 +616,8 @@ console.log(store.getKeys("dynamic:"))
 ### Get value
 - `get(key: string)`
 - `getValue(key: string)` --> alias for get()
+- `<store>.data.<key>`
+- `<store>.d.<key>`
 
 ### Get item
 - `getItem(key: string)` --> Object
@@ -560,6 +629,7 @@ console.log(store.getKeys("dynamic:"))
 - `getItemsArray()` --> alias for getItems()
 - `getItemsArray(startsWith: string)` --> alias for getItems()
 - `getItemsArray(keys: string[])` --> alias for getItems()
+- `items` --> alias for getItems()
 
 ### Get items as Object
 - `getItemsObject()` --> Object with all items
@@ -578,7 +648,7 @@ console.log(store.getKeys("dynamic:"))
 - `getValuesArray()` --> alias for getValues()
 - `getValuesArray(startsWith: string)` --> alias for getValues()
 - `getValuesArray(keys: string[])` --> alias for getValues()
-
+- `values` --> alias for getValues()
 
 ### Get values as Set()
 - `getValuesSet()` --> Set with all values
@@ -591,6 +661,8 @@ console.log(store.getKeys("dynamic:"))
 - `delete(keys: string[])` --> Delete items
 - `clear()` --> alias for delete()
 - `deleteOldExpiringItems(maxExpiringItemsInDb: number)` --> Delete items
+- `delete <store>.data.<key>`
+- `delete <store>.d.<key>`
 
 ### Count
 - `getCount()` --> Number
@@ -601,4 +673,7 @@ console.log(store.getKeys("dynamic:"))
 - `getKeys()` --> Array with all Keys
 - `getKeys(startsWith: string)` --> Array
 - `getKeys(keys: string[])` --> Array
+- `keys` --> alias for getKeys()
+- `<key> in <store>.data`
+- `<key> in <store>.d`
 

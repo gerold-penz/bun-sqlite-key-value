@@ -181,6 +181,11 @@ test("Get all items as array", async () => {
         {key: KEY_2, value: STRING_VALUE_2},
     ])
 
+    expect(store.items).toEqual([
+        {key: KEY_1, value: STRING_VALUE_1},
+        {key: KEY_2, value: STRING_VALUE_2},
+    ])
+
 })
 
 
@@ -191,6 +196,7 @@ test("Get all values as array", () => {
 
     expect(store.getValues()).toEqual([STRING_VALUE_1, STRING_VALUE_2])
     expect(store.getValuesArray()).toEqual([STRING_VALUE_1, STRING_VALUE_2])
+    expect(store.values).toHaveLength(2)
 })
 
 
@@ -199,6 +205,9 @@ test("Get items as array", () => {
 
     store.set<string>("addresses:1:aaa", STRING_VALUE_1)
     store.set<string>("addresses:1:bbb", STRING_VALUE_1)
+
+    expect(store.items).toHaveLength(2)
+
     store.set<string>("addresses:2:aaa", STRING_VALUE_2)
     store.set<string>("addresses:2:bbb", STRING_VALUE_2)
     store.set("addresses:2:ccc", null)
@@ -343,6 +352,11 @@ test("Has key", async () => {
 
     store.set<string>(KEY_1, STRING_VALUE_1, 30)
     expect(store.has(KEY_1)).toEqual(true)
+
+    // Test proxy object
+    expect(KEY_1 in store.data).toEqual(true)
+    expect(KEY_2 in store.d).toEqual(false)
+
     expect(store.has(KEY_2)).toEqual(false)
     await Bun.sleep(40)
     expect(store.has(KEY_1)).toEqual(false)
@@ -358,6 +372,8 @@ test("Get all keys", async () => {
 
     // All keys
     expect(store.getKeys()).toHaveLength(3)
+    expect(store.keys).toHaveLength(3)
+
     await Bun.sleep(40)
     expect(store.getKeys()).toEqual([KEY_1])
 })
@@ -383,12 +399,12 @@ test("Delete old expiring items", () => {
 
     store.set("static:1", STRING_VALUE_1)
     store.set("static:2", STRING_VALUE_1)
-    store.set("dynamic:1", STRING_VALUE_1, 40)
-    store.set("dynamic:2", STRING_VALUE_1, 45)
-    store.set("dynamic:3", STRING_VALUE_1, 50)
-    store.set("dynamic:4", STRING_VALUE_1, 55)
-    store.set("dynamic:5", STRING_VALUE_1, 60)
-    store.set("dynamic:6", STRING_VALUE_1, 65)
+    store.set("dynamic:1", STRING_VALUE_1, 400)
+    store.set("dynamic:2", STRING_VALUE_1, 450)
+    store.set("dynamic:3", STRING_VALUE_1, 500)
+    store.set("dynamic:4", STRING_VALUE_1, 550)
+    store.set("dynamic:5", STRING_VALUE_1, 600)
+    store.set("dynamic:6", STRING_VALUE_1, 650)
 
     store.deleteOldExpiringItems(4)
     store.deleteOldestExpiringItems(4)
@@ -396,23 +412,25 @@ test("Delete old expiring items", () => {
 })
 
 
-test("ALPHA: Proxy-Object: set, get and delete values", () => {
-    const data = new BunSqliteKeyValue().dataObject
+test("Proxy-Object (data, d): set, get and delete values", () => {
+    const store = new BunSqliteKeyValue()
 
     // Key 1
-    data[KEY_1] = STRING_VALUE_1
-    expect(data[KEY_1]).toEqual(STRING_VALUE_1)
+    store.data[KEY_1] = STRING_VALUE_1
+    expect(store.data[KEY_1]).toEqual(STRING_VALUE_1)
+    expect(store.d[KEY_1]).toEqual(STRING_VALUE_1)
 
     // Key 2
-    data.myKey2 = STRING_VALUE_2
-    expect(data.myKey2).toEqual(STRING_VALUE_2)
-
-    // Length
-    expect(data.length).toEqual(2)
+    store.data.myKey2 = STRING_VALUE_2
+    expect(store.data.myKey2).toEqual(STRING_VALUE_2)
+    expect(store.d.myKey2).toEqual(STRING_VALUE_2)
 
     // Delete
-    delete data[KEY_1]
-    expect(data[KEY_1]).toBeUndefined()
-    delete data.myKey2
-    expect(data.myKey2).toBeUndefined()
+    delete store.data[KEY_1]
+    expect(store.data[KEY_1]).toBeUndefined()
+    expect(store.d[KEY_1]).toBeUndefined()
+    delete store.data.myKey2
+    expect(store.data.myKey2).toBeUndefined()
+    expect(store.d.myKey2).toBeUndefined()
 })
+
