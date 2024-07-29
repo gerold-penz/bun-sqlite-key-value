@@ -200,12 +200,14 @@ console.log(item)  // --> {key: "my-key", value: "my-value"}
 ## Read Values
 
 ```typescript
-getValues(startsWithOrKeys: string | string[]): any[]
+getValues(startsWithOrKeys?: string | string[]): any[]
 ```
 
 Reads the data from the database and returns an array with the values.
 
 ### startsWithOrKeys
+
+`undefined`: Returns all values in an array.
 
 `string`: Returns all values in an array whose keys begin with the passed string.
   If you plan the names of the keys well, more complex data can be stored.
@@ -237,11 +239,13 @@ console.log(values)  // --> [ "German", "English", "Italian" ]
 ## Read Items
 
 ```typescript
-getItems(startsWithOrKeys: string | string[]): {key: string, value: any}[]
+getItems(startsWithOrKeys?: string | string[]): {key: string, value: any}[]
 ```
 Reads the data from the database and returns entries in an array as key-value pairs.
 
 ### startsWithOrKeys
+
+`undefined`: Returns all items (key, value) in an array.
 
 `string`: Returns all items (key, value) in an array whose keys begin with 
   the passed string.
@@ -424,12 +428,14 @@ store.has("my-key") --> false
 ## Read Keys
 
 ```typescript
-getKeys(startsWithOrKeys: string | string[]): string[]
+getKeys(startsWithOrKeys?: string | string[]): string[]
 ```
 
 Reads the keys from the database and returns an array.
 
 ### startsWithOrKeys
+
+`undefined`: Returns all keys in an array.
 
 `string`: Returns an array with the keys that begin with the passed string.
   If you plan the names of the keys well, more complex data can be stored.
