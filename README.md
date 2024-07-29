@@ -90,11 +90,11 @@ const store3 = new BunSqliteKeyValue("./store3.sqlite")
 ```typescript
 set(key: string, value: any, ttlMs?: number)
 
-data.<key> = "value"
-data["key"] = "value"
+data.<key> = <value>
+data[<key>] = <value>
 
-d.<key> = "value"
-d["key"] = "value"
+d.<key> = <value>
+d[<key>] = <value>
 ```
 
 Writes a value into the database.
@@ -171,10 +171,10 @@ store.setItems([
 get(key: string): any
 
 data.<key>: any
-data["key"]: any
+data[<key>]: any
 
 d.<key>: any
-d["key"]: any
+d[<key>]: any
 ```
 
 Reads a value from the database.
@@ -439,8 +439,10 @@ const store = new BunSqliteKeyValue(undefined, {ttlMs: 1000})
 
 const KEY = "cache-key"
 store.set(KEY, 12345)
+
 await Bun.sleep(500)
 console.log(store.get(KEY)) // --> 12345
+
 await Bun.sleep(1000)
 console.log(store.get(KEY)) // --> undefined
 ```
@@ -451,8 +453,8 @@ console.log(store.get(KEY)) // --> undefined
 ```typescript
 has(key: string): boolean
 
-"key" in <store>.data
-"key" in <store>.d
+<key> in <store>.data
+<key> in <store>.d
 ```
 
 Checks if key exists. Returns `false` if the item is expired.
@@ -544,7 +546,9 @@ store.delete()
 store.clear()
 
 // Delete one item
-store.delete("my-key")
+store.delete("myKey")
+delete store.data.myKey
+delete store.d.myKey
 
 // Delete multiple items
 store.delete(["key1", "key2"])
@@ -583,9 +587,11 @@ console.log(store.getKeys("dynamic:"))
 ## Count Items
 
 ```typescript
-getCount()
+getCount(): number
 
 length  // --> alias for `getCount()`
+
+(ALPHA) getCountValid(deleteExpired?: boolean): number
 ```
 
 Returns the number of all items, including those that have already expired.
@@ -606,6 +612,32 @@ store.set("my-key2", "my-value2")
 
 store.getCount() // --> 2
 store.length // --> 2
+```
+
+
+## Count Valid Items (ALPHA !!!)
+
+```typescript
+getCountValid(deleteExpired?: boolean): number
+```
+
+ToDo: ...
+
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.set("my-key1", "my-value1")
+store.set("my-key2", "my-value2", {ttlMs: 100})
+
+store.getCountValid() // --> 2
+
+await Bun.sleep(500)
+store.getCountValid() // --> 1
 ```
 
 
