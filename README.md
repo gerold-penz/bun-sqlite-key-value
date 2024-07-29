@@ -89,8 +89,10 @@ const store3 = new BunSqliteKeyValue("./store3.sqlite")
 
 ```typescript
 set(key: string, value: any, ttlMs?: number)
+
 data.<key> = "value"
 data["key"] = "value"
+
 d.<key> = "value"
 d["key"] = "value"
 ```
@@ -126,12 +128,15 @@ const store = new BunSqliteKeyValue()
 
 // Stays in database
 store.set("myKey1", "my-value")
+
 store.data.myKey2 = "my-value"
 store.data["myKey3"] = "my-value"
+
 store.d.myKey4 = "my-value"
+store.data["myKey5"] = "my-value"
 
 // Becomes invalid after 30 seconds
-store.set("myKey5", "item-with-ttl", 30000)
+store.set("myKey6", "item-with-ttl", 30000)
 ```
 
 
@@ -164,8 +169,10 @@ store.setItems([
 
 ```typescript
 get(key: string): any
+
 data.<key>: any
 data["key"]: any
+
 d.<key>: any
 d["key"]: any
 ```
@@ -186,9 +193,12 @@ const store = new BunSqliteKeyValue()
 store.set("myKey", "my-value")
 
 store.get("myKey") // --> "my-value"
+
 store.data.myKey // --> "my-value"
 store.data["myKey"] // --> "my-value"
+
 store.d.myKey // --> "my-value"
+store.d["myKey"] // --> "my-value"
 ```
 
 
@@ -255,6 +265,7 @@ store.set("language:it", "Italian")
 
 store.getValues() // --> [ "German", "English", "Italian" ]
 store.getValues("language:") // --> [ "German", "English", "Italian" ]
+
 store.values // --> [ "German", "English", "Italian" ]
 ```
 
@@ -667,6 +678,7 @@ store.length // --> 2
 ### Count
 - `getCount()` --> Number
 - `length` --> alias for getCount()
+- (ALPHA) `getCountValid(deleteExpired?: boolean)` --> Number
 
 ### Get keys
 - `has(key: string)` --> Boolean
