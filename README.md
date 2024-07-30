@@ -22,22 +22,23 @@ bun add bun-sqlite-key-value
 ## Usage
 
 Using this key value store is dead simple:
-simply create a new BunSqliteKeyValue instance and you're set
+create a new BunSqliteKeyValue instance and you're set.
+And if you want to save the data permanently, enter the path to the database.
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
 const store = new BunSqliteKeyValue()
 
-// Regular methods
+// Use regular methods to write and read values.
 store.set("myKey", [1, 2, 3, 4])
 store.get("myKey") // --> [ 1, 2, 3, 4 ]
 
-// Data proxy object
+// Or use the data proxy object.
 store.data.myKey = "Hello world!"
 store.data.myKey // --> "Hello World"
 
-// Data proxy object (short version)
+// Or use the short name for the data proxy object.
 store.d.myKey = 123456789
 store.d.myKey // --> 123456789
 ```
