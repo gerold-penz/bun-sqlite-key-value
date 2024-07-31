@@ -484,3 +484,13 @@ test("Increment, Decrement", async () => {
 
 })
 
+
+test("Append", async () => {
+    const store = new BunSqliteKeyValue()
+
+    expect(store.append(KEY_1, STRING_VALUE_1)).toEqual(STRING_VALUE_1.length)
+    expect(store.append(KEY_1, STRING_VALUE_2, 30)).toEqual(STRING_VALUE_1.length + STRING_VALUE_2.length)
+    expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_1 + STRING_VALUE_2)
+    await Bun.sleep(40)
+    expect(store.getCountValid()).toEqual(0)
+})

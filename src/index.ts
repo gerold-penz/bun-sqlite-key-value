@@ -466,6 +466,7 @@ export class BunSqliteKeyValue {
     }
 
 
+    // Inspired by: https://docs.keydb.dev/docs/commands/#incrby
     incr(key: string, incrBy: number = 1, ttlMs?: number): number {
         const self = this
         return this.db.transaction(() => {
@@ -477,8 +478,25 @@ export class BunSqliteKeyValue {
     }
 
 
+    // Inspired by: https://docs.keydb.dev/docs/commands/#decrby
     decr(key: string, decrBy: number = 1, ttlMs?: number): number {
         return this.incr(key, decrBy * -1, ttlMs)
     }
+
+
+    // If key already exists and is a string, this command appends the value at the end of the string.
+    // If key does not exist it is created and set as an empty string,
+    // so APPEND will be similar to `set()` in this special case.
+    // Returns the length of the string after the append operation.
+    // Inspired by: https://docs.keydb.dev/docs/commands/#append
+    append(key: string, value: string, ttlMs?: number): number {
+        const self = this
+        return this.db.transaction(() => {
+            const newValue = String(self.get<string>(key) ?? "") + value
+            self.set<string>(key, newValue, ttlMs)
+            return newValue.length
+        })()
+    }
+
 
 }
