@@ -471,4 +471,20 @@ export class BunSqliteKeyValue {
         })
     }
 
+
+    incr(key: string, incrBy: number = 1, ttlMs?: number): number {
+        const self = this
+        return this.db.transaction(() => {
+            const newValue = Number(self.get<number>(key) ?? 0) + incrBy
+            if (isNaN(newValue)) return NaN
+            self.set<number>(key, newValue, ttlMs)
+            return newValue
+        })()
+    }
+
+
+    decr(key: string, decrBy: number = 1, ttlMs?: number): number {
+        return this.incr(key, decrBy * -1, ttlMs)
+    }
+
 }

@@ -434,3 +434,40 @@ test("Proxy-Object (data, d): set, get and delete values", () => {
     expect(store.d.myKey2).toBeUndefined()
 })
 
+
+test("incr/decr", async () => {
+    const store = new BunSqliteKeyValue()
+
+    // incr/decr
+    const resultArray = [
+        store.incr(KEY_1), store.incr(KEY_1),
+        store.decr(KEY_1), store.decr(KEY_1),
+    ]
+    expect(resultArray).toEqual([1, 2, 1, 0])
+    store.delete(KEY_1)
+
+    // ttlMs
+    store.incr(KEY_1, 1, 30)
+    await Bun.sleep(40)
+    expect(store.incr(KEY_1, 1)).toEqual(1)
+    store.delete(KEY_1)
+
+    // incrBy/decrBy
+    store.incr(KEY_1, 2)
+    expect(store.incr(KEY_1, 2)).toEqual(4)
+    expect(store.incr(KEY_1, -2)).toEqual(2)
+    expect(store.decr(KEY_1, 1)).toEqual(1)
+    expect(store.decr(KEY_1, -1)).toEqual(2)
+
+    // String with number
+    store.set(KEY_1, "100")
+    expect(store.incr(KEY_1)).toEqual(101)
+
+    // NaN
+    const value: string = "I am no number"
+    store.set<string>(KEY_1, value)
+    expect(store.incr(KEY_1)).toBeNaN()
+    expect(store.get<string>(KEY_1)).toEqual(value)
+
+})
+
