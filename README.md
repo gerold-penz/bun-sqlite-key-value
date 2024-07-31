@@ -134,7 +134,7 @@ store.data.myKey2 = "my-value"
 store.data["myKey3"] = "my-value"
 
 store.d.myKey4 = "my-value"
-store.data["myKey5"] = "my-value"
+store.d["myKey5"] = "my-value"
 
 // Becomes invalid after 30 seconds
 store.set("myKey6", "item-with-ttl", 30000)
@@ -331,14 +331,8 @@ It is no problem at all to use several databases and access them at the same tim
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 import { join } from "node:path"
-import { exists, mkdir } from "node:fs/promises"
-
 
 const dbDir = join(__dirname, "databases")
-if (!(await exists(dbDir))) {
-    await mkdir(dbDir)
-}
-
 const settingsPath = join(dbDir, "settings.sqlite")
 const languagesPath = join(dbDir, "languages.sqlite")
 
@@ -372,7 +366,7 @@ const languageKey = settingsStore.get("language")
 const currentLanguage = languagesStore.get(languageKey)
 console.log(`Current language: "${currentLanguage}"`)  // -> Current language: "German"
 
-// Explicitly close DBs
+// Close DBs
 settingsStore.close()
 languagesStore.close()
 ```
@@ -585,20 +579,18 @@ console.log(store.getKeys("dynamic:"))
 ```
 
 
-## Count Items
+## Count All Items
 
 ```typescript
 getCount(): number
 
 length  // --> alias for `getCount()`
-
-(ALPHA) getCountValid(deleteExpired?: boolean): number
 ```
 
 Returns the number of all items, including those that have already expired.
 The fact that possibly expired entries are also counted is for reasons of speed.
-First delete the expired items with `deleteExpired()`
-if you want to get the number of items that have not yet expired.
+Use `getCountValid()` if you want to get the number of items that have not yet expired.
+If you do not use `ttlMs` (time to live), `getCount()` is faster than `getCountValid()`. 
 
 
 ### Example
@@ -616,13 +608,23 @@ store.length // --> 2
 ```
 
 
-## Count Valid Items (ALPHA !!!)
+## Count Valid Items
 
 ```typescript
 getCountValid(deleteExpired?: boolean): number
 ```
 
-ToDo: ...
+Returns the number of valid (non-expired) items.
+Can also delete the expired items.
+
+### deleteExpired
+
+If the parameter is not specified or `false` is passed, 
+then only the entries that have no expiration date or 
+whose expiration date is in the future are counted.
+
+If `true` is passed, the expired entries are deleted first 
+before the entries are counted.
 
 
 ### Example
@@ -633,12 +635,96 @@ import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 const store = new BunSqliteKeyValue()
 
 store.set("my-key1", "my-value1")
-store.set("my-key2", "my-value2", {ttlMs: 100})
+store.set("my-key2", "my-value2", 100)
 
 store.getCountValid() // --> 2
 
 await Bun.sleep(500)
 store.getCountValid() // --> 1
+```
+
+## Increment
+
+```typescript
+incr(key: string, incrBy: number = 1, ttlMs?: number): number
+```
+
+Increments the saved number by `incrBy` (default = 1), 
+saves the new number and returns it.
+If the key does not yet exist in the database, 
+the value is set to 0 before being incremented by `incrBy`.
+If a string is stored in the database that can be converted into a number, 
+this is converted first.
+If the stored value cannot be converted into a number, `NaN` is returned.
+
+
+### key
+
+The key must be a string.
+
+### incrBy
+
+The stored number is increased by this value.
+
+### ttlMs (optional)
+
+"Time to live" in milliseconds. After this time, 
+the item becomes invalid and is deleted from the database 
+the next time it is accessed or when the application is started.
+Set the value to 0 if you want to explicitly deactivate the process.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.incr("my-key") // --> 1
+store.incr("my-key") // --> 2
+```
+
+
+## Decrement
+
+```typescript
+decr(key: string, decrBy: number = 1, ttlMs?: number): number
+```
+
+Decrements the saved number by `decrBy` (default = 1), 
+saves the new number and returns it.
+If the key does not yet exist in the database, 
+the value is set to 0 before being decremented by `decrBy`.
+If a string is stored in the database that can be converted into a number, 
+this is converted first.
+If the stored value cannot be converted into a number, `NaN` is returned.
+
+
+### key
+
+The key must be a string.
+
+### incrBy
+
+The stored number is decreased by this value.
+
+### ttlMs (optional)
+
+"Time to live" in milliseconds. After this time, 
+the item becomes invalid and is deleted from the database 
+the next time it is accessed or when the application is started.
+Set the value to 0 if you want to explicitly deactivate the process.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.set("my-key", 10)
+store.decr("my-key") // --> 9
+store.decr("my-key") // --> 8
 ```
 
 
@@ -711,7 +797,11 @@ store.getCountValid() // --> 1
 ### Count
 - `getCount()` --> Number
 - `length` --> alias for getCount()
-- (ALPHA) `getCountValid(deleteExpired?: boolean)` --> Number
+- `getCountValid(deleteExpired?: boolean)` --> Number
+
+### Increment, Decrement
+- `incr()` --> Number
+- `decr()` --> Number
 
 ### Get keys
 - `has(key: string)` --> Boolean

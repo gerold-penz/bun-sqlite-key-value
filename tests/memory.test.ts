@@ -45,11 +45,24 @@ test("Replace existing item", () => {
 })
 
 
-test("Count/length", () => {
+test("Count/length", async () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
-    store.set<string>(KEY_1, STRING_VALUE_1)
+
+    store.set(KEY_1, STRING_VALUE_1)
+    store.set(KEY_2, STRING_VALUE_2, 30)
+
+    expect(store.getCount()).toEqual(2)
+    expect(store.length).toEqual(2)
+    expect(store.getCountValid()).toEqual(2)
+
+    await Bun.sleep(40)
+    expect(store.getCountValid()).toEqual(1)
+    expect(store.getCount()).toEqual(2)
+
+    store.set(KEY_2, STRING_VALUE_2, 30)
+    await Bun.sleep(40)
+    expect(store.getCountValid(true)).toEqual(1)
     expect(store.getCount()).toEqual(1)
-    expect(store.length).toEqual(1)
 })
 
 
@@ -435,7 +448,7 @@ test("Proxy-Object (data, d): set, get and delete values", () => {
 })
 
 
-test("incr/decr", async () => {
+test("Increment, Decrement", async () => {
     const store = new BunSqliteKeyValue()
 
     // incr/decr

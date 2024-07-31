@@ -103,7 +103,7 @@ export class BunSqliteKeyValue {
 
         this.setItemStatement = this.db.query("INSERT OR REPLACE INTO items (key, value, expires) VALUES ($key, $value, $expires)")
         this.countStatement = this.db.query("SELECT COUNT(*) AS count FROM items")
-        this.countValidStatement = this.db.query("SELECT COUNT(*) AS count FROM items WHERE expires IS NULL OR expires < $now")
+        this.countValidStatement = this.db.query("SELECT COUNT(*) AS count FROM items WHERE expires IS NULL OR expires > $now")
 
         this.getAllItemsStatement = this.db.query("SELECT key, value, expires FROM items")
         this.getItemStatement = this.db.query("SELECT value, expires FROM items WHERE key = $key")
@@ -181,9 +181,6 @@ export class BunSqliteKeyValue {
     }
 
 
-    // ALPHA BEGIN ------------------------------------
-
-
     // Returns the number of all valid (non-expired) items in the database.
     // Use `getCount()` if you want the fastet possible method.
     getCountValid(deleteExpired?: boolean) {
@@ -196,9 +193,6 @@ export class BunSqliteKeyValue {
             return (this.countValidStatement.get({now: Date.now()}) as {count: number}).count
         }
     }
-
-
-    // ALPHA END ------------------------------------
 
 
     // @param ttlMs:
