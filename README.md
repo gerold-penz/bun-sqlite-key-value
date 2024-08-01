@@ -733,8 +733,7 @@ store.decr("my-key") // --> 8
 append(key: string, value: string, ttlMs?: number): number
 ```
 
-If key already exists and is a string, this command appends the 
-value at the end of the string.
+If key already exists, this command appends the value at the end of the string.
 If key does not exist it is created and set as an empty string,
 so `append()` will be similar to `set()` in this special case.
 Inspired by: https://docs.keydb.dev/docs/commands/#append

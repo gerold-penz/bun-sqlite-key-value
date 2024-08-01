@@ -484,7 +484,7 @@ export class BunSqliteKeyValue {
     }
 
 
-    // If key already exists and is a string, this command appends the value at the end of the string.
+    // If key already exists, this command appends the value at the end of the string.
     // If key does not exist it is created and set as an empty string,
     // so `append()` will be similar to `set()` in this special case.
     // Returns the length of the string after the append operation.

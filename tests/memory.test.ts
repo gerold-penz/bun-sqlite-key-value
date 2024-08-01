@@ -493,4 +493,8 @@ test("Append", async () => {
     expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_1 + STRING_VALUE_2)
     await Bun.sleep(40)
     expect(store.getCountValid()).toEqual(0)
+
+    store.set<number>(KEY_1, 1)
+    store.append(KEY_1, " million")
+    expect(store.get<string>(KEY_1)).toEqual("1 million")
 })
