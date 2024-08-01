@@ -668,7 +668,7 @@ export class BunSqliteKeyValue {
     // Inspired by: https://docs.keydb.dev/docs/commands/#touch
 
 
-    // ToDo: ttl() like pTtl()
+    // ToDo: ttl() milliseconds like pTtl()
     // Inspired by: https://docs.keydb.dev/docs/commands/#ttl
     // Inspired by: https://docs.keydb.dev/docs/commands/#pttl
 
