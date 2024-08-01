@@ -498,3 +498,14 @@ test("Append", async () => {
     store.append(KEY_1, " million")
     expect(store.get<string>(KEY_1)).toEqual("1 million")
 })
+
+
+test("getSet()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    store.append(KEY_1, STRING_VALUE_1)
+    expect(store.getSet(KEY_1, STRING_VALUE_2)).toEqual(STRING_VALUE_1)
+    expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_2)
+})
+
+

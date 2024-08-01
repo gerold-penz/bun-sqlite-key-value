@@ -498,4 +498,178 @@ export class BunSqliteKeyValue {
         })()
     }
 
+
+    // Atomically sets key to value and returns the old value stored at key.
+    // Inspired by: https://docs.keydb.dev/docs/commands/#getset
+    getSet<T = any>(key: string, value: T, ttlMs?: number): T | undefined {
+        const self = this
+        return this.db.transaction(() => {
+            const oldValue = self.get<T>(key)
+            self.set<T>(key, value, ttlMs)
+            return oldValue
+        })()
+    }
+
+
+    // ToDo: hDel()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hdel
+
+
+    // ToDo: hExists()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hexists
+
+
+    // ToDo: hGet()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hget
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hmget
+
+
+    // ToDo: hIncrBy()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hincrby
+
+
+    // ToDo: hKeys()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hkeys
+
+
+    // ToDo: hLen()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hlen
+
+
+    // ToDo: hSet()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hset
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hmset
+
+
+    // ToDo: hStrLen()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hstrlen
+
+
+    // ToDo: hVals()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hvals
+
+
+    // ToDo: lIndex()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#lindex
+
+
+    // ToDo: lLen()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#llen
+
+
+    // ToDo: lPop()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#lpop
+
+
+    // ToDo: lPush()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#lpush
+
+
+    // ToDo: lRange()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#lrange
+
+
+    // ToDo: lSet()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#lset
+
+
+    // ToDo: lTrim()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#ltrim
+
+
+    // ToDo: randomKey()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
+
+
+    // ToDo: randomValue()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
+
+
+    // ToDo: randomItem()
+    // --> SELECT * FROM items OFFSET abs(random() % (SELECT COUNT(*) from items)) LIMIT 1
+    // --> SELECT * FROM items WHERE key IN (SELECT key FROM items ORDER BY RANDOM() LIMIT 1)
+    // Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
+
+
+    // ToDo: rename()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#rename
+
+
+    // ToDo: rPop()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#rpop
+
+
+    // ToDo: rPopLPush()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#rpoplpush
+
+
+    // ToDo: rPush()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#rpush
+
+
+    // ToDo: sAdd()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#sadd
+
+
+    // ToDo: sCard()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#scard
+
+
+    // ToDo: sDiff()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#sdiff
+
+
+    // ToDo: sDiffStore()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#sdiffstore
+
+
+    // ToDo: sInter()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#sinter
+
+
+    // ToDo: sInterStore()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#sinterstore
+
+
+    // ToDo: sIsMember()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#sismember
+
+
+    // ToDo: sMembers() alias for getSet()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#smembers
+
+
+    // ToDo: sMove()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#smove
+
+
+    // ToDo: sPop()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#spop
+
+
+    // ToDo: sRandMember()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#srandmember
+
+
+    // ToDo: sRem()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#srem
+
+
+    // ToDo: sUnion()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#sunion
+
+
+    // ToDo: sUnionStore()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#sunionstore
+
+
+    // ToDo: touch(key, ttlMs)
+    // Renews the TTL
+    // Inspired by: https://docs.keydb.dev/docs/commands/#touch
+
+
+    // ToDo: ttl() like pTtl()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#ttl
+    // Inspired by: https://docs.keydb.dev/docs/commands/#pttl
+
 }

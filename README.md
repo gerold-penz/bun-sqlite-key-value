@@ -784,10 +784,11 @@ store.get("my-key") // --> "Hello!World!"
 - `setItems({key: string, value: any}[])`
 
 ### Get value
-- `get(key: string)`
+- `get(key: string): any`
 - `getValue(key: string)` --> alias for get()
 - `<store>.data.<key>`
 - `<store>.d.<key>`
+- `getSet(key: string, value: any): any`
 
 ### Get item
 - `getItem(key: string)` --> Object
