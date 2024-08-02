@@ -141,31 +141,6 @@ store.set("myKey6", "item-with-ttl", 30000)
 ```
 
 
-## Write Multiple Items
-
-```typescript
-setItems(items: {key: string, value: T, ttlMs?: number}[]) {
-```
-
-Adds a large number of items to the database and takes only
-a small fraction of the time that `set()` would take individually.
-
-
-### Example
-
-```typescript
-import { BunSqliteKeyValue } from "bun-sqlite-key-value"
-
-const store = new BunSqliteKeyValue()
-
-// Add many records
-store.setItems([
-    {key: "a:1", value: "test-value-1"},
-    {key: "a:2", value: "test-value-2"},
-])
-```
-
-
 ## Read Value
 
 ```typescript
@@ -225,6 +200,31 @@ store.set("my-key", "my-value")
 
 const item = store.getItem("my-key")
 console.log(item)  // --> {key: "my-key", value: "my-value"}
+```
+
+
+## Write Multiple Items
+
+```typescript
+setItems(items: {key: string, value: T, ttlMs?: number}[]) {
+```
+
+Adds a large number of items to the database and takes only
+a small fraction of the time that `set()` would take individually.
+
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+// Add many records
+store.setItems([
+    {key: "a:1", value: "test-value-1"},
+    {key: "a:2", value: "test-value-2"},
+])
 ```
 
 
