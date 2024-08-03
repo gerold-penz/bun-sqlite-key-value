@@ -105,12 +105,12 @@ test("Default expiration ttlMs", async () => {
 
 
 test("Caching with implicite TTL", async () => {
-    const store: BunSqliteKeyValue = new BunSqliteKeyValue(undefined, {ttlMs: 40})
+    const store: BunSqliteKeyValue = new BunSqliteKeyValue(undefined, {ttlMs: 30})
 
     store.set(KEY_1, STRING_VALUE_1)
     store.set(KEY_2, STRING_VALUE_2)
     store.set(KEY_3, STRING_VALUE_3)
-    await Bun.sleep(60)
+    await Bun.sleep(40)
     expect(store.get(KEY_1)).toBeUndefined()
     expect(store.get(KEY_2)).toBeUndefined()
     expect(store.get(KEY_3)).toBeUndefined()
@@ -506,6 +506,22 @@ test("getSet()", async () => {
     store.append(KEY_1, STRING_VALUE_1)
     expect(store.getSet(KEY_1, STRING_VALUE_2)).toEqual(STRING_VALUE_1)
     expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_2)
+})
+
+
+test("getRandomKey()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    expect(store.randomKey()).toBeUndefined()
+    store.setItems([
+        {key: KEY_1, value: STRING_VALUE_1},
+        {key: KEY_2, value: STRING_VALUE_2, ttlMs: 30},
+    ])
+    expect(store.randomKey()).toBeOneOf([KEY_1, KEY_2])
+    await Bun.sleep(40)
+    expect(store.randomKey()).toEqual(KEY_1)
+    expect(store.randomKey()).toEqual(KEY_1)
+    expect(store.randomKey()).toEqual(KEY_1)
 })
 
 

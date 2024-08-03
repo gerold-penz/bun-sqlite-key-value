@@ -54,6 +54,7 @@ export class BunSqliteKeyValue {
     private getKeyStatement: Statement<Omit<Record, "key" | "value">>
     private getAllKeysStatement: Statement<Omit<Record, "value">>
     private getKeysStartsWithStatement: Statement<Omit<Record, "value">>
+    private getRandomKeyStatement: Statement<{key: string}>
     private countExpiringStatement: Statement<{count: number}>
     private deleteExpiringStatement: Statement
 
@@ -101,24 +102,38 @@ export class BunSqliteKeyValue {
         this.deleteStatement = this.db.query("DELETE FROM items WHERE key = $key")
         this.deleteExpiredStatement = this.db.query("DELETE FROM items WHERE expires < $now")
 
-        this.setItemStatement = this.db.query("INSERT OR REPLACE INTO items (key, value, expires) VALUES ($key, $value, $expires)")
+        this.setItemStatement = this.db.query(
+            "INSERT OR REPLACE INTO items (key, value, expires) VALUES ($key, $value, $expires)"
+        )
         this.countStatement = this.db.query("SELECT COUNT(*) AS count FROM items")
-        this.countValidStatement = this.db.query("SELECT COUNT(*) AS count FROM items WHERE expires IS NULL OR expires > $now")
+        this.countValidStatement = this.db.query(
+            "SELECT COUNT(*) AS count FROM items WHERE expires IS NULL OR expires > $now"
+        )
 
         this.getAllItemsStatement = this.db.query("SELECT key, value, expires FROM items")
         this.getItemStatement = this.db.query("SELECT value, expires FROM items WHERE key = $key")
-        this.getItemsStartsWithStatement = this.db.query("SELECT key, value, expires FROM items WHERE key = $key OR key >= $gte AND key < $lt")
+        this.getItemsStartsWithStatement = this.db.query(
+            "SELECT key, value, expires FROM items WHERE key = $key OR key >= $gte AND key < $lt"
+        )
         // gte = key + MIN_UTF8_CHAR
         // lt = key + MAX_UTF8_CHAR
 
         this.getAllKeysStatement = this.db.query("SELECT key, expires FROM items")
         this.getKeyStatement = this.db.query("SELECT expires FROM items WHERE key = $key")
-        this.getKeysStartsWithStatement = this.db.query("SELECT key, expires FROM items WHERE (key = $key OR key >= $gte AND key < $lt)")
-
-        this.countExpiringStatement = this.db.query("SELECT COUNT(*) as count FROM items WHERE expires IS NOT NULL")
+        this.getKeysStartsWithStatement = this.db.query(
+            "SELECT key, expires FROM items WHERE key = $key OR key >= $gte AND key < $lt"
+        )
+        this.getRandomKeyStatement = this.db.query(`
+        SELECT key FROM items 
+        WHERE expires IS NULL OR expires > $now
+        ORDER BY RANDOM() 
+        LIMIT 1
+        `)
+        this.countExpiringStatement = this.db.query(
+            "SELECT COUNT(*) as count FROM items WHERE expires IS NOT NULL"
+        )
         this.deleteExpiringStatement = this.db.query(`
-        DELETE FROM items
-        WHERE key IN (
+        DELETE FROM items WHERE key IN (
             SELECT key FROM items
             WHERE expires IS NOT NULL
             ORDER BY expires ASC
@@ -514,6 +529,12 @@ export class BunSqliteKeyValue {
     }
 
 
+    // Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
+    randomKey(): string | undefined {
+        return this.getRandomKeyStatement.get({now: Date.now()})?.key ?? undefined
+    }
+
+
     // ToDo: hDel()
     // Inspired by: https://docs.keydb.dev/docs/commands/#hdel
 
@@ -578,10 +599,6 @@ export class BunSqliteKeyValue {
 
     // ToDo: lTrim()
     // Inspired by: https://docs.keydb.dev/docs/commands/#ltrim
-
-
-    // ToDo: randomKey()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
 
 
     // ToDo: randomValue()

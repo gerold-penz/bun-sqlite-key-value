@@ -471,7 +471,7 @@ console.log("my-key" in store.data) // --> false
 ```typescript
 getKeys(startsWithOrKeys?: string | string[]): string[]
 
-<store>.keys
+<store>.keys // --> all keys
 ```
 
 Reads the keys from the database and returns an array.
@@ -509,6 +509,15 @@ store.getKeys("language:e") // --> ["language:en", "language:es"]
 store.getKeys(["language:de", "language:fr"]) // --> ["language:de"]
 
 ```
+
+
+## Random Key
+
+```typescript
+getRandomKey() // --> random key
+```
+
+Returns a valid random key.
 
 
 ## Delete Items
@@ -848,6 +857,7 @@ store.get("my-key") // --> "Hello!World!"
 - `keys` --> alias for getKeys()
 - `<key> in <store>.data`
 - `<key> in <store>.d`
+- `getRandomKey()`
 
 ### Math operations
 - `incr()` --> Number
