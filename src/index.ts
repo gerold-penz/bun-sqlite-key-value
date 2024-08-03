@@ -183,7 +183,7 @@ export class BunSqliteKeyValue {
 
     // Returns the number of all valid (non-expired) items in the database.
     // Use `getCount()` if you want the fastet possible method.
-    getCountValid(deleteExpired?: boolean) {
+    getCountValid(deleteExpired?: boolean): number {
         if (deleteExpired === true) {
             return this.db.transaction(() => {
                 this.deleteExpiredStatement.run({now: Date.now()})
@@ -469,12 +469,13 @@ export class BunSqliteKeyValue {
     // Inspired by: https://docs.keydb.dev/docs/commands/#incrby
     incr(key: string, incrBy: number = 1, ttlMs?: number): number {
         const self = this
+        // @ts-ignore (Transaction returns a number or NaN, not void.)
         return this.db.transaction(() => {
             const newValue = Number(self.get<number>(key) ?? 0) + incrBy
             if (isNaN(newValue)) return NaN
             self.set<number>(key, newValue, ttlMs)
             return newValue
-        })()
+        }).immediate()
     }
 
 
@@ -491,11 +492,12 @@ export class BunSqliteKeyValue {
     // Inspired by: https://docs.keydb.dev/docs/commands/#append
     append(key: string, value: string, ttlMs?: number): number {
         const self = this
+        // @ts-ignore (Transaction returns a number, not void.)
         return this.db.transaction(() => {
             const newValue = String(self.get<string>(key) ?? "") + value
             self.set<string>(key, newValue, ttlMs)
             return newValue.length
-        })()
+        }).immediate()
     }
 
 
@@ -503,11 +505,12 @@ export class BunSqliteKeyValue {
     // Inspired by: https://docs.keydb.dev/docs/commands/#getset
     getSet<T = any>(key: string, value: T, ttlMs?: number): T | undefined {
         const self = this
+        // @ts-ignore (Transaction returns a number, not void.)
         return this.db.transaction(() => {
             const oldValue = self.get<T>(key)
             self.set<T>(key, value, ttlMs)
             return oldValue
-        })()
+        }).immediate()
     }
 
 
