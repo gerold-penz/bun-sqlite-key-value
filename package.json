@@ -1,6 +1,6 @@
 {
   "name": "bun-sqlite-key-value",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "author": {
     "name": "Gerold Penz",
     "email": "gerold@gp-softwaretechnik.at",
@@ -13,8 +13,7 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "devDependencies": {
-    "@types/bun": "latest",
-    "bun-plugin-dts": "^0.2.3"
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.5.3"
@@ -50,7 +49,9 @@
   "license": "MIT",
   "scripts": {
     "test": "bun test",
-    "build": "bun run build.ts",
+    "bun:build": "bun build ./src/index.ts --outdir=./dist --target=node",
+    "tsc:dts": "bunx tsc --project ./tsconfigDts.json --declaration",
+    "build": "bun run bun:build && bun run tsc:dts",
     "increment_package_version": "npm version patch --no-git-tag-version",
     "prepublishOnly": "bun run test && bun run build",
     "npm:publish": "bun run increment_package_version && npm publish --access public",
