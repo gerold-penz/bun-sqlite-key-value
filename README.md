@@ -178,6 +178,18 @@ store.d["myKey"] // --> "my-value"
 ```
 
 
+## Random Value
+
+```typescript
+getRandomValue(): any // --> random value
+
+randomValue() // --> alias for getRandomValue()
+```
+
+Returns a random value or `undefined` if no valid item was found.
+Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
+
+
 ## Read Item
 
 Reads the key and the value from the database.
@@ -201,6 +213,18 @@ store.set("my-key", "my-value")
 const item = store.getItem("my-key")
 console.log(item)  // --> {key: "my-key", value: "my-value"}
 ```
+
+
+## Random Item
+
+```typescript
+getRandomItem() // --> random item
+
+randomItem() // --> alias for getRandomItem()
+```
+
+Returns a random item or `undefined` if no valid item was found.
+Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
 
 
 ## Write Multiple Items
@@ -514,10 +538,12 @@ store.getKeys(["language:de", "language:fr"]) // --> ["language:de"]
 ## Random Key
 
 ```typescript
-randomKey() // --> random key
+getRandomKey() // --> random key
+
+randomKey() // --> alias for getRandomKey()
 ```
 
-Returns a valid random key or `undefined` if no valid key was found.
+Returns a random key or `undefined` if no valid item was found.
 Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
 
 
@@ -799,9 +825,13 @@ store.get("my-key") // --> "Hello!World!"
 - `<store>.data.<key>`
 - `<store>.d.<key>`
 - `getSet(key: string, value: any): any`
+- `getRandomValue(): any`
+- `randomValue(): any` --> alias for getRandomValue()
 
 ### Get item
 - `getItem(key: string)` --> Object
+- `getRandomItem()` --> Object
+- `randomItem()` --> Alias for getRandomItem()
 
 ### Get items as Array
 - `getItems()` --> Array with all items
@@ -858,7 +888,8 @@ store.get("my-key") // --> "Hello!World!"
 - `keys` --> alias for getKeys()
 - `<key> in <store>.data`
 - `<key> in <store>.d`
-- `randomKey()`
+- `getRandomKey()`
+- `randomKey()`  --> alias for getRandomKey()
 
 ### Math operations
 - `incr()` --> Number
