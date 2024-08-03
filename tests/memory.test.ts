@@ -15,9 +15,11 @@ test("Set and get value", () => {
 
     store.set<string>(KEY_1, STRING_VALUE_1)
     store.setValue<string>(KEY_2, STRING_VALUE_2)
+    store.put<string>(KEY_3, STRING_VALUE_3)
 
     expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_1)
-    expect(store.getValue<string>(KEY_2)).toEqual(STRING_VALUE_2)
+    expect(store.get<string>(KEY_2)).toEqual(STRING_VALUE_2)
+    expect(store.getValue<string>(KEY_3)).toEqual(STRING_VALUE_3)
 })
 
 
@@ -52,6 +54,7 @@ test("Count/length", async () => {
     store.set(KEY_2, STRING_VALUE_2, 30)
 
     expect(store.getCount()).toEqual(2)
+    expect(store.count()).toEqual(2)
     expect(store.length).toEqual(2)
     expect(store.getCountValid()).toEqual(2)
 
@@ -121,8 +124,11 @@ test("Delete one item", () => {
     const store: BunSqliteKeyValue = new BunSqliteKeyValue()
 
     store.set<string>(KEY_1, STRING_VALUE_1)
+    store.set<string>(KEY_2, STRING_VALUE_2)
     store.delete(KEY_1)
+    store.del(KEY_2)
     expect(store.get<string>(KEY_1)).toBeUndefined()
+    expect(store.get<string>(KEY_2)).toBeUndefined()
 })
 
 
@@ -365,6 +371,7 @@ test("Has key", async () => {
 
     store.set<string>(KEY_1, STRING_VALUE_1, 30)
     expect(store.has(KEY_1)).toEqual(true)
+    expect(store.exists(KEY_1)).toEqual(true)
 
     // Test proxy object
     expect(KEY_1 in store.data).toEqual(true)
@@ -509,19 +516,37 @@ test("getSet()", async () => {
 })
 
 
-test("getRandomKey()", async () => {
+test("getRandomKey(), getRandomItem(), getRandomValue", async () => {
     const store = new BunSqliteKeyValue()
 
+    expect(store.getRandomKey()).toBeUndefined()
+    expect(store.getRandomItem()).toBeUndefined()
+    expect(store.getRandomValue()).toBeUndefined()
+
     expect(store.randomKey()).toBeUndefined()
+    expect(store.randomItem()).toBeUndefined()
+    expect(store.randomValue()).toBeUndefined()
+
     store.setItems([
         {key: KEY_1, value: STRING_VALUE_1},
         {key: KEY_2, value: STRING_VALUE_2, ttlMs: 30},
     ])
-    expect(store.randomKey()).toBeOneOf([KEY_1, KEY_2])
+
+    expect(store.getRandomKey()).toBeOneOf([KEY_1, KEY_2])
+    expect(store.getRandomItem()?.key).toBeOneOf([KEY_1, KEY_2])
+    expect(store.getRandomItem()?.value).toBeOneOf([STRING_VALUE_1, STRING_VALUE_2])
+    expect(store.getRandomValue()).toBeOneOf([STRING_VALUE_1, STRING_VALUE_2])
+
     await Bun.sleep(40)
-    expect(store.randomKey()).toEqual(KEY_1)
-    expect(store.randomKey()).toEqual(KEY_1)
-    expect(store.randomKey()).toEqual(KEY_1)
+    expect(store.getRandomKey()).toEqual(KEY_1)
+    expect(store.getRandomKey()).toEqual(KEY_1)
+    expect(store.getRandomKey()).toEqual(KEY_1)
+    expect(store.getRandomItem()?.key).toEqual(KEY_1)
+    expect(store.getRandomItem()?.key).toEqual(KEY_1)
+    expect(store.getRandomItem()?.key).toEqual(KEY_1)
+    expect(store.getRandomValue<string>()).toEqual(STRING_VALUE_1)
+    expect(store.getRandomValue<string>()).toEqual(STRING_VALUE_1)
+    expect(store.getRandomValue<string>()).toEqual(STRING_VALUE_1)
 })
 
 

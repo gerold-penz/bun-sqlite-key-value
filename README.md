@@ -514,10 +514,11 @@ store.getKeys(["language:de", "language:fr"]) // --> ["language:de"]
 ## Random Key
 
 ```typescript
-getRandomKey() // --> random key
+randomKey() // --> random key
 ```
 
-Returns a valid random key.
+Returns a valid random key or `undefined` if no valid key was found.
+Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
 
 
 ## Delete Items
@@ -857,7 +858,7 @@ store.get("my-key") // --> "Hello!World!"
 - `keys` --> alias for getKeys()
 - `<key> in <store>.data`
 - `<key> in <store>.d`
-- `getRandomKey()`
+- `randomKey()`
 
 ### Math operations
 - `incr()` --> Number

@@ -54,9 +54,10 @@ export class BunSqliteKeyValue {
     private getKeyStatement: Statement<Omit<Record, "key" | "value">>
     private getAllKeysStatement: Statement<Omit<Record, "value">>
     private getKeysStartsWithStatement: Statement<Omit<Record, "value">>
-    private getRandomKeyStatement: Statement<{key: string}>
     private countExpiringStatement: Statement<{count: number}>
     private deleteExpiringStatement: Statement
+    private getRandomKeyStatement: Statement<Omit<Record, "value" | "expires">>
+    private getRandomItemStatement: Statement<Omit<Record, "expires">>
 
 
     // - `filename`: The full path of the SQLite database to open.
@@ -123,12 +124,6 @@ export class BunSqliteKeyValue {
         this.getKeysStartsWithStatement = this.db.query(
             "SELECT key, expires FROM items WHERE key = $key OR key >= $gte AND key < $lt"
         )
-        this.getRandomKeyStatement = this.db.query(`
-        SELECT key FROM items 
-        WHERE expires IS NULL OR expires > $now
-        ORDER BY RANDOM() 
-        LIMIT 1
-        `)
         this.countExpiringStatement = this.db.query(
             "SELECT COUNT(*) as count FROM items WHERE expires IS NOT NULL"
         )
@@ -138,6 +133,20 @@ export class BunSqliteKeyValue {
             WHERE expires IS NOT NULL
             ORDER BY expires ASC
             LIMIT $limit
+        )`)
+        this.getRandomKeyStatement = this.db.query(`
+        SELECT key FROM items 
+        WHERE expires IS NULL OR expires > $now
+        ORDER BY RANDOM() 
+        LIMIT 1
+        `)
+        this.getRandomItemStatement = this.db.query(`
+        SELECT key, value from items
+        WHERE key = (
+            SELECT key FROM items 
+            WHERE expires IS NULL OR expires > $now
+            ORDER BY RANDOM() 
+            LIMIT 1
         )`)
 
         // Delete expired items
@@ -170,6 +179,11 @@ export class BunSqliteKeyValue {
     }
 
 
+    // Alias for clear
+    // Alias inspired by: https://docs.keydb.dev/docs/commands/#del
+    del = this.delete
+
+
     // Delete all items
     clear() {
         this.delete()
@@ -190,6 +204,10 @@ export class BunSqliteKeyValue {
     }
 
 
+    // Alias for getCount()
+    count = this.getCount
+
+
     // Getter for getCount()
     get length() {
         return this.getCount()
@@ -199,6 +217,7 @@ export class BunSqliteKeyValue {
     // Returns the number of all valid (non-expired) items in the database.
     // Use `getCount()` if you want the fastet possible method.
     getCountValid(deleteExpired?: boolean): number {
+
         if (deleteExpired === true) {
             return this.db.transaction(() => {
                 this.deleteExpiredStatement.run({now: Date.now()})
@@ -380,6 +399,11 @@ export class BunSqliteKeyValue {
     }
 
 
+    // Alias for has()
+    // Alias inspired by: https://docs.keydb.dev/docs/commands/#exists
+    exists = this.has
+
+
     // Get multiple keys as array
     getKeys(startsWithOrKeys?: string | string[]): string[] | undefined {
         let records: (Omit<Record, "value"> | undefined)[]
@@ -530,10 +554,53 @@ export class BunSqliteKeyValue {
 
 
     // Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
-    randomKey(): string | undefined {
+    getRandomKey(): string | undefined {
         return this.getRandomKeyStatement.get({now: Date.now()})?.key ?? undefined
     }
 
+
+    // Alias for getRandomKey()
+    randomKey = this.getRandomKey
+
+
+    // Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
+    getRandomItem<T = any>(): Item<T> | undefined {
+        const record = this.getRandomItemStatement.get({now: Date.now()})
+        if (!record) return
+        return {
+            key: record.key,
+            value: record.value ? deserialize(record.value) as T : undefined
+        }
+    }
+
+
+    // Alias for getRandomItem()
+    randomItem = this.getRandomItem
+
+
+    // Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
+    getRandomValue<T = any>(): T | undefined {
+        const item = this.randomItem<T>()
+        if (item) return item.value
+    }
+
+
+    // Alias for getRandomValue()
+    randomValue = this.getRandomValue
+
+
+    // ToDo: rename()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#rename
+
+
+    // ToDo: touch(key, ttlMs)
+    // Renews the TTL
+    // Inspired by: https://docs.keydb.dev/docs/commands/#touch
+
+
+    // ToDo: ttl() milliseconds like pTtl()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#ttl
+    // Inspired by: https://docs.keydb.dev/docs/commands/#pttl
 
     // ToDo: hDel()
     // Inspired by: https://docs.keydb.dev/docs/commands/#hdel
@@ -599,20 +666,6 @@ export class BunSqliteKeyValue {
 
     // ToDo: lTrim()
     // Inspired by: https://docs.keydb.dev/docs/commands/#ltrim
-
-
-    // ToDo: randomValue()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
-
-
-    // ToDo: randomItem()
-    // --> SELECT * FROM items OFFSET abs(random() % (SELECT COUNT(*) from items)) LIMIT 1
-    // --> SELECT * FROM items WHERE key IN (SELECT key FROM items ORDER BY RANDOM() LIMIT 1)
-    // Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
-
-
-    // ToDo: rename()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#rename
 
 
     // ToDo: rPop()
@@ -682,14 +735,5 @@ export class BunSqliteKeyValue {
     // ToDo: sUnionStore()
     // Inspired by: https://docs.keydb.dev/docs/commands/#sunionstore
 
-
-    // ToDo: touch(key, ttlMs)
-    // Renews the TTL
-    // Inspired by: https://docs.keydb.dev/docs/commands/#touch
-
-
-    // ToDo: ttl() milliseconds like pTtl()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#ttl
-    // Inspired by: https://docs.keydb.dev/docs/commands/#pttl
 
 }
