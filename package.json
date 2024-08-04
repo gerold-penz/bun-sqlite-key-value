@@ -13,8 +13,7 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "devDependencies": {
-    "@types/bun": "latest",
-    "typedoc": "^0.26.5"
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.5.3"
@@ -52,13 +51,11 @@
     "test": "bun test",
     "bun:build": "bun build ./src/index.ts --outdir=./dist --target=node",
     "tsc:dts": "bunx tsc --project ./tsconfigDts.json --declaration",
-    "build": "bun run bun:build && bun run tsc:dts && bun run typedoc",
+    "build": "bun run bun:build && bun run tsc:dts",
     "increment_package_version": "npm version patch --no-git-tag-version",
     "prepublishOnly": "bun run test && bun run build",
     "npm:publish": "bun run increment_package_version && npm publish --access public",
-    "jsr:publish": "bunx jsr publish",
-    "typedoc": "bunx typedoc",
-    "typedoc:watch": "bunx typedoc --watch --preserveWatchOutput"
+    "jsr:publish": "bunx jsr publish"
   },
   "type": "module",
   "files": [
