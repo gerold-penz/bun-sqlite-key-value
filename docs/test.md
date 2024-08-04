@@ -2,6 +2,7 @@
 layout: page
 title: Testpage
 description: Testpage
+category: Tests
 ---
 
 ## Servus from Oberhofen
