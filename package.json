@@ -52,7 +52,7 @@
     "test": "bun test",
     "bun:build": "bun build ./src/index.ts --outdir=./dist --target=node",
     "tsc:dts": "bunx tsc --project ./tsconfigDts.json --declaration",
-    "build": "bun run bun:build && bun run tsc:dts",
+    "build": "bun run bun:build && bun run tsc:dts && bun run typedoc",
     "increment_package_version": "npm version patch --no-git-tag-version",
     "prepublishOnly": "bun run test && bun run build",
     "npm:publish": "bun run increment_package_version && npm publish --access public",
