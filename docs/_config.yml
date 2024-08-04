@@ -7,4 +7,4 @@ relative_links:
   enabled: true
   collections: true
 lsi: true
-remote_theme: cotes2020/jekyll-theme-chirpy
+remote_theme: jekyll-theme-chirpy

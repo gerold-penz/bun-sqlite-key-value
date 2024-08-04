@@ -1,4 +1,5 @@
 ---
+layout: home
 ---
 
 **Bun-SQLite-Key-Value** is a super fast key-value store with SQLite 
