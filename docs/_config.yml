@@ -7,4 +7,3 @@ relative_links:
   enabled: true
   collections: true
 lsi: true
-remote_theme: pmarsceill/just-the-docs

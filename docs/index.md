@@ -1,5 +1,4 @@
 ---
-layout: home
 ---
 
 **Bun-SQLite-Key-Value** is a super fast key-value store with SQLite 
@@ -13,9 +12,6 @@ perfect for a fast storage and cache solution with TTL support.
 The ideas for the implementation come from 
 [bun-sqlite-cache](https://github.com/notskamr/bun-sqlite-cache) and 
 [bun-kv](https://github.com/kirill-dev-pro/bun-kv). Thank you very much!
-
-
-Link to the [Test-Page](test.md)
 
 
 ## Installation
