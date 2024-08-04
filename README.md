@@ -302,7 +302,7 @@ getItems(startsWithOrKeys?: string | string[]): {key: string, value: any}[]
 
 <store>.items
 ```
-Reads the data from the database and returns entries in an array as key-value pairs.
+Reads the data from the database and returns items in an array as key-value pairs.
 
 ### startsWithOrKeys
 
@@ -454,7 +454,7 @@ If the value is read after this period, `undefined` is returned.
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
-const store = new BunSqliteKeyValue(undefined, {ttlMs: 1000})
+const store = new BunSqliteKeyValue(":memory:", {ttlMs: 1000})
 
 const KEY = "cache-key"
 store.set(KEY, 12345)
@@ -655,12 +655,12 @@ Can also delete the expired items.
 
 ### deleteExpired
 
+If `true` is passed, the expired entries are deleted first 
+before the entries are counted.
+
 If the parameter is not specified or `false` is passed, 
 then only the entries that have no expiration date or 
 whose expiration date is in the future are counted.
-
-If `true` is passed, the expired entries are deleted first 
-before the entries are counted.
 
 
 ### Example
