@@ -1,6 +1,21 @@
 {
+  "$schema": "https://typedoc.org/schema.json",
   "entryPoints": [
     "src/index.ts"
   ],
-  "out": "docs"
+  "out": "docs",
+  "name": "Bun SQlite Key Value",
+  "lightHighlightTheme": "github-light",
+  "darkHighlightTheme": "github-dark",
+  "sourceLinkExternal": true,
+  "searchInComments": true,
+  "searchInDocuments": true,
+  "navigationLinks": {
+    "GitHub": "https://github.com/gerold-penz/bun-sqlite-key-value"
+  },
+  "projectDocuments": [
+    "README.md"
+  ],
+  "excludeNotDocumented": true,
+  "theme": "typedoc-github-theme"
 }

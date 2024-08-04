@@ -57,7 +57,8 @@
     "prepublishOnly": "bun run test && bun run build",
     "npm:publish": "bun run increment_package_version && npm publish --access public",
     "jsr:publish": "bunx jsr publish",
-    "typedoc": "bunx typedoc"
+    "typedoc": "bunx typedoc",
+    "typedoc:watch": "bunx typedoc --watch --preserveWatchOutput"
   },
   "type": "module",
   "files": [
