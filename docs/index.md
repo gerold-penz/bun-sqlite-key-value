@@ -1,8 +1,4 @@
 ---
-layout: page
-title: Bun SQLite Key Value
-description: Bun-SQLite-Key-Value is a super fast key-value store with SQLite 
-  that uses bun:sqlite and v8 as a fast JSON replacement.
 ---
 
 **Bun-SQLite-Key-Value** is a super fast key-value store with SQLite 

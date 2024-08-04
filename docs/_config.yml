@@ -1,4 +1,6 @@
-title: "Das ist der Standardtitel"
+title: "Bun SQLite Key Value"
+description: Bun-SQLite-Key-Value is a super fast key-value store with SQLite 
+  that uses bun:sqlite and v8 as a fast JSON replacement.
 plugins:
   - jekyll-relative-links
 relative_links:
