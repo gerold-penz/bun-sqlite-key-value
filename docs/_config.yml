@@ -1,5 +1,7 @@
+title: "Das ist der Standardtitel"
 plugins:
   - jekyll-relative-links
 relative_links:
   enabled: true
   collections: true
+lsi: true
