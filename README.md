@@ -37,10 +37,6 @@ store.get("myKey") // --> [ 1, 2, 3, 4 ]
 // Or use the data proxy object.
 store.data.myKey = "Hello world!"
 store.data.myKey // --> "Hello World"
-
-// Or use the short name for the data proxy object.
-store.d.myKey = 123456789
-store.d.myKey // --> 123456789
 ```
 
 ## Open Database
@@ -93,9 +89,6 @@ set(key: string, value: any, ttlMs?: number)
 
 data.<key> = <value>
 data[<key>] = <value>
-
-d.<key> = <value>
-d[<key>] = <value>
 ```
 
 Writes a value into the database.
@@ -133,9 +126,6 @@ store.set("myKey1", "my-value")
 store.data.myKey2 = "my-value"
 store.data["myKey3"] = "my-value"
 
-store.d.myKey4 = "my-value"
-store.d["myKey5"] = "my-value"
-
 // Becomes invalid after 30 seconds
 store.set("myKey6", "item-with-ttl", 30000)
 ```
@@ -148,9 +138,6 @@ get(key: string): any
 
 data.<key>: any
 data[<key>]: any
-
-d.<key>: any
-d[<key>]: any
 ```
 
 Reads a value from the database.
@@ -172,9 +159,6 @@ store.get("myKey") // --> "my-value"
 
 store.data.myKey // --> "my-value"
 store.data["myKey"] // --> "my-value"
-
-store.d.myKey // --> "my-value"
-store.d["myKey"] // --> "my-value"
 ```
 
 
@@ -473,7 +457,6 @@ console.log(store.get(KEY)) // --> undefined
 has(key: string): boolean
 
 <key> in <store>.data
-<key> in <store>.d
 ```
 
 Checks if key exists. Returns `false` if the item is expired.
@@ -556,7 +539,6 @@ delete(keys: string[])
 clear()  // --> alias for `delete()`
 
 delete <store>.data.<key>
-delete <store>.d.<key>
 ```
 
 Deletes all items if no parameter was passed.
@@ -579,7 +561,6 @@ store.clear()
 // Delete one item
 store.delete("myKey")
 delete store.data.myKey
-delete store.d.myKey
 
 // Delete multiple items
 store.delete(["key1", "key2"])
@@ -814,7 +795,6 @@ store.get("my-key") // --> "Hello!World!"
 - `set(key: string, value: any)`
 - `setValue(key: string, value: any)` --> alias for set()
 - `<store>.data.<key> = <value>`
-- `<store>.d.<key> = <value>`
 
 ### Set items
 - `setItems({key: string, value: any}[])`
@@ -823,7 +803,6 @@ store.get("my-key") // --> "Hello!World!"
 - `get(key: string): any`
 - `getValue(key: string)` --> alias for get()
 - `<store>.data.<key>`
-- `<store>.d.<key>`
 - `getSet(key: string, value: any): any`
 - `getRandomValue(): any`
 - `randomValue(): any` --> alias for getRandomValue()
@@ -873,7 +852,6 @@ store.get("my-key") // --> "Hello!World!"
 - `clear()` --> alias for delete()
 - `deleteOldExpiringItems(maxExpiringItemsInDb: number)` --> Delete items
 - `delete <store>.data.<key>`
-- `delete <store>.d.<key>`
 
 ### Count
 - `getCount()` --> Number
@@ -887,7 +865,6 @@ store.get("my-key") // --> "Hello!World!"
 - `getKeys(keys: string[])` --> Array
 - `keys` --> alias for getKeys()
 - `<key> in <store>.data`
-- `<key> in <store>.d`
 - `getRandomKey()`
 - `randomKey()`  --> alias for getRandomKey()
 
