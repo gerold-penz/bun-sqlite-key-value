@@ -39,8 +39,7 @@ export class BunSqliteKeyValue {
     db: Database
     ttlMs: number | undefined
     data = this.getDataObject()
-    // Alias for `data`
-    d = this.data
+    d = this.data  // Alias for `data`
 
     private deleteExpiredStatement: Statement
     private deleteStatement: Statement
@@ -483,20 +482,20 @@ export class BunSqliteKeyValue {
         const self = this
         return new Proxy({}, {
 
-            get(target, property: string, receiver) {
+            get(_, property: string) {
                 return self.get(property)
             },
 
-            set(target, property: string, value: any) {
+            set(_, property: string, value: any) {
                 self.set(property, value)
                 return true
             },
 
-            has(target, property: string) {
+            has(_, property: string) {
                 return self.has(property)
             },
 
-            deleteProperty(target: {}, property: string) {
+            deleteProperty(_: {}, property: string) {
                 self.delete(property)
                 return true
             }
