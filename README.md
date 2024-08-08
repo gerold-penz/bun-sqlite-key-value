@@ -456,6 +456,8 @@ console.log(store.get(KEY)) // --> undefined
 ```typescript
 has(key: string): boolean
 
+exists(key: string) // --> alias for has()
+
 <key> in <store>.data
 ```
 
@@ -533,10 +535,9 @@ Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
 ## Delete Items
 
 ```typescript
-delete()
-delete(key: string)
-delete(keys: string[])
-clear()  // --> alias for `delete()`
+delete(keyOrKeys?: string | string[])
+
+clear() // --> delete all items
 
 delete <store>.data.<key>
 ```
@@ -601,7 +602,8 @@ console.log(store.getKeys("dynamic:"))
 ```typescript
 getCount(): number
 
-length  // --> alias for `getCount()`
+count() // --> alias for getCount()
+length // --> getter method for `getCount()`
 ```
 
 Returns the number of all items, including those that have already expired.
