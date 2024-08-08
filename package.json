@@ -16,7 +16,7 @@
     "@types/bun": "latest"
   },
   "peerDependencies": {
-    "typescript": "^5.5.3"
+    "typescript": "^5.0.0"
   },
   "bugs": {
     "url": "https://github.com/gerold-penz/bun-sqlite-key-value/issues"
