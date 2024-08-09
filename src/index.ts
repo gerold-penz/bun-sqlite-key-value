@@ -57,6 +57,7 @@ export class BunSqliteKeyValue {
     private deleteExpiringStatement: Statement
     private getRandomKeyStatement: Statement<Omit<Record, "value" | "expires">>
     private getRandomItemStatement: Statement<Omit<Record, "expires">>
+    private renameStatement: Statement
 
 
     // - `filename`: The full path of the SQLite database to open.
@@ -147,6 +148,7 @@ export class BunSqliteKeyValue {
             ORDER BY RANDOM() 
             LIMIT 1
         )`)
+        this.renameStatement = this.db.query("UPDATE items SET key = $newKey WHERE key = $oldKey")
 
         // Delete expired items
         this.deleteExpired()
@@ -588,8 +590,21 @@ export class BunSqliteKeyValue {
     randomValue = this.getRandomValue
 
 
-    // ToDo: rename()
+    // Renames `oldKey` to `newKey`.
+    // It returns `false` when `oldKey` does not exist.
+    // If `newKey` already exists it is deleted first.
     // Inspired by: https://docs.keydb.dev/docs/commands/#rename
+    rename(oldKey: string, newKey: string): boolean {
+        return this.db.transaction(() => {
+            if (this.has(oldKey)) {
+                this.delete(newKey)
+                this.renameStatement.run({oldKey, newKey})
+                return true
+            } else {
+                return false
+            }
+        })()
+    }
 
 
     // ToDo: touch(key, ttlMs)

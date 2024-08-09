@@ -532,6 +532,18 @@ Returns a random key or `undefined` if no valid item was found.
 Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
 
 
+## Rename Key
+
+```typescript
+rename(oldKey: string, newKey: string): boolean
+```
+
+Renames `oldKey` to `newKey`.
+It returns `false` when `oldKey` does not exist.
+If `newKey` already exists it is deleted first.
+Inspired by: https://docs.keydb.dev/docs/commands/#rename
+
+
 ## Delete Items
 
 ```typescript
@@ -893,15 +905,16 @@ store.db.transaction(() => {
 - `length` --> alias for getCount()
 - `getCountValid(deleteExpired?: boolean)` --> Number
 
-### Get keys
-- `has(key: string)` --> Boolean
+### Keys
+- `has(key: string): boolean`
 - `getKeys()` --> Array with all Keys
-- `getKeys(startsWith: string)` --> Array
-- `getKeys(keys: string[])` --> Array
+- `getKeys(startsWith: string): string[]`
+- `getKeys(keys: string[]): string[]`
 - `keys` --> alias for getKeys()
 - `<key> in <store>.data`
 - `getRandomKey()`
 - `randomKey()`  --> alias for getRandomKey()
+- `rename(oldKey: string, newKey: string): boolean`
 
 ### Math operations
 - `incr()` --> Number

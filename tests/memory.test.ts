@@ -550,3 +550,16 @@ test("getRandomKey(), getRandomItem(), getRandomValue", async () => {
 })
 
 
+test("rename()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    store.set(KEY_1, STRING_VALUE_1)
+    store.set(KEY_2, STRING_VALUE_2)
+
+    expect(store.rename(KEY_3, "new-key")).toBeFalse()
+    expect(store.rename(KEY_1, KEY_2)).toBeTrue()
+    expect(store.items).toEqual([{key: KEY_2, value: STRING_VALUE_1}])
+})
+
+
+
