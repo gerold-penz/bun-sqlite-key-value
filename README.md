@@ -76,7 +76,7 @@ import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 // In-memory
 const store1 = new BunSqliteKeyValue()
 // In-memory with 30 seconds default expiration timeout
-const store2 = new BunSqliteKeyValue(undefined, {ttlMs: 30000})
+const store2 = new BunSqliteKeyValue(":memory:", {ttlMs: 30000})
 // Store items in file system
 const store3 = new BunSqliteKeyValue("./store3.sqlite")
 ```
