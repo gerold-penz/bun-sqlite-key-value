@@ -565,7 +565,7 @@ test("rename()", async () => {
 })
 
 
-test("hSet(), hGet(), hmSet()", async () => {
+test("hSet(), hGet(), hmSet(), hmGet()", async () => {
     const store = new BunSqliteKeyValue()
 
     store.hSet(KEY_1, FIELD_1, STRING_VALUE_1)

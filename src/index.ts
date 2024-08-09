@@ -508,12 +508,11 @@ export class BunSqliteKeyValue {
 
     // Inspired by: https://docs.keydb.dev/docs/commands/#incrby
     incr(key: string, incrBy: number = 1, ttlMs?: number): number {
-        const self = this
         // @ts-ignore (Transaction returns a number or NaN, not void.)
         return this.db.transaction(() => {
-            const newValue = Number(self.get<number>(key) ?? 0) + incrBy
+            const newValue = Number(this.get<number>(key) ?? 0) + incrBy
             if (isNaN(newValue)) return NaN
-            self.set<number>(key, newValue, ttlMs)
+            this.set<number>(key, newValue, ttlMs)
             return newValue
         }).immediate()
     }
@@ -531,11 +530,10 @@ export class BunSqliteKeyValue {
     // Returns the length of the string after the append operation.
     // Inspired by: https://docs.keydb.dev/docs/commands/#append
     append(key: string, value: string, ttlMs?: number): number {
-        const self = this
         // @ts-ignore (Transaction returns a number, not void.)
         return this.db.transaction(() => {
-            const newValue = String(self.get<string>(key) ?? "") + value
-            self.set<string>(key, newValue, ttlMs)
+            const newValue = String(this.get<string>(key) ?? "") + value
+            this.set<string>(key, newValue, ttlMs)
             return newValue.length
         }).immediate()
     }
@@ -544,11 +542,10 @@ export class BunSqliteKeyValue {
     // Atomically sets key to value and returns the old value stored at key.
     // Inspired by: https://docs.keydb.dev/docs/commands/#getset
     getSet<T = any>(key: string, value: T, ttlMs?: number): T | undefined {
-        const self = this
         // @ts-ignore (Transaction returns a number, not void.)
         return this.db.transaction(() => {
-            const oldValue = self.get<T>(key)
-            self.set<T>(key, value, ttlMs)
+            const oldValue = this.get<T>(key)
+            this.set<T>(key, value, ttlMs)
             return oldValue
         }).immediate()
     }
@@ -595,6 +592,7 @@ export class BunSqliteKeyValue {
     // If `newKey` already exists it is deleted first.
     // Inspired by: https://docs.keydb.dev/docs/commands/#rename
     rename(oldKey: string, newKey: string): boolean {
+        // @ts-ignore (Transaction returns boolean, not void.)
         return this.db.transaction(() => {
             if (this.has(oldKey)) {
                 this.delete(newKey)
@@ -603,7 +601,7 @@ export class BunSqliteKeyValue {
             } else {
                 return false
             }
-        })()
+        }).immediate()
     }
 
 
@@ -617,18 +615,21 @@ export class BunSqliteKeyValue {
     // Inspired by: https://docs.keydb.dev/docs/commands/#pttl
 
 
+    // Don't use it with large values or blobs.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hset
     hSet<T = any>(key: string, field: string, value: T, ttlMs?: number): boolean {
+        // @ts-ignore (Transaction returns boolean, not void.)
         return this.db.transaction(() => {
             const internalValue = this.get<Map<string, T>>(key) ?? new Map<string, T>()
             const isNewField: boolean = !internalValue.has(field)
             internalValue.set(field, value)
             this.set(key, internalValue, ttlMs)
             return isNewField
-        })()
+        }).immediate()
     }
 
 
+    // Don't use it with large values or blobs.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hget
     hGet<T = any>(key: string, field: string): T | undefined {
         const internalValue = this.get<Map<string, T>>(key)
@@ -637,6 +638,7 @@ export class BunSqliteKeyValue {
     }
 
 
+    // Don't use it with large values or blobs.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hmset
     hmSet<T = any>(key: string, fields: {[field: string]: T}, ttlMs?: number) {
         this.db.transaction(() => {
@@ -645,11 +647,12 @@ export class BunSqliteKeyValue {
                 internalValue.set(field, value)
             })
             this.set(key, internalValue, ttlMs)
-        })()
+        }).immediate()
     }
 
 
     // ToDo: hmGet()
+    // Don't use it with large values or blobs.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hmget
 
 
@@ -670,6 +673,7 @@ export class BunSqliteKeyValue {
 
 
     // ToDo: hVals()
+    // Don't use it with large values or blobs.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hvals
 
 
