@@ -8,6 +8,9 @@ const KEY_3: string = "test-key-3"
 const STRING_VALUE_1: string = "Hello world!"
 const STRING_VALUE_2: string = "Hello moon!"
 const STRING_VALUE_3: string = "Hello Tyrol!"
+const FIELD_1: string = "test-field-1"
+const FIELD_2: string = "test-field-2"
+const FIELD_3: string = "test-field-3"
 
 
 test("Set and get value", () => {
@@ -559,6 +562,34 @@ test("rename()", async () => {
     expect(store.rename(KEY_3, "new-key")).toBeFalse()
     expect(store.rename(KEY_1, KEY_2)).toBeTrue()
     expect(store.items).toEqual([{key: KEY_2, value: STRING_VALUE_1}])
+})
+
+
+test("hSet(), hGet(), hmSet()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    store.hSet(KEY_1, FIELD_1, STRING_VALUE_1)
+    store.hSet(KEY_1, FIELD_2, STRING_VALUE_2)
+
+    expect(store.hGet<string>(KEY_1, FIELD_1)).toEqual(STRING_VALUE_1)
+    expect(store.hGet<string>(KEY_1, FIELD_2)).toEqual(STRING_VALUE_2)
+
+    store.hSet(KEY_1, FIELD_2, STRING_VALUE_3)
+    expect(store.hGet<string>(KEY_1, FIELD_2)).toEqual(STRING_VALUE_3)
+
+    // Set multiple fields
+    store.hmSet(KEY_1, {
+        "test-field-3": "value-3",
+        "test-field-4": "value-4",
+        "test-field-5": "value-5"
+    })
+
+    // ToDo: Get multiple fields
+
+
+    console.log(store.get(KEY_1))
+
+
 })
 
 

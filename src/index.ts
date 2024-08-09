@@ -616,34 +616,53 @@ export class BunSqliteKeyValue {
     // Inspired by: https://docs.keydb.dev/docs/commands/#ttl
     // Inspired by: https://docs.keydb.dev/docs/commands/#pttl
 
-    // ToDo: hDel()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hdel
+
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hset
+    hSet<T = any>(key: string, field: string, value: T, ttlMs?: number): boolean {
+        return this.db.transaction(() => {
+            const internalValue = this.get<Map<string, T>>(key) ?? new Map<string, T>()
+            const isNewField: boolean = !internalValue.has(field)
+            internalValue.set(field, value)
+            this.set(key, internalValue, ttlMs)
+            return isNewField
+        })()
+    }
+
+
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hget
+    hGet<T = any>(key: string, field: string): T | undefined {
+        const internalValue = this.get<Map<string, T>>(key)
+        if (internalValue === undefined) return undefined
+        return internalValue.get(field)
+    }
+
+
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hmset
+    hmSet<T = any>(key: string, fields: {[field: string]: T}, ttlMs?: number) {
+        this.db.transaction(() => {
+            const internalValue = this.get<Map<string, T>>(key) ?? new Map<string, T>()
+            Object.entries(fields).forEach(([field, value]) => {
+                internalValue.set(field, value)
+            })
+            this.set(key, internalValue, ttlMs)
+        })()
+    }
+
+
+    // ToDo: hmGet()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hmget
 
 
     // ToDo: hExists()
     // Inspired by: https://docs.keydb.dev/docs/commands/#hexists
 
 
-    // ToDo: hGet()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hget
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hmget
-
-
-    // ToDo: hIncrBy()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hincrby
-
-
-    // ToDo: hKeys()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hkeys
-
-
     // ToDo: hLen()
     // Inspired by: https://docs.keydb.dev/docs/commands/#hlen
 
 
-    // ToDo: hSet()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hset
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hmset
+    // ToDo: hKeys()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hkeys
 
 
     // ToDo: hStrLen()
@@ -652,6 +671,14 @@ export class BunSqliteKeyValue {
 
     // ToDo: hVals()
     // Inspired by: https://docs.keydb.dev/docs/commands/#hvals
+
+
+    // ToDo: hDel()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hdel
+
+
+    // ToDo: hIncrBy()
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hincrby
 
 
     // ToDo: lIndex()
