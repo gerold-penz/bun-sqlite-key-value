@@ -13,6 +13,11 @@ The ideas for the implementation come from
 [bun-kv](https://github.com/kirill-dev-pro/bun-kv). Thank you very much!
 
 
+## Table of Contents
+
+[[_TOC_]]
+
+
 ## Installation
 
 ```bash
