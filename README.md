@@ -834,12 +834,11 @@ store.db.transaction(() => {
 ## Renew TTL
 
 ```typescript
-touch(key: string, ttlMs?: number): boolean
+setTtl(key: string, ttlMs?: number): boolean
 ```
 
 Renews or deletes the TTL of the database row.
 Returns `true` if the `key` exists.
-Inspired by: https://docs.keydb.dev/docs/commands/#touch
 
 ### key
 
@@ -863,10 +862,10 @@ const store = new BunSqliteKeyValue()
 store.set("my-key", "my-value", 10000)
 
 // Update TTL
-store.touch("my-key", 10000) // --> true
+store.setTtl("my-key", 10000) // --> true
 
 // Delete TTL
-store.touch("my-key", 0) // --> true
+store.setTtl("my-key", 0) // --> true
 ```
 
 

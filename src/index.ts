@@ -58,7 +58,7 @@ export class BunSqliteKeyValue {
     private getRandomKeyStatement: Statement<Omit<Record, "value" | "expires">>
     private getRandomItemStatement: Statement<Omit<Record, "expires">>
     private renameStatement: Statement
-    private touchStatement: Statement
+    private setTtlStatement: Statement
 
 
     // - `filename`: The full path of the SQLite database to open.
@@ -150,7 +150,7 @@ export class BunSqliteKeyValue {
             LIMIT 1
         )`)
         this.renameStatement = this.db.query("UPDATE items SET key = $newKey WHERE key = $oldKey")
-        this.touchStatement = this.db.query("UPDATE items SET expires = $expires WHERE key = $key")
+        this.setTtlStatement = this.db.query("UPDATE items SET expires = $expires WHERE key = $key")
 
         // Delete expired items
         this.deleteExpired()
@@ -610,13 +610,13 @@ export class BunSqliteKeyValue {
     // Renews or deletes the TTL of the database row.
     // Returns `true` if the `key` exists.
     // Inspired by: https://docs.keydb.dev/docs/commands/#touch
-    touch(key: string, ttlMs?: number): boolean {
+    setTtl(key: string, ttlMs?: number): boolean {
         let expires: number | undefined
         ttlMs = ttlMs ?? this.ttlMs
         if (ttlMs !== undefined && ttlMs > 0) {
             expires = Date.now() + ttlMs
         }
-        return this.touchStatement.run({key, expires}).changes === 1
+        return this.setTtlStatement.run({key, expires}).changes === 1
     }
 
 

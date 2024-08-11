@@ -566,7 +566,7 @@ test("rename()", async () => {
 })
 
 
-test("touch()", async () => {
+test("setTtl()", async () => {
     const store = new BunSqliteKeyValue()
 
     store.set(KEY_1, STRING_VALUE_1, 30000)
@@ -576,19 +576,19 @@ test("touch()", async () => {
     )
 
     // Reset TTL
-    expect(store.touch(KEY_1, 20000)).toBeTrue()
+    expect(store.setTtl(KEY_1, 20000)).toBeTrue()
     expect(sqlStatement.get(KEY_1)?.expires).toBeNumber()
 
     // Key not found
-    expect(store.touch(KEY_2)).toBeFalse()
+    expect(store.setTtl(KEY_2)).toBeFalse()
 
     // Delete TTL
-    expect(store.touch(KEY_1)).toBeTrue()
+    expect(store.setTtl(KEY_1)).toBeTrue()
     expect(sqlStatement.get(KEY_1)?.expires).toBeNull()
 })
 
 
-test("touch() with global defined TTL", async () => {
+test("setTtl() with global defined TTL", async () => {
     const store = new BunSqliteKeyValue(":memory:", {ttlMs: 30000})
 
     store.set(KEY_1, STRING_VALUE_1)
@@ -598,14 +598,14 @@ test("touch() with global defined TTL", async () => {
     )
 
     // Reset TTL
-    expect(store.touch(KEY_1)).toBeTrue()
+    expect(store.setTtl(KEY_1)).toBeTrue()
     expect(sqlStatement.get(KEY_1)?.expires).toBeNumber()
 
     // Key not found
-    expect(store.touch(KEY_2)).toBeFalse()
+    expect(store.setTtl(KEY_2)).toBeFalse()
 
     // Delete TTL
-    expect(store.touch(KEY_1, 0)).toBeTrue()
+    expect(store.setTtl(KEY_1, 0)).toBeTrue()
     expect(sqlStatement.get(KEY_1)?.expires).toBeNull()
 })
 
