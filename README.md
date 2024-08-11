@@ -18,6 +18,24 @@ The ideas for the implementation come from
 - [Installation](#installation)
 - [Usage](#usage)
 - [Open Database](#open-database)
+- [Write Value](#write-value)
+  - [`set()`](#write-value)
+- [Read Value](#read-value)
+  - [`get()`](#read-value)
+- [Read Random Value](#read-random-value)
+  - [`getRandomValue()`](#read-random-value)
+- [Write Multiple Items](#write-multiple-items)
+  - [`setItems()`](#write-multiple-items)
+- [Read Values](#read-values)
+  - [`getValues()`](#read-values)
+- [Read Items](#read-items)
+  - [`getItems()`](#read-items)
+- [Multiple Databases](#multiple-databases)
+- [Read and Write Binary Files (Images)](#read-and-write-binary-files-images)
+- [Cache Values with TTL](#cache-values-with-ttl)
+
+...
+
 
 
 ## Installation
@@ -169,7 +187,7 @@ store.data["myKey"] // --> "my-value"
 ```
 
 
-## Random Value
+## Read Random Value
 
 ```typescript
 getRandomValue(): any // --> random value
@@ -206,7 +224,7 @@ console.log(item)  // --> {key: "my-key", value: "my-value"}
 ```
 
 
-## Random Item
+## Read Random Item
 
 ```typescript
 getRandomItem() // --> random item
@@ -243,7 +261,7 @@ store.setItems([
 ```
 
 
-## Read Values
+## Read Multiple Values
 
 ```typescript
 getValues(startsWithOrKeys?: string | string[]): any[]
@@ -286,7 +304,7 @@ store.values // --> [ "German", "English", "Italian" ]
 ```
 
 
-## Read Items
+## Read Multiple Items
 
 ```typescript
 getItems(startsWithOrKeys?: string | string[]): {key: string, value: any}[]
