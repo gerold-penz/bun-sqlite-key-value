@@ -17,6 +17,10 @@ The ideas for the implementation come from
 
 [[_TOC_]]
 
+[[__TOC__]]
+
+__TOC__
+
 
 ## Installation
 
