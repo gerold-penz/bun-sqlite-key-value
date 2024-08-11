@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test"
 import { BunSqliteKeyValue } from "../src"
+import { Statement } from "bun:sqlite"
 
 
 const KEY_1: string = "test-key-1"
@@ -562,6 +563,50 @@ test("rename()", async () => {
     expect(store.rename(KEY_3, "new-key")).toBeFalse()
     expect(store.rename(KEY_1, KEY_2)).toBeTrue()
     expect(store.items).toEqual([{key: KEY_2, value: STRING_VALUE_1}])
+})
+
+
+test("touch()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    store.set(KEY_1, STRING_VALUE_1, 30000)
+
+    const sqlStatement: Statement<{expires: number}> = store.db.prepare(
+        "SELECT expires FROM items WHERE key = $key"
+    )
+
+    // Reset TTL
+    expect(store.touch(KEY_1, 20000)).toBeTrue()
+    expect(sqlStatement.get(KEY_1)?.expires).toBeNumber()
+
+    // Key not found
+    expect(store.touch(KEY_2)).toBeFalse()
+
+    // Delete TTL
+    expect(store.touch(KEY_1)).toBeTrue()
+    expect(sqlStatement.get(KEY_1)?.expires).toBeNull()
+})
+
+
+test("touch() with global defined TTL", async () => {
+    const store = new BunSqliteKeyValue(":memory:", {ttlMs: 30000})
+
+    store.set(KEY_1, STRING_VALUE_1)
+
+    const sqlStatement: Statement<{expires: number}> = store.db.prepare(
+        "SELECT expires FROM items WHERE key = $key"
+    )
+
+    // Reset TTL
+    expect(store.touch(KEY_1)).toBeTrue()
+    expect(sqlStatement.get(KEY_1)?.expires).toBeNumber()
+
+    // Key not found
+    expect(store.touch(KEY_2)).toBeFalse()
+
+    // Delete TTL
+    expect(store.touch(KEY_1, 0)).toBeTrue()
+    expect(sqlStatement.get(KEY_1)?.expires).toBeNull()
 })
 
 
