@@ -15,11 +15,9 @@ The ideas for the implementation come from
 
 ## Table of Contents
 
-[[_TOC_]]
-
-[[__TOC__]]
-
-__TOC__
+- [Installation](#installation)
+- [Usage](#usage)
+- [Open Database](#open-database)
 
 
 ## Installation
