@@ -595,7 +595,7 @@ export class BunSqliteKeyValue {
         // @ts-ignore (Transaction returns boolean, not void.)
         return this.db.transaction(() => {
             if (this.has(oldKey)) {
-                this.delete(newKey)
+                this.deleteStatement.run({key: newKey})
                 this.renameStatement.run({oldKey, newKey})
                 return true
             } else {
@@ -615,44 +615,48 @@ export class BunSqliteKeyValue {
     // Inspired by: https://docs.keydb.dev/docs/commands/#pttl
 
 
-    // Don't use it with large values or blobs.
+    // Do not use it with several large amounts of data or blobs.
+    // This is because the entire data record with all fields is always read and written.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hset
     hSet<T = any>(key: string, field: string, value: T, ttlMs?: number): boolean {
         // @ts-ignore (Transaction returns boolean, not void.)
         return this.db.transaction(() => {
-            const internalValue = this.get<Map<string, T>>(key) ?? new Map<string, T>()
-            const isNewField: boolean = !internalValue.has(field)
-            internalValue.set(field, value)
-            this.set(key, internalValue, ttlMs)
+            const map = this.get<Map<string, T>>(key) ?? new Map<string, T>()
+            const isNewField: boolean = !map.has(field)
+            map.set(field, value)
+            this.set(key, map, ttlMs)
             return isNewField
         }).immediate()
     }
 
 
-    // Don't use it with large values or blobs.
+    // Do not use it with several large amounts of data or blobs.
+    // This is because the entire data record with all fields is always read and written.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hget
     hGet<T = any>(key: string, field: string): T | undefined {
-        const internalValue = this.get<Map<string, T>>(key)
-        if (internalValue === undefined) return undefined
-        return internalValue.get(field)
+        const map = this.get<Map<string, T>>(key)
+        if (map === undefined) return undefined
+        return map.get(field)
     }
 
 
-    // Don't use it with large values or blobs.
+    // Do not use it with several large amounts of data or blobs.
+    // This is because the entire data record with all fields is always read and written.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hmset
     hmSet<T = any>(key: string, fields: {[field: string]: T}, ttlMs?: number) {
         this.db.transaction(() => {
-            const internalValue = this.get<Map<string, T>>(key) ?? new Map<string, T>()
+            const map = this.get<Map<string, T>>(key) ?? new Map<string, T>()
             Object.entries(fields).forEach(([field, value]) => {
-                internalValue.set(field, value)
+                map.set(field, value)
             })
-            this.set(key, internalValue, ttlMs)
+            this.set(key, map, ttlMs)
         }).immediate()
     }
 
 
     // ToDo: hmGet()
-    // Don't use it with large values or blobs.
+    // Do not use it with several large amounts of data or blobs.
+    // This is because the entire data record with all fields is always read and written.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hmget
 
 
@@ -673,7 +677,8 @@ export class BunSqliteKeyValue {
 
 
     // ToDo: hVals()
-    // Don't use it with large values or blobs.
+    // Do not use it with several large amounts of data or blobs.
+    // This is because the entire data record with all fields is always read and written.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hvals
 
 
