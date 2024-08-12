@@ -58,7 +58,8 @@ export class BunSqliteKeyValue {
     private getRandomKeyStatement: Statement<Omit<Record, "value" | "expires">>
     private getRandomItemStatement: Statement<Omit<Record, "expires">>
     private renameStatement: Statement
-    private setTtlStatement: Statement
+    private setExpiresStatement: Statement
+    private getExpiresStatement: Statement<{expires: number}>
 
 
     // - `filename`: The full path of the SQLite database to open.
@@ -150,7 +151,8 @@ export class BunSqliteKeyValue {
             LIMIT 1
         )`)
         this.renameStatement = this.db.query("UPDATE items SET key = $newKey WHERE key = $oldKey")
-        this.setTtlStatement = this.db.query("UPDATE items SET expires = $expires WHERE key = $key")
+        this.setExpiresStatement = this.db.query("UPDATE items SET expires = $expires WHERE key = $key")
+        this.getExpiresStatement = this.db.query("SELECT expires FROM items WHERE key = $key")
 
         // Delete expired items
         this.deleteExpired()
@@ -616,13 +618,25 @@ export class BunSqliteKeyValue {
         if (ttlMs !== undefined && ttlMs > 0) {
             expires = Date.now() + ttlMs
         }
-        return this.setTtlStatement.run({key, expires}).changes === 1
+        return this.setExpiresStatement.run({key, expires}).changes === 1
     }
 
 
-    // ToDo: ttl() milliseconds like pTtl()
+    // Returns how long the data record is still valid (in milliseconds).
+    // Returns `undefined` if the key does not exist.
     // Inspired by: https://docs.keydb.dev/docs/commands/#ttl
-    // Inspired by: https://docs.keydb.dev/docs/commands/#pttl
+    getTtl(key: string): number | undefined {
+        const record = this.getExpiresStatement.get({key})
+        if (!record) return
+        const expires = record?.expires
+        if (!expires) return
+        const now = Date.now()
+        if (expires < now) {
+            this.delete(key)
+            return
+        }
+        return expires - now
+    }
 
 
     // Do not use it with several large amounts of data or blobs.

@@ -610,6 +610,20 @@ test("setTtl() with global defined TTL", async () => {
 })
 
 
+test("getTtl()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    store.set(KEY_1, STRING_VALUE_1)
+
+    expect(store.getTtl(KEY_1)).toBeUndefined()
+    expect(store.getTtl(KEY_2)).toBeUndefined()
+
+    store.setTtl(KEY_1, 20000)
+    await Bun.sleep(1)
+    expect(store.getTtl(KEY_1)).toBeLessThanOrEqual(19999)
+})
+
+
 test("hSet(), hGet()", async () => {
     const store = new BunSqliteKeyValue()
 
