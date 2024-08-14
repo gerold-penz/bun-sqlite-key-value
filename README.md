@@ -1042,9 +1042,9 @@ store.hmSet("my-key", {
 })
 
 store.hmGet(KEY_1, ["field-1", "field-100"]) // --> {
-  "field-1": "value-1",
-  "field-100": undefined,
-}
+//   "field-1": "value-1",
+//   "field-100": undefined,
+// }
 ```
 
 
@@ -1077,7 +1077,7 @@ languagesStore.set("it", "Italian")
 
 // Read all settings
 const settingItems = settingsStore.getItems()
-console.log(settingItems) // -> [
+console.log(settingItems) // --> [
 //   {key: "language", value: "de"},
 //   {key: "page-size", value: "A4"},
 //   {key: "screen-position", value: {top: 100, left: 100}},
@@ -1085,12 +1085,12 @@ console.log(settingItems) // -> [
 
 // Read all languages
 const languageValues = languagesStore.getValues()
-console.log(languageValues)  // -> [ "German", "English", "Italian" ]
+console.log(languageValues) // --> [ "German", "English", "Italian" ]
 
 // Read current language
 const languageKey = settingsStore.get("language")
 const currentLanguage = languagesStore.get(languageKey)
-console.log(`Current language: "${currentLanguage}"`)  // -> Current language: "German"
+console.log(`Current language: "${currentLanguage}"`) // --> Current language: "German"
 
 // Close DBs
 settingsStore.close()
