@@ -22,7 +22,7 @@
     "url": "https://github.com/gerold-penz/bun-sqlite-key-value/issues"
   },
   "description": "A super fast key-value store with SQLite that uses bun:sqlite and v8 as faster JSON replacement.",
-  "homepage": "https://github.com/gerold-penz/bun-sqlite-key-value",
+  "homepage": "https://gerold-penz.github.io/bun-sqlite-key-value/",
   "keywords": [
     "Bun",
     "Bun.js",
