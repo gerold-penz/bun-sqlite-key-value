@@ -6,7 +6,6 @@
     "include": [
       "LICENSE",
       "README.md",
-      "SQLITE.md",
       "src/**/*.ts"
     ]
   }

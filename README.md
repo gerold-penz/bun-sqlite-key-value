@@ -5,7 +5,7 @@ and v8 as a fast JSON replacement.
 
 [Bun's](https://bun.sh/) lightning-fast 
 [SQLite implementation](https://bun.sh/docs/api/sqlite) makes Bun-SQLite-Key-Value 
-perfect for a fast storage and cache solution with TTL support.
+perfect for a fast and reliable storage and cache solution with TTL support.
 *You need [Bun](https://bun.sh/) to be able to use this package.*
 
 The ideas for the implementation come from 
@@ -53,7 +53,7 @@ The ideas for the implementation come from
   - [`incr()`](#increment)
   - [`decr()`](#decrement)
 - String
-  - ['append()'](#append)
+  - [`append()`](#append)
 - Hash (Map Object)
   - [`hSet()`](#hash-map-object---write-value-)
   - [`hGet()`](#hash-map-object---read-value-)
