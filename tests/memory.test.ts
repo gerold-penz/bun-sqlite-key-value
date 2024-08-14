@@ -638,19 +638,19 @@ test("hSet(), hGet()", async () => {
 })
 
 
-// test("hmSet(), hmGet()", async () => {
-//     const store = new BunSqliteKeyValue()
-//
-//     // // Set multiple fields
-//     // store.hmSet(KEY_1, {
-//     //     "test-field-3": "value-3",
-//     //     "test-field-4": "value-4",
-//     //     "test-field-5": "value-5"
-//     // })
-//     //
-//     // // ToDo: Get multiple fields
-//     //
-//     //
-//     // console.log(store.get(KEY_1))
-//
-// })
+test("hmSet(), hmGet()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    // Set multiple fields
+    store.hmSet(KEY_1, {
+        "field-1": "value-1",
+        "field-2": "value-2"
+    })
+
+    // Get multiple fields
+    expect(store.hmGet(KEY_2, ["field-1", "field-2"]))
+    const result = store.hmGet(KEY_1, ["field-1", "field-100"])
+    expect(result?.["field-1"]).toEqual("value-1")
+    expect(result?.["field-100"]).toBeUndefined()
+
+})

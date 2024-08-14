@@ -57,6 +57,8 @@ The ideas for the implementation come from
 - Hash (Map Object)
   - [`hSet()`](#hash-map-object---write-value-)
   - [`hGet()`](#hash-map-object---read-value-)
+  - [`hmSet()`](#hash-map-object---write-multiple-values-)
+  - [`hmGet()`](#hash-map-object---read-multiple-values-)
 - Extended database topics
   - [Multiple Databases](#multiple-databases)
   - [Database Transactions](#database-transactions)
@@ -887,6 +889,10 @@ Then the entry marked with `field` is added to the "Map Object" or overwritten.
 Finally, the modified "Map Object" is written back to the database.
 Inspired by: https://docs.keydb.dev/docs/commands/#hset
 
+Do not use it with several large amounts of data or blobs.
+This is because the entire data record with all fields is always read and written.
+It is better to use `setValues()` and `getValues()` for large amounts of data.
+
 ### key
 
 The key must be a string.
@@ -940,6 +946,10 @@ If the data record (marked with `key`) does not exist, `undefined` is returned.
 If the field (marked with `field`) does not exist in the "Map Object", `undefined` is returned.
 Inspired by: https://docs.keydb.dev/docs/commands/#hget
 
+Do not use it with several large amounts of data or blobs.
+This is because the entire data record with all fields is always read and written.
+It is better to use `setValues()` and `getValues()` for large amounts of data.
+
 ### key
 
 The key must be a string.
@@ -959,6 +969,78 @@ store.hSet("key-1", "field-name-1", "field-value-1")
 
 store.hGet("key-1", "field-name-1") // --> "field-value-1"
 store.hGet("key-1", "field-name-2") // --> undefined
+```
+
+
+## Hash (Map Object) - Write Multiple Values 
+```typescript
+hmSet(key: string, fields: {[field: string]: T}, ttlMs?: number)
+```
+
+Like `hSet()`, with the difference that several fields 
+are written to the database in one go.
+
+### key
+
+The key must be a string.
+
+### fields
+
+Object with field names (keys) and values.
+
+### ttlMs (optional)
+
+"Time to live" in milliseconds (for the database line, marked with `key`).
+After this time, the item becomes invalid and is deleted from the database 
+the next time it is accessed or when the application is started.
+Set the value to 0 if you want to explicitly deactivate the process.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.hmSet("my-key", {
+    "field-1": "value-1",
+    "field-2": "value-2",
+    "field-3": "value-3"
+})
+```
+
+
+## Hash (Map Object) - Read Multiple Values 
+```typescript
+hmGet(key: string, fields: fields: string[])
+```
+
+Like `hGet()`, with the difference that several fields are read in one go.
+
+### key
+
+The key must be a string.
+
+### fields
+
+Array with field names.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.hmSet("my-key", {
+    "field-1": "value-1",
+    "field-2": "value-2"
+})
+
+store.hmGet(KEY_1, ["field-1", "field-100"]) // --> {
+  "field-1": "value-1",
+  "field-100": undefined,
+}
 ```
 
 

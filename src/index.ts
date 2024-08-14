@@ -659,7 +659,7 @@ export class BunSqliteKeyValue {
     // Inspired by: https://docs.keydb.dev/docs/commands/#hget
     hGet<T = any>(key: string, field: string): T | undefined {
         const map = this.get<Map<string, T>>(key)
-        if (map === undefined) return undefined
+        if (map === undefined) return
         return map.get(field)
     }
 
@@ -678,10 +678,18 @@ export class BunSqliteKeyValue {
     }
 
 
-    // ToDo: hmGet()
     // Do not use it with several large amounts of data or blobs.
     // This is because the entire data record with all fields is always read and written.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hmget
+    hmGet<T = any>(key: string, fields: string[]): {[field: string]: T | undefined} | undefined {
+        const map = this.get<Map<string, T>>(key)
+        if (map === undefined) return
+        const result: {[field: string]: T | undefined} = {}
+        fields.forEach((field) => {
+            result[field] = map.get(field)
+        })
+        return result
+    }
 
 
     // ToDo: hExists()
