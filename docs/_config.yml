@@ -7,6 +7,5 @@ relative_links:
   enabled: true
   collections: true
 lsi: true
-source: "../"
 include:
-  - "README.md"
+  - "../README.md"
