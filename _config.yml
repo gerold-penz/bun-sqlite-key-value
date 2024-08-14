@@ -8,4 +8,4 @@ relative_links:
   collections: true
 lsi: true
 include:
-  - "../README.md"
+  - "README.md"
