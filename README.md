@@ -55,10 +55,10 @@ The ideas for the implementation come from
 - String
   - [`append()`](#append)
 - Hash (Map Object)
-  - [`hSet()`](#hash-map-object---write-value-)
-  - [`hGet()`](#hash-map-object---read-value-)
-  - [`hmSet()`](#hash-map-object---write-multiple-values-)
-  - [`hmGet()`](#hash-map-object---read-multiple-values-)
+  - [`hSet()`](#hash-map-object---write-value)
+  - [`hGet()`](#hash-map-object---read-value)
+  - [`hmSet()`](#hash-map-object---write-multiple-values)
+  - [`hmGet()`](#hash-map-object---read-multiple-values)
 - Extended database topics
   - [Multiple Databases](#multiple-databases)
   - [Database Transactions](#database-transactions)
@@ -876,7 +876,8 @@ store.get("my-key") // --> "Hello!World!"
 ```
 
 
-## Hash (Map Object) - Write Value 
+## Hash (Map Object) - Write Value
+
 ```typescript
 hSet(key: string, field: string, value: any, ttlMs?: number)
 ```
@@ -934,7 +935,8 @@ store.get("key-1") // --> Map(2) {
 ```
 
 
-## Hash (Map Object) - Read Value 
+## Hash (Map Object) - Read Value
+
 ```typescript
 hGet(key: string, field: string)
 ```
@@ -972,7 +974,8 @@ store.hGet("key-1", "field-name-2") // --> undefined
 ```
 
 
-## Hash (Map Object) - Write Multiple Values 
+## Hash (Map Object) - Write Multiple Values
+
 ```typescript
 hmSet(key: string, fields: {[field: string]: T}, ttlMs?: number)
 ```
@@ -1010,7 +1013,8 @@ store.hmSet("my-key", {
 ```
 
 
-## Hash (Map Object) - Read Multiple Values 
+## Hash (Map Object) - Read Multiple Values
+
 ```typescript
 hmGet(key: string, fields: fields: string[])
 ```
