@@ -17,25 +17,50 @@ The ideas for the implementation come from
 
 - [Installation](#installation)
 - [Usage](#usage)
-- [Open Database](#open-database)
-- [Write Value](#write-value)
+- Database Usage
+  - [Open Database](#open-database)
+  - [Close Database](#close-database)
+- Write and Read Values
   - [`set()`](#write-value)
-- [Read Value](#read-value)
   - [`get()`](#read-value)
-- [Read Random Value](#read-random-value)
+  - [`getValues()`](#read-multiple-values)
   - [`getRandomValue()`](#read-random-value)
-- [Write Multiple Items](#write-multiple-items)
+  - `getValuesSet()` --> Set with values
+- Write and Read Items
   - [`setItems()`](#write-multiple-items)
-- [Read Values](#read-values)
-  - [`getValues()`](#read-values)
-- [Read Items](#read-items)
-  - [`getItems()`](#read-items)
-- [Multiple Databases](#multiple-databases)
-- [Read and Write Binary Files (Images)](#read-and-write-binary-files-images)
-- [Cache Values with TTL](#cache-values-with-ttl)
-
-...
-
+  - [`getItem()`](#read-item)
+  - [`getItems()`](#read-multiple-items)
+  - [`getRandomItem()`](#read-random-item)
+  - `getItemsObject()` --> Object with items
+  - `getItemsMap()` --> Map with items
+  - [Read and Write Binary Files (Images)](#read-and-write-binary-files-images)
+- Keys
+  - [`has()`](#has-key)
+  - [`getKeys()`](#read-multiple-keys)
+  - [`getRandomKey()`](#random-key)
+  - [`rename()`](#rename-key)
+- Delete Items
+  - [`delete()`](#delete-items)
+  - [`deleteOldExpiringItems()`](#delete-old-expiring-items)
+- Count Items
+  - [`getCount()`](#count-all-items)
+  - [`getCountValid()`](#count-valid-items)
+- Expiration/TTL (Time To Live)
+  - [Cache Values with TTL](#cache-values-with-ttl)
+  - [`setTtl()`](#set-ttl)
+  - [`getTtl()`](#get-ttl)
+- Math
+  - [`incr()`](#increment)
+  - [`decr()`](#decrement)
+- String
+  - ['append()'](#append)
+- Hash (Map Object)
+  - [`hSet()`](#hash-map-object---write-value-)
+  - [`hGet()`](#hash-map-object---read-value-)
+- Extended database topics
+  - [Multiple Databases](#multiple-databases)
+  - [Database Transactions](#database-transactions)
+  - [SQLite as base for a key value storage](#sqlite-as-base-for-a-key-value-storage)
 
 
 ## Installation
@@ -105,6 +130,14 @@ const store2 = new BunSqliteKeyValue(":memory:", {ttlMs: 30000})
 // Store items in file system
 const store3 = new BunSqliteKeyValue("./store3.sqlite")
 ```
+
+
+## Close Database
+
+```typescript
+close()
+```
+Closes database and removes *.sqlite-shm* and *.sqlite-wal* files.
 
 
 ## Write Value
@@ -187,80 +220,6 @@ store.data["myKey"] // --> "my-value"
 ```
 
 
-## Read Random Value
-
-```typescript
-getRandomValue(): any // --> random value
-
-randomValue() // --> alias for getRandomValue()
-```
-
-Returns a random value or `undefined` if no valid item was found.
-Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
-
-
-## Read Item
-
-Reads the key and the value from the database.
-
-```typescript
-getItem(key: string): {key: string, value: any}
-```
-
-### key
-
-The key must be a string.
-
-### Example
-
-```typescript
-import { BunSqliteKeyValue } from "bun-sqlite-key-value"
-
-const store = new BunSqliteKeyValue()
-store.set("my-key", "my-value")
-
-const item = store.getItem("my-key")
-console.log(item)  // --> {key: "my-key", value: "my-value"}
-```
-
-
-## Read Random Item
-
-```typescript
-getRandomItem() // --> random item
-
-randomItem() // --> alias for getRandomItem()
-```
-
-Returns a random item or `undefined` if no valid item was found.
-Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
-
-
-## Write Multiple Items
-
-```typescript
-setItems(items: {key: string, value: T, ttlMs?: number}[]) {
-```
-
-Adds a large number of items to the database and takes only
-a small fraction of the time that `set()` would take individually.
-
-
-### Example
-
-```typescript
-import { BunSqliteKeyValue } from "bun-sqlite-key-value"
-
-const store = new BunSqliteKeyValue()
-
-// Add many records
-store.setItems([
-    {key: "a:1", value: "test-value-1"},
-    {key: "a:2", value: "test-value-2"},
-])
-```
-
-
 ## Read Multiple Values
 
 ```typescript
@@ -301,6 +260,68 @@ store.getValues() // --> [ "German", "English", "Italian" ]
 store.getValues("language:") // --> [ "German", "English", "Italian" ]
 
 store.values // --> [ "German", "English", "Italian" ]
+```
+
+
+## Read Random Value
+
+```typescript
+getRandomValue(): any // --> random value
+
+randomValue() // --> alias for getRandomValue()
+```
+
+Returns a random value or `undefined` if no valid item was found.
+Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
+
+
+## Write Multiple Items
+
+```typescript
+setItems(items: {key: string, value: T, ttlMs?: number}[]) {
+```
+
+Adds a large number of items to the database and takes only
+a small fraction of the time that `set()` would take individually.
+
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+// Add many records
+store.setItems([
+    {key: "a:1", value: "test-value-1"},
+    {key: "a:2", value: "test-value-2"},
+])
+```
+
+
+## Read Item
+
+Reads the key and the value from the database.
+
+```typescript
+getItem(key: string): {key: string, value: any}
+```
+
+### key
+
+The key must be a string.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+store.set("my-key", "my-value")
+
+const item = store.getItem("my-key")
+console.log(item)  // --> {key: "my-key", value: "my-value"}
 ```
 
 
@@ -355,54 +376,16 @@ store.items // --> [
 ```
 
 
-## Multiple Databases
-
-It is no problem at all to use several databases and access them at the same time.
-
-### Example
+## Read Random Item
 
 ```typescript
-import { BunSqliteKeyValue } from "bun-sqlite-key-value"
-import { join } from "node:path"
+getRandomItem() // --> random item
 
-const dbDir = join(__dirname, "databases")
-const settingsPath = join(dbDir, "settings.sqlite")
-const languagesPath = join(dbDir, "languages.sqlite")
-
-const settingsStore = new BunSqliteKeyValue(settingsPath)
-const languagesStore = new BunSqliteKeyValue(languagesPath)
-
-// Write settings
-settingsStore.set("language", "de")
-settingsStore.set("page-size", "A4")
-settingsStore.set("screen-position", {top: 100, left: 100})
-
-// Write languages
-languagesStore.set("de", "German")
-languagesStore.set("en", "English")
-languagesStore.set("it", "Italian")
-
-// Read all settings
-const settingItems = settingsStore.getItems()
-console.log(settingItems) // -> [
-//   {key: "language", value: "de"},
-//   {key: "page-size", value: "A4"},
-//   {key: "screen-position", value: {top: 100, left: 100}},
-// ]
-
-// Read all languages
-const languageValues = languagesStore.getValues()
-console.log(languageValues)  // -> [ "German", "English", "Italian" ]
-
-// Read current language
-const languageKey = settingsStore.get("language")
-const currentLanguage = languagesStore.get(languageKey)
-console.log(`Current language: "${currentLanguage}"`)  // -> Current language: "German"
-
-// Close DBs
-settingsStore.close()
-languagesStore.close()
+randomItem() // --> alias for getRandomItem()
 ```
+
+Returns a random item or `undefined` if no valid item was found.
+Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
 
 
 ## Read and Write Binary Files (Images)
@@ -451,30 +434,6 @@ const targetBuffer = store.get("my-image")
 writeFileSync("<Target File Path>", targetBuffer)
 ```
 
-## Cache Values with TTL
-
-You can specify a caching period when you open the database. 
-This period in milliseconds is then added with each write. 
-If you read the value within this period, the value is returned. 
-If the value is read after this period, `undefined` is returned.
-
-### Example
-
-```typescript
-import { BunSqliteKeyValue } from "bun-sqlite-key-value"
-
-const store = new BunSqliteKeyValue(":memory:", {ttlMs: 1000})
-
-const KEY = "cache-key"
-store.set(KEY, 12345)
-
-await Bun.sleep(500)
-console.log(store.get(KEY)) // --> 12345
-
-await Bun.sleep(1000)
-console.log(store.get(KEY)) // --> undefined
-```
-
 
 ## Has (key)
 
@@ -500,7 +459,7 @@ console.log("my-key" in store.data) // --> false
 ```
 
 
-## Read Keys
+## Read Multiple Keys
 
 ```typescript
 getKeys(startsWithOrKeys?: string | string[]): string[]
@@ -699,164 +658,33 @@ await Bun.sleep(500)
 store.getCountValid() // --> 1
 ```
 
-## Increment
 
-```typescript
-incr(key: string, incrBy: number = 1, ttlMs?: number): number
-```
+## Cache Values with TTL
 
-Increments the saved number by `incrBy` (default = 1), 
-saves the new number and returns it.
-If the key does not yet exist in the database, 
-the value is set to 0 before being incremented by `incrBy`.
-If a string is stored in the database that can be converted into a number, 
-this is converted first.
-If the stored value cannot be converted into a number, `NaN` is returned.
-
-
-### key
-
-The key must be a string.
-
-### incrBy
-
-The stored number is increased by this value.
-
-### ttlMs (optional)
-
-"Time to live" in milliseconds. After this time, 
-the item becomes invalid and is deleted from the database 
-the next time it is accessed or when the application is started.
-Set the value to 0 if you want to explicitly deactivate the process.
+You can specify a caching period when you open the database. 
+This period in milliseconds is then added with each write. 
+If you read the value within this period, the value is returned. 
+If the value is read after this period, `undefined` is returned.
 
 ### Example
 
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
-const store = new BunSqliteKeyValue()
+const store = new BunSqliteKeyValue(":memory:", {ttlMs: 1000})
 
-store.incr("my-key") // --> 1
-store.incr("my-key") // --> 2
+const KEY = "cache-key"
+store.set(KEY, 12345)
+
+await Bun.sleep(500)
+console.log(store.get(KEY)) // --> 12345
+
+await Bun.sleep(1000)
+console.log(store.get(KEY)) // --> undefined
 ```
 
 
-## Decrement
-
-```typescript
-decr(key: string, decrBy: number = 1, ttlMs?: number): number
-```
-
-Decrements the saved number by `decrBy` (default = 1), 
-saves the new number and returns it.
-If the key does not yet exist in the database, 
-the value is set to 0 before being decremented by `decrBy`.
-If a string is stored in the database that can be converted into a number, 
-this is converted first.
-If the stored value cannot be converted into a number, `NaN` is returned.
-
-
-### key
-
-The key must be a string.
-
-### incrBy
-
-The stored number is decreased by this value.
-
-### ttlMs (optional)
-
-"Time to live" in milliseconds. After this time, 
-the item becomes invalid and is deleted from the database 
-the next time it is accessed or when the application is started.
-Set the value to 0 if you want to explicitly deactivate the process.
-
-### Example
-
-```typescript
-import { BunSqliteKeyValue } from "bun-sqlite-key-value"
-
-const store = new BunSqliteKeyValue()
-
-store.set("my-key", 10)
-store.decr("my-key") // --> 9
-store.decr("my-key") // --> 8
-```
-
-## Append
-
-```typescript
-append(key: string, value: string, ttlMs?: number): number
-```
-
-If key already exists, this command appends the value at the end of the string.
-If key does not exist it is created and set as an empty string,
-so `append()` will be similar to `set()` in this special case.
-Inspired by: https://docs.keydb.dev/docs/commands/#append
-
-Returns the length of the string after the append operation.
-
-### key
-
-The key must be a string.
-
-### value
-
-The string that is appended to the existing string.
-
-### ttlMs (optional)
-
-"Time to live" in milliseconds. After this time, 
-the item becomes invalid and is deleted from the database 
-the next time it is accessed or when the application is started.
-Set the value to 0 if you want to explicitly deactivate the process.
-
-### Example
-
-```typescript
-import { BunSqliteKeyValue } from "bun-sqlite-key-value"
-
-const store = new BunSqliteKeyValue()
-
-store.append("my-key", "Hello!") // --> 6
-store.append("my-key", "World!") // --> 12 
-store.get("my-key") // --> "Hello!World!"
-```
-
-
-## Database Transactions
-
-Transactions can be used to combine several database statements. 
-These combined database statements are processed much faster than 
-if they were executed individually.
-The more database statements are combined, the greater the speed advantage.
-You can find more infos in the 
-[Bun documentation](https://bun.sh/docs/api/sqlite#transactions).
-
-### Example
-
-```typescript
-import { BunSqliteKeyValue } from "bun-sqlite-key-value"
-
-const store = new BunSqliteKeyValue()
-
-store.db.transaction(() => {
-    store.set("key1", "100")
-    store.set("key2", "200")
-    store.set("key3", "300")
-})()
-
-store.db.transaction(() => {
-    const value1 = store.get("key1")
-    const value2 = store.get("key2")
-    const value3 = store.get("key3")
-    const total = value1 + value2 + value3
-    store.set("total1", total)
-})()
-```
-
-
-## Set TTL (renew)
+## Set TTL
 
 ```typescript
 setTtl(key: string, ttlMs?: number): boolean
@@ -922,6 +750,130 @@ store.getTtl("my-key") // --> 19999
 ```
 
 
+## Increment
+
+```typescript
+incr(key: string, incrBy: number = 1, ttlMs?: number): number
+```
+
+Increments the saved number by `incrBy` (default = 1), 
+saves the new number and returns it.
+If the key does not yet exist in the database, 
+the value is set to 0 before being incremented by `incrBy`.
+If a string is stored in the database that can be converted into a number, 
+this is converted first.
+If the stored value cannot be converted into a number, `NaN` is returned.
+
+### key
+
+The key must be a string.
+
+### incrBy
+
+The stored number is increased by this value.
+
+### ttlMs (optional)
+
+"Time to live" in milliseconds. After this time, 
+the item becomes invalid and is deleted from the database 
+the next time it is accessed or when the application is started.
+Set the value to 0 if you want to explicitly deactivate the process.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.incr("my-key") // --> 1
+store.incr("my-key") // --> 2
+```
+
+
+## Decrement
+
+```typescript
+decr(key: string, decrBy: number = 1, ttlMs?: number): number
+```
+
+Decrements the saved number by `decrBy` (default = 1), 
+saves the new number and returns it.
+If the key does not yet exist in the database, 
+the value is set to 0 before being decremented by `decrBy`.
+If a string is stored in the database that can be converted into a number, 
+this is converted first.
+If the stored value cannot be converted into a number, `NaN` is returned.
+
+### key
+
+The key must be a string.
+
+### incrBy
+
+The stored number is decreased by this value.
+
+### ttlMs (optional)
+
+"Time to live" in milliseconds. After this time, 
+the item becomes invalid and is deleted from the database 
+the next time it is accessed or when the application is started.
+Set the value to 0 if you want to explicitly deactivate the process.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.set("my-key", 10)
+store.decr("my-key") // --> 9
+store.decr("my-key") // --> 8
+```
+
+
+## Append
+
+```typescript
+append(key: string, value: string, ttlMs?: number): number
+```
+
+If key already exists, this command appends the value at the end of the string.
+If key does not exist it is created and set as an empty string,
+so `append()` will be similar to `set()` in this special case.
+Inspired by: https://docs.keydb.dev/docs/commands/#append
+
+Returns the length of the string after the append operation.
+
+### key
+
+The key must be a string.
+
+### value
+
+The string that is appended to the existing string.
+
+### ttlMs (optional)
+
+"Time to live" in milliseconds. After this time, 
+the item becomes invalid and is deleted from the database 
+the next time it is accessed or when the application is started.
+Set the value to 0 if you want to explicitly deactivate the process.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.append("my-key", "Hello!") // --> 6
+store.append("my-key", "World!") // --> 12 
+store.get("my-key") // --> "Hello!World!"
+```
+
+
 ## Hash (Map Object) - Write Value 
 ```typescript
 hSet(key: string, field: string, value: any, ttlMs?: number)
@@ -934,7 +886,6 @@ If the data record does not yet exist, a new "Map Object" is created.
 Then the entry marked with `field` is added to the "Map Object" or overwritten. 
 Finally, the modified "Map Object" is written back to the database.
 Inspired by: https://docs.keydb.dev/docs/commands/#hset
-
 
 ### key
 
@@ -989,7 +940,6 @@ If the data record (marked with `key`) does not exist, `undefined` is returned.
 If the field (marked with `field`) does not exist in the "Map Object", `undefined` is returned.
 Inspired by: https://docs.keydb.dev/docs/commands/#hget
 
-
 ### key
 
 The key must be a string.
@@ -1012,97 +962,86 @@ store.hGet("key-1", "field-name-2") // --> undefined
 ```
 
 
-## All Functions
+## Multiple Databases
 
-### Database
-- `new BunSqliteKeyValue()` --> Open database
-- `close()` --> Close database
+It is no problem at all to use several databases and access them at the same time.
 
-### Set value
-- `set(key: string, value: any)`
-- `setValue(key: string, value: any)` --> alias for set()
-- `<store>.data.<key> = <value>`
+### Example
 
-### Set items
-- `setItems({key: string, value: any}[])`
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+import { join } from "node:path"
 
-### Get value
-- `get(key: string): any`
-- `getValue(key: string)` --> alias for get()
-- `<store>.data.<key>`
-- `getSet(key: string, value: any): any`
-- `getRandomValue(): any`
-- `randomValue(): any` --> alias for getRandomValue()
+const dbDir = join(__dirname, "databases")
+const settingsPath = join(dbDir, "settings.sqlite")
+const languagesPath = join(dbDir, "languages.sqlite")
 
-### Get item
-- `getItem(key: string)` --> Object
-- `getRandomItem()` --> Object
-- `randomItem()` --> Alias for getRandomItem()
+const settingsStore = new BunSqliteKeyValue(settingsPath)
+const languagesStore = new BunSqliteKeyValue(languagesPath)
 
-### Get items as Array
-- `getItems()` --> Array with all items
-- `getItems(startsWith: string)` --> Array
-- `getItems(keys: string[])` --> Array
-- `getItemsArray()` --> alias for getItems()
-- `getItemsArray(startsWith: string)` --> alias for getItems()
-- `getItemsArray(keys: string[])` --> alias for getItems()
-- `items` --> alias for getItems()
+// Write settings
+settingsStore.set("language", "de")
+settingsStore.set("page-size", "A4")
+settingsStore.set("screen-position", {top: 100, left: 100})
 
-### Get items as Object
-- `getItemsObject()` --> Object with all items
-- `getItemsObject(startsWith: string)` --> Object
-- `getItemsObject(keys: string[])` --> Object
+// Write languages
+languagesStore.set("de", "German")
+languagesStore.set("en", "English")
+languagesStore.set("it", "Italian")
 
-### Get items as Map()
-- `getItemsMap()` --> Map with all items
-- `getItemsMap(startsWith: string)` --> Map
-- `getItemsMap(keys: string[])` --> Map
+// Read all settings
+const settingItems = settingsStore.getItems()
+console.log(settingItems) // -> [
+//   {key: "language", value: "de"},
+//   {key: "page-size", value: "A4"},
+//   {key: "screen-position", value: {top: 100, left: 100}},
+// ]
 
-### Get values as Array
-- `getValues()` --> Array with all values
-- `getValues(startsWith: string)` --> Array
-- `getValues(keys: string[])` --> Array
-- `getValuesArray()` --> alias for getValues()
-- `getValuesArray(startsWith: string)` --> alias for getValues()
-- `getValuesArray(keys: string[])` --> alias for getValues()
-- `values` --> alias for getValues()
+// Read all languages
+const languageValues = languagesStore.getValues()
+console.log(languageValues)  // -> [ "German", "English", "Italian" ]
 
-### Get values as Set()
-- `getValuesSet()` --> Set with all values
-- `getValuesSet(startsWith: string)` --> Set
-- `getValuesSet(keys: string[])` --> Set
+// Read current language
+const languageKey = settingsStore.get("language")
+const currentLanguage = languagesStore.get(languageKey)
+console.log(`Current language: "${currentLanguage}"`)  // -> Current language: "German"
 
-### Delete
-- `delete()` --> Delete all items
-- `delete(key: string)` --> Delete item
-- `delete(keys: string[])` --> Delete items
-- `clear()` --> alias for delete()
-- `deleteOldExpiringItems(maxExpiringItemsInDb: number)` --> Delete items
-- `delete <store>.data.<key>`
+// Close DBs
+settingsStore.close()
+languagesStore.close()
+```
 
-### Count
-- `getCount()` --> Number
-- `count()` 
-- `length` --> alias for getCount()
-- `getCountValid(deleteExpired?: boolean)` --> Number
 
-### Keys
-- `has(key: string): boolean`
-- `getKeys()` --> Array with all Keys
-- `getKeys(startsWith: string): string[]`
-- `getKeys(keys: string[]): string[]`
-- `keys` --> alias for getKeys()
-- `<key> in <store>.data`
-- `getRandomKey()`
-- `randomKey()`  --> alias for getRandomKey()
-- `rename(oldKey: string, newKey: string): boolean`
+## Database Transactions
 
-### Math operations
-- `incr()` --> Number
-- `decr()` --> Number
+Transactions can be used to combine several database statements. 
+These combined database statements are processed much faster than 
+if they were executed individually.
+The more database statements are combined, the greater the speed advantage.
+You can find more infos in the 
+[Bun documentation](https://bun.sh/docs/api/sqlite#transactions).
 
-### String operations
-- `append()` --> Number
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.db.transaction(() => {
+    store.set("key1", "100")
+    store.set("key2", "200")
+    store.set("key3", "300")
+})()
+
+store.db.transaction(() => {
+    const value1 = store.get("key1")
+    const value2 = store.get("key2")
+    const value3 = store.get("key3")
+    const total = value1 + value2 + value3
+    store.set("total1", total)
+})()
+```
 
 
 ## SQLite as base for a key value storage
