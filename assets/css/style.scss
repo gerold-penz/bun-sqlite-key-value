@@ -3,6 +3,6 @@
 
 @import "{{ site.theme }}";
 
-body {
-  font-size: 200%;
+:root {
+  font-size: 18px;
 }
