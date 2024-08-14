@@ -7,5 +7,3 @@ relative_links:
   enabled: true
   collections: true
 lsi: true
-include:
-  - "README.md"
