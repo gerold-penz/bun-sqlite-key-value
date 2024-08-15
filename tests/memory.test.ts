@@ -648,19 +648,58 @@ test("hmSet(), hmGet()", async () => {
     })
 
     // Get multiple fields
-    expect(store.hmGet(KEY_2, ["field-1", "field-2"]))
+    expect(store.hmGet(KEY_2, ["field-1"])).toBeUndefined()
     const result = store.hmGet(KEY_1, ["field-1", "field-100"])
     expect(result?.["field-1"]).toEqual("value-1")
     expect(result?.["field-100"]).toBeUndefined()
+
+    // Get all fields
+    expect(Object.keys(store.hmGet(KEY_1)!).length).toEqual(2)
 })
 
 
 test("hHasField()", async () => {
     const store = new BunSqliteKeyValue()
 
-    // Set multiple fields
     store.hSet(KEY_1, "field-1", "value-1")
 
     expect(store.hHasField(KEY_1, "field-1")).toBeTrue()
     expect(store.hExists(KEY_2, "field-1")).toBeUndefined()
+})
+
+
+test("hGetCount()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    expect(store.hGetCount(KEY_1)).toBeUndefined()
+
+    store.set(KEY_1, "value-1")
+    expect(store.hGetCount(KEY_1)).toBeUndefined()
+
+    store.hSet(KEY_2, "field-1", "value-1")
+    expect(store.hLen(KEY_2)).toEqual(1)
+})
+
+
+test("hGetFields()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    store.hmSet(KEY_1, {
+        "field-1": "value-1",
+        "field-2": "value-2"
+    })
+    expect(store.hGetFields(KEY_1)).toEqual(["field-1", "field-2"])
+    expect(store.hKeys(KEY_1)).toBeArrayOfSize(2)
+})
+
+
+test("hGetValues()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    store.hmSet(KEY_1, {
+        "field-1": "value-1",
+        "field-2": "value-2"
+    })
+    expect(store.hGetValues(KEY_1)).toEqual(["value-1", "value-2"])
+    expect(store.hVals(KEY_1)).toBeArrayOfSize(2)
 })

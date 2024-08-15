@@ -639,7 +639,7 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Do not use it with several large amounts of data or blobs.
+    // Do not use it with several very large amounts of data or blobs.
     // This is because the entire data record with all fields is always read and written.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hset
     hSet<T = any>(key: string, field: string, value: T, ttlMs?: number): boolean {
@@ -654,7 +654,7 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Do not use it with several large amounts of data or blobs.
+    // Do not use it with several very large amounts of data or blobs.
     // This is because the entire data record with all fields is always read and written.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hget
     hGet<T = any>(key: string, field: string): T | undefined {
@@ -664,7 +664,7 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Do not use it with several large amounts of data or blobs.
+    // Do not use it with several very large amounts of data or blobs.
     // This is because the entire data record with all fields is always read and written.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hmset
     hmSet<T = any>(key: string, fields: {[field: string]: T}, ttlMs?: number) {
@@ -678,22 +678,26 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Do not use it with several large amounts of data or blobs.
+    // Do not use it with several very large amounts of data or blobs.
     // This is because the entire data record with all fields is always read and written.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hmget
-    hmGet<T = any>(key: string, fields: string[]): {[field: string]: T | undefined} | undefined {
+    hmGet<T = any>(key: string, fields?: string[]): {[field: string]: T | undefined} | undefined {
         const map = this.get<Map<string, T>>(key)
         if (map === undefined) return
         const result: {[field: string]: T | undefined} = {}
-        fields.forEach((field) => {
-            result[field] = map.get(field)
-        })
+        if (fields) {
+            fields.forEach((field) => {
+                result[field] = map.get(field)
+            })
+        } else {
+            Object.assign(result, Object.fromEntries(map.entries()))
+        }
         return result
     }
 
 
     // Returns if `field` is an existing field in the hash stored at `key`.
-    // Do not use it with several large amounts of data or blobs.
+    // Do not use it with several very large amounts of data or blobs.
     // This is because the entire data record with all fields is always read.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hexists
     hHasField(key: string, field: string): boolean | undefined {
@@ -707,22 +711,42 @@ export class BunSqliteKeyValue {
     hExists = this.hHasField
 
 
-    // ToDo: hLen()
     // Inspired by: https://docs.keydb.dev/docs/commands/#hlen
+    hGetCount(key: string): number | undefined {
+        const map = this.get<Map<string, any>>(key)
+        if (map === undefined) return
+        return map.size
+    }
 
 
-    // ToDo: hKeys()
+    // Alias for hGetCount()
+    hLen = this.hGetCount
+
+
     // Inspired by: https://docs.keydb.dev/docs/commands/#hkeys
+    hGetFields(key: string): string[] | undefined {
+        const map = this.get<Map<string, any>>(key)
+        if (map === undefined) return
+        return [...map.keys()]
+    }
 
 
-    // ToDo: hStrLen()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hstrlen
+    // Alias for hGetFields()
+    hKeys = this.hGetFields
 
 
-    // ToDo: hVals()
-    // Do not use it with several large amounts of data or blobs.
+    // Do not use it with several very large amounts of data or blobs.
     // This is because the entire data record with all fields is always read and written.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hvals
+    hGetValues<T = any>(key: string): T[] | undefined {
+        const map = this.get<Map<string, T>>(key)
+        if (map === undefined) return
+        return [...map.values()]
+    }
+
+
+    // Alias for hGetValues()
+    hVals = this.hGetValues
 
 
     // ToDo: hDel()

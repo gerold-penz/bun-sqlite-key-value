@@ -60,7 +60,10 @@ The ideas for the implementation come from
   - [`hGet()`](#hash-map-object---read-value)
   - [`hmSet()`](#hash-map-object---write-multiple-values)
   - [`hmGet()`](#hash-map-object---read-multiple-values)
-  - [`hExists()`](#hash-map-object---xxx)
+  - [`hHasField()`](#hash-map-object---has-field)
+  - [`hGetCount()`](#hash-map-object---count-fields)
+  - [`hGetFields()`](#hash-map-object---get-all-field-names)
+  - [`hGetValues()`](#hash-map-object---get-all-values)
 - Extended database topics
   - [Multiple Databases](#multiple-databases)
   - [Database Transactions](#database-transactions)
@@ -932,9 +935,10 @@ is read from the database.
 If the data record does not yet exist, a new "Map Object" is created.
 Then the entry marked with `field` is added to the "Map Object" or overwritten. 
 Finally, the modified "Map Object" is written back to the database.
+
 Inspired by: https://docs.keydb.dev/docs/commands/#hset
 
-Do not use it with several large amounts of data or blobs.
+Do not use the hash functions with several very large amounts of data or blobs.
 This is because the entire data record with all fields is always read and written.
 It is better to use `setValues()` and `getValues()` for large amounts of data.
 
@@ -990,11 +994,12 @@ First the
 is read from the database.
 If the data record (marked with `key`) does not exist, `undefined` is returned.
 If the field (marked with `field`) does not exist in the "Map Object", `undefined` is returned.
-Inspired by: https://docs.keydb.dev/docs/commands/#hget
 
-Do not use it with several large amounts of data or blobs.
+Do not use the hash functions with several very large amounts of data or blobs.
 This is because the entire data record with all fields is always read and written.
 It is better to use `setValues()` and `getValues()` for large amounts of data.
+
+Inspired by: https://docs.keydb.dev/docs/commands/#hget
 
 ### key
 
@@ -1026,6 +1031,12 @@ hmSet(key: string, fields: {[field: string]: T}, ttlMs?: number)
 
 Like `hSet()`, with the difference that several fields 
 are written to the database in one go.
+
+Do not use the hash functions with several very large amounts of data or blobs.
+This is because the entire data record with all fields is always read and written.
+It is better to use `setValues()` and `getValues()` for large amounts of data.
+
+Inspired by: https://docs.keydb.dev/docs/commands/#hmset
 
 ### key
 
@@ -1060,10 +1071,16 @@ store.hmSet("my-key", {
 ## Hash (Map Object) - Read Multiple Values
 
 ```typescript
-hmGet(key: string, fields: fields: string[])
+hmGet(key: string, fields: fields?: string[])
 ```
 
 Like `hGet()`, with the difference that several fields are read in one go.
+
+Do not use the hash functions with several very large amounts of data or blobs.
+This is because the entire data record with all fields is always read and written.
+It is better to use `setValues()` and `getValues()` for large amounts of data.
+
+Inspired by: https://docs.keydb.dev/docs/commands/#hmget
 
 ### key
 
@@ -1072,6 +1089,7 @@ The key must be a string.
 ### fields
 
 Array with field names.
+If the parameter is not specified, all fields are returned.
 
 ### Example
 
@@ -1099,8 +1117,11 @@ hHasField(key: string, field: string)
 ```
 
 Returns if `field` is an existing field in the hash stored at `key`.
-Do not use it with several large amounts of data or blobs.
-This is because the entire data record with all fields is always read.
+
+Do not use the hash functions with several very large amounts of data or blobs.
+This is because the entire data record with all fields is always read and written.
+It is better to use `setValues()` and `getValues()` for large amounts of data.
+
 Inspired by: https://docs.keydb.dev/docs/commands/#hexists
 
 ### key
@@ -1122,6 +1143,105 @@ store.hSet("key-1", "field-1", "value-1")
 
 store.hHasField("key-1", "field-1") // --> true
 store.hHasField("key-1", "field-1") // --> undefined
+```
+
+
+## Hash (Map Object) - Count Fields
+
+```typescript
+hGetCount(key: string)
+```
+
+Returns the number of fields contained in the hash stored at `key`.
+
+Do not use the hash functions with several very large amounts of data or blobs.
+This is because the entire data record with all fields is always read and written.
+It is better to use `setValues()` and `getValues()` for large amounts of data.
+
+Inspired by: https://docs.keydb.dev/docs/commands/#hlen
+
+### key
+
+The key must be a string.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.hGetCount("key-1") // --> undefined
+store.hSet("key-1", "field-1", "value-1")
+store.hGetCount("key-1") // --> 1
+```
+
+
+## Hash (Map Object) - Get All Field Names
+
+```typescript
+hGetFields(key: string)
+```
+
+Returns the field names contained in the hash stored at `key`.
+Use `hmGet()` to read field names and values.
+
+Do not use the hash functions with several very large amounts of data or blobs.
+This is because the entire data record with all fields is always read and written.
+It is better to use `setValues()` and `getValues()` for large amounts of data.
+
+Inspired by: https://docs.keydb.dev/docs/commands/#hkeys
+
+### key
+
+The key must be a string.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.hmSet("key-1", {
+    "field-1": "value-1",
+    "field-2": "value-2"
+})
+store.hGetFields("key-1") // --> ["field-1", "field-2"]
+```
+
+
+## Hash (Map Object) - Get All Values
+
+```typescript
+hGetValues(key: string)
+```
+
+Returns the values contained in the hash stored at `key`.
+Use `hmGet()` to read field names and values.
+
+Do not use the hash functions with several very large amounts of data or blobs.
+This is because the entire data record with all fields is always read and written.
+It is better to use `setValues()` and `getValues()` for large amounts of data.
+
+Inspired by: https://docs.keydb.dev/docs/commands/#hvals
+
+### key
+
+The key must be a string.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.hmSet("key-1", {
+    "field-1": "value-1",
+    "field-2": "value-2"
+})
+store.hGetValues("key-1") // --> ["value-1", "value-2"]
 ```
 
 
