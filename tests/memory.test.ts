@@ -514,7 +514,7 @@ test("Append", async () => {
 test("getSet()", async () => {
     const store = new BunSqliteKeyValue()
 
-    store.append(KEY_1, STRING_VALUE_1)
+    store.set(KEY_1, STRING_VALUE_1)
     expect(store.getSet(KEY_1, STRING_VALUE_2)).toEqual(STRING_VALUE_1)
     expect(store.get<string>(KEY_1)).toEqual(STRING_VALUE_2)
 })
@@ -652,5 +652,4 @@ test("hmSet(), hmGet()", async () => {
     const result = store.hmGet(KEY_1, ["field-1", "field-100"])
     expect(result?.["field-1"]).toEqual("value-1")
     expect(result?.["field-100"]).toBeUndefined()
-
 })
