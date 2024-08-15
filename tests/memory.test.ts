@@ -644,7 +644,8 @@ test("hmSet(), hmGet()", async () => {
     // Set multiple fields
     store.hmSet(KEY_1, {
         "field-1": "value-1",
-        "field-2": "value-2"
+        "field-2": "value-2",
+        "field-3": "value-3"
     })
 
     // Get multiple fields
@@ -654,17 +655,17 @@ test("hmSet(), hmGet()", async () => {
     expect(result?.["field-100"]).toBeUndefined()
 
     // Get all fields
-    expect(Object.keys(store.hmGet(KEY_1)!).length).toEqual(2)
+    expect(Object.keys(store.hmGet(KEY_1)!).length).toEqual(3)
 })
 
 
 test("hHasField()", async () => {
     const store = new BunSqliteKeyValue()
 
-    store.hSet(KEY_1, "field-1", "value-1")
+    store.hSet(KEY_1, FIELD_1, STRING_VALUE_1)
 
-    expect(store.hHasField(KEY_1, "field-1")).toBeTrue()
-    expect(store.hExists(KEY_2, "field-1")).toBeUndefined()
+    expect(store.hHasField(KEY_1, FIELD_1)).toBeTrue()
+    expect(store.hExists(KEY_2, FIELD_1)).toBeUndefined()
 })
 
 
@@ -673,10 +674,10 @@ test("hGetCount()", async () => {
 
     expect(store.hGetCount(KEY_1)).toBeUndefined()
 
-    store.set(KEY_1, "value-1")
+    store.set(KEY_1, STRING_VALUE_1)
     expect(store.hGetCount(KEY_1)).toBeUndefined()
 
-    store.hSet(KEY_2, "field-1", "value-1")
+    store.hSet(KEY_2, FIELD_1, STRING_VALUE_1)
     expect(store.hLen(KEY_2)).toEqual(1)
 })
 
@@ -684,11 +685,9 @@ test("hGetCount()", async () => {
 test("hGetFields()", async () => {
     const store = new BunSqliteKeyValue()
 
-    store.hmSet(KEY_1, {
-        "field-1": "value-1",
-        "field-2": "value-2"
-    })
-    expect(store.hGetFields(KEY_1)).toEqual(["field-1", "field-2"])
+    store.hSet(KEY_1, FIELD_1, STRING_VALUE_1)
+    store.hSet(KEY_1, FIELD_2, STRING_VALUE_2)
+    expect(store.hGetFields(KEY_1)).toEqual([FIELD_1, FIELD_2])
     expect(store.hKeys(KEY_1)).toBeArrayOfSize(2)
 })
 
@@ -696,10 +695,8 @@ test("hGetFields()", async () => {
 test("hGetValues()", async () => {
     const store = new BunSqliteKeyValue()
 
-    store.hmSet(KEY_1, {
-        "field-1": "value-1",
-        "field-2": "value-2"
-    })
-    expect(store.hGetValues(KEY_1)).toEqual(["value-1", "value-2"])
+    store.hSet(KEY_1, FIELD_1, STRING_VALUE_1)
+    store.hSet(KEY_1, FIELD_2, STRING_VALUE_2)
+    expect(store.hGetValues(KEY_1)).toEqual([STRING_VALUE_1, STRING_VALUE_2])
     expect(store.hVals(KEY_1)).toBeArrayOfSize(2)
 })
