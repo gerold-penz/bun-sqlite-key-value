@@ -60,6 +60,7 @@ The ideas for the implementation come from
   - [`hGet()`](#hash-map-object---read-value)
   - [`hmSet()`](#hash-map-object---write-multiple-values)
   - [`hmGet()`](#hash-map-object---read-multiple-values)
+  - [`hExists()`](#hash-map-object---xxx)
 - Extended database topics
   - [Multiple Databases](#multiple-databases)
   - [Database Transactions](#database-transactions)
@@ -968,12 +969,12 @@ import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
 const store = new BunSqliteKeyValue()
 
-store.hSet("key-1", "field-name-1", "field-value-1")
-store.hSet("key-1", "field-name-2", "field-value-2")
+store.hSet("key-1", "field-1", "value-1")
+store.hSet("key-1", "field-2", "value-2")
 
 store.get("key-1") // --> Map(2) {
-  "field-name-1": "field-value-1",
-  "field-name-2": "field-value-2",
+  "name-1": "value-1",
+  "name-2": "value-2",
 }
 ```
 
@@ -1010,10 +1011,10 @@ import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
 const store = new BunSqliteKeyValue()
 
-store.hSet("key-1", "field-name-1", "field-value-1")
+store.hSet("key-1", "field-1", "value-1")
 
-store.hGet("key-1", "field-name-1") // --> "field-value-1"
-store.hGet("key-1", "field-name-2") // --> undefined
+store.hGet("key-1", "field-1") // --> "value-1"
+store.hGet("key-1", "field-2") // --> undefined
 ```
 
 
@@ -1088,6 +1089,39 @@ store.hmGet(KEY_1, ["field-1", "field-100"]) // --> {
 //   "field-1": "value-1",
 //   "field-100": undefined,
 // }
+```
+
+
+## Hash (Map Object) - Has Field
+
+```typescript
+hHasField(key: string, field: string)
+```
+
+Returns if `field` is an existing field in the hash stored at `key`.
+Do not use it with several large amounts of data or blobs.
+This is because the entire data record with all fields is always read.
+Inspired by: https://docs.keydb.dev/docs/commands/#hexists
+
+### key
+
+The key must be a string.
+
+### field
+
+The field name must be a string.
+
+### Example
+
+```typescript
+import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+
+const store = new BunSqliteKeyValue()
+
+store.hSet("key-1", "field-1", "value-1")
+
+store.hHasField("key-1", "field-1") // --> true
+store.hHasField("key-1", "field-1") // --> undefined
 ```
 
 

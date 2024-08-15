@@ -653,3 +653,14 @@ test("hmSet(), hmGet()", async () => {
     expect(result?.["field-1"]).toEqual("value-1")
     expect(result?.["field-100"]).toBeUndefined()
 })
+
+
+test("hHasField()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    // Set multiple fields
+    store.hSet(KEY_1, "field-1", "value-1")
+
+    expect(store.hHasField(KEY_1, "field-1")).toBeTrue()
+    expect(store.hExists(KEY_2, "field-1")).toBeUndefined()
+})

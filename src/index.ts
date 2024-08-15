@@ -692,8 +692,19 @@ export class BunSqliteKeyValue {
     }
 
 
-    // ToDo: hExists()
+    // Returns if `field` is an existing field in the hash stored at `key`.
+    // Do not use it with several large amounts of data or blobs.
+    // This is because the entire data record with all fields is always read.
     // Inspired by: https://docs.keydb.dev/docs/commands/#hexists
+    hHasField(key: string, field: string): boolean | undefined {
+        const map = this.get<Map<string, any>>(key)
+        if (map === undefined) return
+        return map.has(field)
+    }
+
+
+    // Alias for hHasField()
+    hExists = this.hHasField
 
 
     // ToDo: hLen()
