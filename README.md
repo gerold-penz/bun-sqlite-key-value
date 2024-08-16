@@ -283,9 +283,9 @@ Reads the data from the database and returns an array with the values.
 
 ### startsWithOrKeys
 
-`undefined`: Returns all values in an array.
+`undefined`: Returns an array with all values.
 
-`string`: Returns all values in an array whose keys begin with the passed string.
+`string`: Returns an array with all values whose keys begin with the passed string.
   If you plan the names of the keys well, more complex data can be stored.
   It is advisable to divide keys into ranges using separators.
   For example `"language:de"`, `"language:en"`, `"language:it"`.
