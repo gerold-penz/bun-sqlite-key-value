@@ -65,7 +65,7 @@ The ideas for the implementation come from
   - [`hGetCount()`](#hash-map-object---count-fields)
   - [`hGetFields()`](#hash-map-object---get-all-field-names)
   - [`hGetValues()`](#hash-map-object---get-all-values)
-  - [`hDelete()`]()
+  - [`hDelete()`](#hash-map-object---delete-field)
 - Extended database topics
   - [Multiple Databases](#multiple-databases)
   - [Database Transactions](#database-transactions)
