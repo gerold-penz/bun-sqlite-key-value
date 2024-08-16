@@ -954,9 +954,9 @@ Finally, the modified "Map Object" is written back to the database.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hset
 
-Do not use the hash functions with several very large amounts of data or blobs.
-This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts of data.
+> Do not use the hash functions with several very large amounts of data or blobs.
+> This is because the entire data record with all fields is always read and written.
+> It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 ### key
 
@@ -1011,9 +1011,9 @@ is read from the database.
 If the data record (marked with `key`) does not exist, `undefined` is returned.
 If the field (marked with `field`) does not exist in the "Map Object", `undefined` is returned.
 
-Do not use the hash functions with several very large amounts of data or blobs.
-This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts of data.
+> Do not use the hash functions with several very large amounts of data or blobs.
+> This is because the entire data record with all fields is always read and written.
+> It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hget
 
@@ -1048,9 +1048,9 @@ hmSet(key: string, fields: {[field: string]: T}, ttlMs?: number)
 Like `hSet()`, with the difference that several fields 
 are written to the database in one go.
 
-Do not use the hash functions with several very large amounts of data or blobs.
-This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
+> Do not use the hash functions with several very large amounts of data or blobs.
+> This is because the entire data record with all fields is always read and written.
+> It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hmset
 
@@ -1092,9 +1092,9 @@ hmGet(key: string, fields: fields?: string[])
 
 Like `hGet()`, with the difference that several fields are read in one go.
 
-Do not use the hash functions with several very large amounts of data or blobs.
-This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
+> Do not use the hash functions with several very large amounts of data or blobs.
+> This is because the entire data record with all fields is always read and written.
+> It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hmget
 
@@ -1134,9 +1134,9 @@ hHasField(key: string, field: string)
 
 Returns if `field` is an existing field in the hash stored at `key`.
 
-Do not use the hash functions with several very large amounts of data or blobs.
-This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
+> Do not use the hash functions with several very large amounts of data or blobs.
+> This is because the entire data record with all fields is always read and written.
+> It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hexists
 
@@ -1170,9 +1170,9 @@ hGetCount(key: string)
 
 Returns the number of fields contained in the hash stored at `key`.
 
-Do not use the hash functions with several very large amounts of data or blobs.
-This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
+> Do not use the hash functions with several very large amounts of data or blobs.
+> This is because the entire data record with all fields is always read and written.
+> It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hlen
 
@@ -1202,9 +1202,9 @@ hGetFields(key: string)
 Returns the field names contained in the hash stored at `key`.
 Use `hmGet()` to read field names and values.
 
-Do not use the hash functions with several very large amounts of data or blobs.
-This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
+> Do not use the hash functions with several very large amounts of data or blobs.
+> This is because the entire data record with all fields is always read and written.
+> It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hkeys
 
@@ -1236,9 +1236,9 @@ hGetValues(key: string)
 Returns the values contained in the hash stored at `key`.
 Use `hmGet()` to read field names and values.
 
-Do not use the hash functions with several very large amounts of data or blobs.
-This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
+> Do not use the hash functions with several very large amounts of data or blobs.
+> This is because the entire data record with all fields is always read and written.
+> It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hvals
 
@@ -1273,7 +1273,6 @@ Deletes a field of the map object.
 - Returns `true` if the field existed and was deleted.
 - Returns `false` if the field did not exist.
 
-> [!NOTE]
 > Do not use the hash functions with several very large amounts of data or blobs.
 > This is because the entire data record with all fields is always read and written.
 > It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
