@@ -236,7 +236,7 @@ getSet(key: string, value: any, ttlMs?: number)
 ```
 
 Atomically sets key to value and returns the old value stored at key.
-Inspired by: https://docs.keydb.dev/docs/commands/#getset
+Inspired by: [https://docs.keydb.dev/docs/commands/#getset](https://docs.keydb.dev/docs/commands/#getset)
 
 ### key
 
@@ -323,7 +323,7 @@ randomValue() // --> alias for getRandomValue()
 ```
 
 Returns a random value or `undefined` if no valid item was found.
-Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
+Inspired by: [https://docs.keydb.dev/docs/commands/#randomkey](https://docs.keydb.dev/docs/commands/#randomkey)
 
 
 ## Write Multiple Items
@@ -436,7 +436,7 @@ randomItem() // --> alias for getRandomItem()
 ```
 
 Returns a random item or `undefined` if no valid item was found.
-Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
+Inspired by: [https://docs.keydb.dev/docs/commands/#randomkey](https://docs.keydb.dev/docs/commands/#randomkey)
 
 
 ## Read and Write Binary Files (Images)
@@ -564,7 +564,7 @@ randomKey() // --> alias for getRandomKey()
 ```
 
 Returns a random key or `undefined` if no valid item was found.
-Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
+Inspired by: [https://docs.keydb.dev/docs/commands/#randomkey](https://docs.keydb.dev/docs/commands/#randomkey)
 
 
 ## Rename Key
@@ -576,7 +576,7 @@ rename(oldKey: string, newKey: string): boolean
 Renames `oldKey` to `newKey`.
 It returns `false` when `oldKey` does not exist.
 If `newKey` already exists it is deleted first.
-Inspired by: https://docs.keydb.dev/docs/commands/#rename
+Inspired by: [https://docs.keydb.dev/docs/commands/#rename](https://docs.keydb.dev/docs/commands/#rename)
 
 
 ## Delete Items
@@ -796,7 +796,7 @@ getTtl(key: string): number | undefined
 Returns how long the data record is still valid (in milliseconds).
 Returns `undefined` if the `key` does not exist or no expiration date has been set.
 
-Inspired by: https://docs.keydb.dev/docs/commands/#ttl
+Inspired by: [https://docs.keydb.dev/docs/commands/#ttl](https://docs.keydb.dev/docs/commands/#ttl)
 
 ### key
 
@@ -907,7 +907,7 @@ append(key: string, value: string, ttlMs?: number): number
 If key already exists, this command appends the value at the end of the string.
 If key does not exist it is created and set as an empty string,
 so `append()` will be similar to `set()` in this special case.
-Inspired by: https://docs.keydb.dev/docs/commands/#append
+Inspired by: [https://docs.keydb.dev/docs/commands/#append](https://docs.keydb.dev/docs/commands/#append)
 
 Returns the length of the string after the append operation.
 
@@ -952,7 +952,7 @@ If the data record does not yet exist, a new "Map Object" is created.
 Then the entry marked with `field` is added to the "Map Object" or overwritten. 
 Finally, the modified "Map Object" is written back to the database.
 
-Inspired by: https://docs.keydb.dev/docs/commands/#hset
+Inspired by: [https://docs.keydb.dev/docs/commands/#hset](https://docs.keydb.dev/docs/commands/#hset)
 
 > Do not use the hash functions with several very large amounts of data or blobs.
 > This is because the entire data record with all fields is always read and written.
@@ -1015,7 +1015,7 @@ If the field (marked with `field`) does not exist in the "Map Object", `undefine
 > This is because the entire data record with all fields is always read and written.
 > It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
-Inspired by: https://docs.keydb.dev/docs/commands/#hget
+Inspired by: [https://docs.keydb.dev/docs/commands/#hget](https://docs.keydb.dev/docs/commands/#hget)
 
 ### key
 
@@ -1052,7 +1052,7 @@ are written to the database in one go.
 > This is because the entire data record with all fields is always read and written.
 > It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
-Inspired by: https://docs.keydb.dev/docs/commands/#hmset
+Inspired by: [https://docs.keydb.dev/docs/commands/#hmset](https://docs.keydb.dev/docs/commands/#hmset)
 
 ### key
 
@@ -1096,7 +1096,7 @@ Like `hGet()`, with the difference that several fields are read in one go.
 > This is because the entire data record with all fields is always read and written.
 > It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
-Inspired by: https://docs.keydb.dev/docs/commands/#hmget
+Inspired by: [https://docs.keydb.dev/docs/commands/#hmget](https://docs.keydb.dev/docs/commands/#hmget)
 
 ### key
 
@@ -1138,7 +1138,7 @@ Returns if `field` is an existing field in the hash stored at `key`.
 > This is because the entire data record with all fields is always read and written.
 > It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
-Inspired by: https://docs.keydb.dev/docs/commands/#hexists
+Inspired by: [https://docs.keydb.dev/docs/commands/#hexists](https://docs.keydb.dev/docs/commands/#hexists)
 
 ### key
 
@@ -1174,7 +1174,7 @@ Returns the number of fields contained in the hash stored at `key`.
 > This is because the entire data record with all fields is always read and written.
 > It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
-Inspired by: https://docs.keydb.dev/docs/commands/#hlen
+Inspired by: [https://docs.keydb.dev/docs/commands/#hlen](https://docs.keydb.dev/docs/commands/#hlen)
 
 ### key
 
@@ -1206,7 +1206,7 @@ Use `hmGet()` to read field names and values.
 > This is because the entire data record with all fields is always read and written.
 > It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
-Inspired by: https://docs.keydb.dev/docs/commands/#hkeys
+Inspired by: [https://docs.keydb.dev/docs/commands/#hkeys](https://docs.keydb.dev/docs/commands/#hkeys)
 
 ### key
 
@@ -1240,7 +1240,7 @@ Use `hmGet()` to read field names and values.
 > This is because the entire data record with all fields is always read and written.
 > It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
-Inspired by: https://docs.keydb.dev/docs/commands/#hvals
+Inspired by: [https://docs.keydb.dev/docs/commands/#hvals](https://docs.keydb.dev/docs/commands/#hvals)
 
 ### key
 
@@ -1277,7 +1277,7 @@ Deletes a field of the map object.
 > This is because the entire data record with all fields is always read and written.
 > It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
-Inspired by: https://docs.keydb.dev/docs/commands/#hdel
+Inspired by: [https://docs.keydb.dev/docs/commands/#hdel](https://docs.keydb.dev/docs/commands/#hdel)
 
 ### key
 
