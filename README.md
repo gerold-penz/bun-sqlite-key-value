@@ -42,6 +42,7 @@ The ideas for the implementation come from
   - [`rename()`](#rename-key)
 - Delete Items
   - [`delete()`](#delete-items)
+  - [`deleteExpired()`](#delete-expired-items)
   - [`deleteOldExpiringItems()`](#delete-old-expiring-items)
 - Count Items
   - [`getCount()`](#count-all-items)
@@ -611,6 +612,20 @@ delete store.data.myKey
 // Delete multiple items
 store.delete(["key1", "key2"])
 ```
+
+
+## Delete Expired Items
+
+```typescript
+deleteExpired()
+```
+
+Deletes all expired items. 
+These are entries whose TTL (Time to live) has expired.
+These entries are not deleted continuously, 
+but only when they are accessed directly or when the database is opened.
+If you want to delete the expired entries in between, 
+you can do this with `deleteExpired()`.
 
 
 ## Delete Old Expiring Items
