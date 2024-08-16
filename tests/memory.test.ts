@@ -700,3 +700,15 @@ test("hGetValues()", async () => {
     expect(store.hGetValues(KEY_1)).toEqual([STRING_VALUE_1, STRING_VALUE_2])
     expect(store.hVals(KEY_1)).toBeArrayOfSize(2)
 })
+
+
+test("hDelete()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    store.hSet(KEY_1, FIELD_1, STRING_VALUE_1)
+    store.hSet(KEY_1, FIELD_2, STRING_VALUE_2)
+    expect(store.hDelete(KEY_2, FIELD_1)).toBeUndefined()
+    expect(store.hDelete(KEY_1, FIELD_3)).toBeFalse()
+    expect(store.hDelete(KEY_1, FIELD_2)).toBeTrue()
+    expect(store.hGetCount(KEY_1)).toEqual(1)
+})

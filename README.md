@@ -65,6 +65,7 @@ The ideas for the implementation come from
   - [`hGetCount()`](#hash-map-object---count-fields)
   - [`hGetFields()`](#hash-map-object---get-all-field-names)
   - [`hGetValues()`](#hash-map-object---get-all-values)
+  - [`hDelete()`]()
 - Extended database topics
   - [Multiple Databases](#multiple-databases)
   - [Database Transactions](#database-transactions)
@@ -1049,7 +1050,7 @@ are written to the database in one go.
 
 Do not use the hash functions with several very large amounts of data or blobs.
 This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts of data.
+It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hmset
 
@@ -1093,7 +1094,7 @@ Like `hGet()`, with the difference that several fields are read in one go.
 
 Do not use the hash functions with several very large amounts of data or blobs.
 This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts of data.
+It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hmget
 
@@ -1135,7 +1136,7 @@ Returns if `field` is an existing field in the hash stored at `key`.
 
 Do not use the hash functions with several very large amounts of data or blobs.
 This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts of data.
+It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hexists
 
@@ -1171,7 +1172,7 @@ Returns the number of fields contained in the hash stored at `key`.
 
 Do not use the hash functions with several very large amounts of data or blobs.
 This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts of data.
+It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hlen
 
@@ -1203,7 +1204,7 @@ Use `hmGet()` to read field names and values.
 
 Do not use the hash functions with several very large amounts of data or blobs.
 This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts of data.
+It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hkeys
 
@@ -1237,7 +1238,7 @@ Use `hmGet()` to read field names and values.
 
 Do not use the hash functions with several very large amounts of data or blobs.
 This is because the entire data record with all fields is always read and written.
-It is better to use `setValues()` and `getValues()` for large amounts of data.
+It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
 
 Inspired by: https://docs.keydb.dev/docs/commands/#hvals
 
@@ -1247,7 +1248,7 @@ The key must be a string.
 
 ### Example
 
-```typescript
+```TypeScript#hgetvalues-example.ts
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
 const store = new BunSqliteKeyValue()
@@ -1258,6 +1259,34 @@ store.hmSet("key-1", {
 })
 store.hGetValues("key-1") // --> ["value-1", "value-2"]
 ```
+
+
+## Hash (Map Object) - Delete Field
+
+```typescript
+hDelete(key: string, field: string)
+```
+
+Deletes a field of the map object.
+
+- Returns `undefined` if the key does not exist.
+- Returns `true` if the field existed and was deleted.
+- Returns `false` if the field did not exist.
+
+> [!NOTE]
+> Do not use the hash functions with several very large amounts of data or blobs.
+> This is because the entire data record with all fields is always read and written.
+> It is better to use `setValues()` and `getValues()` for large amounts (megabytes) of data.
+
+Inspired by: https://docs.keydb.dev/docs/commands/#hdel
+
+### key
+
+The key must be a string.
+
+### field
+
+The field name must be a string.
 
 
 ## Multiple Databases

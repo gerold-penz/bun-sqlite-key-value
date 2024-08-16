@@ -727,21 +727,45 @@ export class BunSqliteKeyValue {
     hGetFields(key: string): string[] | undefined {
         const map = this.get<Map<string, any>>(key)
         if (map === undefined) return
-        return [...map.keys()]
+        return Array.from(map.keys())
     }
 
 
     // Alias for hGetFields()
     hKeys = this.hGetFields
 
-
-    // Do not use it with several very large amounts of data or blobs.
-    // This is because the entire data record with all fields is always read and written.
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hvals
+    /**
+     * Returns the *values* contained in the hash stored at `key`.
+     *
+     * @param {string} key
+     * @returns {T[] | undefined}
+     *  - If the data record (marked with `key`) does not exist, `undefined` is returned.
+     *
+     * Use `hmGet()` to read *field names* and *values*.
+     *
+     * Do not use the hash functions with several very large amounts of data or blobs.
+     * This is because the entire data record with all fields is always read and written.
+     * It is better to use `setValues()` and `getValues()` for large amounts of data.
+     *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#hvals
+     *
+     * @example
+     * ```TypeScript
+     * import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+     *
+     * const store = new BunSqliteKeyValue()
+     *
+     * store.hmSet("key-1", {
+     *     "field-1": "value-1",
+     *     "field-2": "value-2"
+     * })
+     * store.hGetValues("key-1") // --> ["value-1", "value-2"]
+     * ```
+     */
     hGetValues<T = any>(key: string): T[] | undefined {
         const map = this.get<Map<string, T>>(key)
         if (map === undefined) return
-        return [...map.values()]
+        return Array.from(map.values())
     }
 
 
@@ -749,9 +773,28 @@ export class BunSqliteKeyValue {
     hVals = this.hGetValues
 
 
-    // ToDo: hDel()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hdel
-
+    /**
+     * Hash function: Delete a field of the map object.
+     *
+     * @param {string} key - The key of the item.
+     * @param {string} field - The name of the field.
+     * @returns {boolean | undefined}
+     *  - `undefined` if the key does not exist.
+     *  - `true` if the field existed and was deleted.
+     *  - `false` if the field did not exist.
+     *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#hdel
+     */
+    hDelete(key: string, field: string): boolean | undefined {
+        // @ts-ignore (Transaction returns boolean, not void.)
+        return this.db.transaction(() => {
+            const map = this.get<Map<string, any>>(key)
+            if (map === undefined) return
+            const result = map.delete(field)
+            this.set(key, map)
+            return result
+        }).immediate()
+    }
 
     // ToDo: hIncrBy()
     // Inspired by: https://docs.keydb.dev/docs/commands/#hincrby
