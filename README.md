@@ -4,7 +4,7 @@ A super fast key-value store with SQLite that uses **bun:sqlite**
 and v8 as a fast JSON replacement.
 
 [![license](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
-[![npm version](https://img.shields.io/npm/v/bun-sqlite-key-value.svg?style=flat-square)](https://www.npmjs.com/package/bun-sqlite-key-value)
+[![npm version](https://img.shields.io/npm/v/bun-sqlite-key-value.svg?style=flat-square&logo=Bun&logoColor=f6dece)](https://www.npmjs.com/package/bun-sqlite-key-value)
 [![npm downloads](https://img.shields.io/npm/dw/bun-sqlite-key-value)](https://www.npmjs.com/package/bun-sqlite-key-value)
 
 [Bun's](https://bun.sh/) lightning-fast 
