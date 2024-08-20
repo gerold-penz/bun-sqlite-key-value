@@ -25,20 +25,17 @@ The ideas for the implementation come from
   - [`get()`](#read-value)
   - [`getSet()`](#read-and-write-value-in-one-step)
   - [`getValues()`](#read-multiple-values)
-  - [`getRandomValue()`](#read-random-value)
   - `getValuesSet()` --> Set with values
 - Write and Read Items
   - [`setItems()`](#write-multiple-items)
   - [`getItem()`](#read-item)
   - [`getItems()`](#read-multiple-items)
-  - [`getRandomItem()`](#read-random-item)
   - `getItemsObject()` --> Object with items
   - `getItemsMap()` --> Map with items
   - [Read and Write Binary Files (Images)](#read-and-write-binary-files-images)
 - Keys
   - [`has()`](#has-key)
   - [`getKeys()`](#read-multiple-keys)
-  - [`getRandomKey()`](#random-key)
   - [`rename()`](#rename-key)
 - Delete Items
   - [`delete()`](#delete-items)
@@ -51,6 +48,10 @@ The ideas for the implementation come from
   - [Cache Values with TTL](#cache-values-with-ttl)
   - [`setTtl()`](#set-ttl)
   - [`getTtl()`](#get-ttl)
+- Random
+  - [`getRandomValue()`](#read-random-value)
+  - [`getRandomItem()`](#read-random-item)
+  - [`getRandomKey()`](#random-key)
 - Math
   - [`incr()`](#increment)
   - [`decr()`](#decrement)
@@ -314,18 +315,6 @@ store.values // --> [ "German", "English", "Italian" ]
 ```
 
 
-## Read Random Value
-
-```typescript
-getRandomValue(): any // --> random value
-
-randomValue() // --> alias for getRandomValue()
-```
-
-Returns a random value or `undefined` if no valid item was found.
-Inspired by: [https://docs.keydb.dev/docs/commands/#randomkey](https://docs.keydb.dev/docs/commands/#randomkey)
-
-
 ## Write Multiple Items
 
 ```typescript
@@ -425,18 +414,6 @@ store.items // --> [
 // ]
 
 ```
-
-
-## Read Random Item
-
-```typescript
-getRandomItem() // --> random item
-
-randomItem() // --> alias for getRandomItem()
-```
-
-Returns a random item or `undefined` if no valid item was found.
-Inspired by: [https://docs.keydb.dev/docs/commands/#randomkey](https://docs.keydb.dev/docs/commands/#randomkey)
 
 
 ## Read and Write Binary Files (Images)
@@ -553,18 +530,6 @@ store.getKeys("language:e") // --> ["language:en", "language:es"]
 store.getKeys(["language:de", "language:fr"]) // --> ["language:de"]
 
 ```
-
-
-## Random Key
-
-```typescript
-getRandomKey() // --> random key
-
-randomKey() // --> alias for getRandomKey()
-```
-
-Returns a random key or `undefined` if no valid item was found.
-Inspired by: [https://docs.keydb.dev/docs/commands/#randomkey](https://docs.keydb.dev/docs/commands/#randomkey)
 
 
 ## Rename Key
@@ -813,6 +778,42 @@ store.set("my-key", "my-value", 20000)
 await Bun.sleep(1)
 store.getTtl("my-key") // --> 19999
 ```
+
+
+## Read Random Value
+
+```typescript
+getRandomValue(): any // --> random value
+
+randomValue() // --> alias for getRandomValue()
+```
+
+Returns a random value or `undefined` if no valid item was found.
+Inspired by: [https://docs.keydb.dev/docs/commands/#randomkey](https://docs.keydb.dev/docs/commands/#randomkey)
+
+
+## Read Random Item
+
+```typescript
+getRandomItem() // --> random item
+
+randomItem() // --> alias for getRandomItem()
+```
+
+Returns a random item or `undefined` if no valid item was found.
+Inspired by: [https://docs.keydb.dev/docs/commands/#randomkey](https://docs.keydb.dev/docs/commands/#randomkey)
+
+
+## Random Key
+
+```typescript
+getRandomKey() // --> random key
+
+randomKey() // --> alias for getRandomKey()
+```
+
+Returns a random key or `undefined` if no valid item was found.
+Inspired by: [https://docs.keydb.dev/docs/commands/#randomkey](https://docs.keydb.dev/docs/commands/#randomkey)
 
 
 ## Increment
