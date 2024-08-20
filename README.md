@@ -6,7 +6,7 @@ and v8 as a fast JSON replacement.
 [![license](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/bun-sqlite-key-value.svg?style=flat-square)](https://www.npmjs.com/package/bun-sqlite-key-value)
 [![npm downloads](https://img.shields.io/npm/dw/bun-sqlite-key-value)](https://www.npmjs.com/package/bun-sqlite-key-value)
-[![bun:sqlite](https://img.shields.io/badge/Bun-%3Asqlite-blue?style=flat&logo=Bun&logoColor=f6dece
+[![bun:sqlite](https://img.shields.io/badge/bun-%3Asqlite-blue?style=flat&logo=Bun&logoColor=f6dece
 )](https://bun.sh/docs/api/sqlite)
 
 
