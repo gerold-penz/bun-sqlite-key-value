@@ -55,8 +55,8 @@ The ideas for the implementation come from
   - [`setTtl()`](#set-ttl)
   - [`getTtl()`](#get-ttl)
 - Random
-  - [`getRandomValue()`](#read-random-value)
-  - [`getRandomItem()`](#read-random-item)
+  - [`getRandomValue()`](#random-value)
+  - [`getRandomItem()`](#random-item)
   - [`getRandomKey()`](#random-key)
 - Math
   - [`incr()`](#increment)
@@ -786,7 +786,7 @@ store.getTtl("my-key") // --> 19999
 ```
 
 
-## Read Random Value
+## Random Value
 
 ```typescript
 getRandomValue(): any // --> random value
@@ -798,7 +798,7 @@ Returns a random value or `undefined` if no valid item was found.
 Inspired by: [https://docs.keydb.dev/docs/commands/#randomkey](https://docs.keydb.dev/docs/commands/#randomkey)
 
 
-## Read Random Item
+## Random Item
 
 ```typescript
 getRandomItem() // --> random item
