@@ -184,7 +184,7 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Alias for clear
+    // Alias for delete
     // Alias inspired by: https://docs.keydb.dev/docs/commands/#del
     del = this.delete
 
