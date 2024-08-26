@@ -712,3 +712,35 @@ test("hDelete()", async () => {
     expect(store.hDelete(KEY_1, FIELD_2)).toBeTrue()
     expect(store.hGetCount(KEY_1)).toEqual(1)
 })
+
+
+test("hIncrBy(), hDecrBy()", async () => {
+    const store = new BunSqliteKeyValue()
+
+
+    // incr/decr
+    const resultArray = [
+        store.hIncrBy(KEY_1, FIELD_1), store.hIncrBy(KEY_1, FIELD_1),
+        store.hDecrBy(KEY_1, FIELD_1), store.hDecrBy(KEY_1, FIELD_1),
+    ]
+    expect(resultArray).toEqual([1, 2, 1, 0])
+    store.delete(KEY_1)
+
+    // incrBy/decrBy
+    store.hIncrBy(KEY_1, FIELD_1, 2)
+    expect(store.hIncrBy(KEY_1, FIELD_1, 2)).toEqual(4)
+    expect(store.hIncrBy(KEY_1, FIELD_1, -2)).toEqual(2)
+    expect(store.hDecrBy(KEY_1, FIELD_1, 1)).toEqual(1)
+    expect(store.hDecrBy(KEY_1, FIELD_1, -1)).toEqual(2)
+
+    // String with number
+    store.hSet(KEY_1, FIELD_1, "100")
+    expect(store.hIncrBy(KEY_1, FIELD_1)).toEqual(101)
+
+    // NaN
+    const value: string = "I am no number"
+    store.hSet<string>(KEY_1, FIELD_1, value)
+    expect(store.hIncrBy(KEY_1, FIELD_1)).toBeNaN()
+    expect(store.hGet<string>(KEY_1, FIELD_1)).toEqual(value)
+
+})

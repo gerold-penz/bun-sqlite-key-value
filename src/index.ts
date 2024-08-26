@@ -734,6 +734,7 @@ export class BunSqliteKeyValue {
     // Alias for hGetFields()
     hKeys = this.hGetFields
 
+
     /**
      * Returns the *values* contained in the hash stored at `key`.
      *
@@ -796,8 +797,25 @@ export class BunSqliteKeyValue {
         }).immediate()
     }
 
-    // ToDo: hIncrBy()
+
     // Inspired by: https://docs.keydb.dev/docs/commands/#hincrby
+    hIncrBy(key: string, field: string, incrBy: number = 1, ttlMs?: number): number {
+        // @ts-ignore (Transaction returns boolean, not void.)
+        return this.db.transaction(() => {
+            const map = this.get<Map<string, number>>(key) ?? new Map<string, number>()
+            const newValue = Number(map.get(field) ?? 0) + incrBy
+            if (isNaN(newValue)) return NaN
+            map.set(field, newValue)
+            this.set(key, map, ttlMs)
+            return newValue
+        }).immediate()
+    }
+
+
+    // Inspired by: https://docs.keydb.dev/docs/commands/#hincrby
+    hDecrBy(key: string, field: string, decrBy: number = 1, ttlMs?: number): number {
+        return this.hIncrBy(key, field, decrBy * -1, ttlMs)
+    }
 
 
     // ToDo: lIndex()
