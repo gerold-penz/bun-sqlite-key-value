@@ -73,6 +73,8 @@ The ideas for the implementation come from
   - [`hGetFields()`](#hash-map-object---get-all-field-names)
   - [`hGetValues()`](#hash-map-object---get-all-values)
   - [`hDelete()`](#hash-map-object---delete-field)
+  - [`hIncr()`]()
+  - [`hDecr()`]()
 - Extended database topics
   - [Multiple Databases](#multiple-databases)
   - [Database Transactions](#database-transactions)
@@ -1293,6 +1295,10 @@ The key must be a string.
 ### field
 
 The field name must be a string.
+
+
+
+
 
 
 ## Multiple Databases

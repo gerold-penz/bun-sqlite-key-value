@@ -799,11 +799,20 @@ export class BunSqliteKeyValue {
 
 
     // Inspired by: https://docs.keydb.dev/docs/commands/#hincrby
-    hIncrBy(key: string, field: string, incrBy: number = 1, ttlMs?: number): number {
+    hIncr(key: string, field: string, incrBy: number = 1, ttlMs?: number): number {
         // @ts-ignore (Transaction returns boolean, not void.)
         return this.db.transaction(() => {
             const map = this.get<Map<string, number>>(key) ?? new Map<string, number>()
-            const newValue = Number(map.get(field) ?? 0) + incrBy
+            let newValue: number
+            try {
+                newValue = Number(map.get(field) ?? 0) + incrBy
+            } catch (error: any) {
+                if (error.toString().includes("TypeError")) {
+                    return NaN
+                } else {
+                    throw error
+                }
+            }
             if (isNaN(newValue)) return NaN
             map.set(field, newValue)
             this.set(key, map, ttlMs)
@@ -813,8 +822,8 @@ export class BunSqliteKeyValue {
 
 
     // Inspired by: https://docs.keydb.dev/docs/commands/#hincrby
-    hDecrBy(key: string, field: string, decrBy: number = 1, ttlMs?: number): number {
-        return this.hIncrBy(key, field, decrBy * -1, ttlMs)
+    hDecr(key: string, field: string, decrBy: number = 1, ttlMs?: number): number {
+        return this.hIncr(key, field, decrBy * -1, ttlMs)
     }
 
 
