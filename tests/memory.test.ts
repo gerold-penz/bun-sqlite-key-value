@@ -743,14 +743,4 @@ test("hIncr(), hDecr()", async () => {
     store.hSet<string>(KEY_1, FIELD_1, value)
     expect(store.hIncr(KEY_1, FIELD_1)).toBeNaN()
     expect(store.hGet<string>(KEY_1, FIELD_1)).toEqual(value)
-
-
-
-
-
-
-
-
-
-
 })
