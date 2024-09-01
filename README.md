@@ -326,7 +326,7 @@ store.values // --> [ "German", "English", "Italian" ]
 ## Write Multiple Items
 
 ```typescript
-setItems(items: {key: string, value: T, ttlMs?: number}[]) {
+setItems(items: {key: string, value: T, ttlMs?: number}[])
 ```
 
 Adds a large number of items to the database and takes only
