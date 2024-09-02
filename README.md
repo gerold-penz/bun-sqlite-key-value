@@ -31,13 +31,13 @@ The ideas for the implementation come from
   - [`get()`](#read-value)
   - [`getSet()`](#read-and-write-value-in-one-step)
   - [`getValues()`](#read-multiple-values)
-  - `getValuesSet()` --> Set with values
+  - `getValuesAsSet()` --> Set with values
 - Write and Read Items
   - [`setItems()`](#write-multiple-items)
   - [`getItem()`](#read-item)
   - [`getItems()`](#read-multiple-items)
-  - `getItemsObject()` --> Object with items
-  - `getItemsMap()` --> Map with items
+  - `getItemsAsObject()` --> Object with items
+  - `getItemsAsMap()` --> Map with items
   - [Read and Write Binary Files (Images)](#read-and-write-binary-files-images)
 - Keys
   - [`has()`](#has-key)
@@ -73,8 +73,11 @@ The ideas for the implementation come from
   - [`hGetFields()`](#hash-map-object---get-all-field-names)
   - [`hGetValues()`](#hash-map-object---get-all-values)
   - [`hDelete()`](#hash-map-object---delete-field)
-  - `hIncr()`
-  - `hDecr()`
+  - `hIncr()` --> Increments the value of a field.
+  - `hDecr()` --> Decrements the value of a field.
+- List (Array Object)
+  - `lPush()` --> Insert values at the begin of the list.
+  - `rPush()` --> Insert values at the end of the list.
 - Extended database topics
   - [Multiple Databases](#multiple-databases)
   - [Database Transactions](#database-transactions)

@@ -367,27 +367,39 @@ export class BunSqliteKeyValue {
 
 
     // Get multiple items as object
-    getItemsObject<T = any>(startsWithOrKeys?: string | string[]): {[key: string]: T | undefined} | undefined {
+    getItemsAsObject<T = any>(startsWithOrKeys?: string | string[]): {[key: string]: T | undefined} | undefined {
         const items = this.getItems(startsWithOrKeys)
         if (!items) return
         return Object.fromEntries(items.map(item => [item.key, item.value as T | undefined]))
     }
 
 
+    // alias for getItemsAsObject()
+    getItemsObject = this.getItemsAsObject
+
+
     // Get multiple items as Map()
-    getItemsMap<T = any>(startsWithOrKeys?: string | string[]): Map<string, T | undefined> | undefined {
+    getItemsAsMap<T = any>(startsWithOrKeys?: string | string[]): Map<string, T | undefined> | undefined {
         const items = this.getItems(startsWithOrKeys)
         if (!items) return
         return new Map(items.map(item => [item.key, item.value as T | undefined]))
     }
 
 
+    // Alias for getItemsAsMap()
+    getItemsMap = this.getItemsAsMap
+
+
     // Get multiple values as Set()
-    getValuesSet<T = any>(startsWithOrKeys?: string | string[]): Set<T> | undefined {
+    getValuesAsSet<T = any>(startsWithOrKeys?: string | string[]): Set<T> | undefined {
         const values = this.getValues(startsWithOrKeys)
         if (!values) return
         return new Set(values)
     }
+
+
+    // Alias for getValuesAsSet()
+    getValuesSet = this.getValuesAsSet
 
 
     // Checks if key exists
@@ -827,6 +839,68 @@ export class BunSqliteKeyValue {
     }
 
 
+    /**
+     * Array - Left Push
+     *
+     * @param {string} key
+     * @param {T} values
+     * @returns {number | undefined}
+     *  New length of the list or `undefined` if the old value in the database is not an array.
+     *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#lpush
+     */
+    lPush<T = any>(key: string, ...values: T[]): number | undefined {
+        // @ts-ignore (Transaction returns number, not void.)
+        return this.db.transaction(() => {
+            const array = this.get<Array<T>>(key) ?? new Array<T>()
+            let newLength: number | undefined
+            try {
+                values.forEach((value) => {
+                    newLength = array.unshift(value)
+                })
+            } catch (error: any) {
+                if (error.toString().includes("TypeError")) {
+                    return
+                } else {
+                    throw error
+                }
+            }
+            this.set<Array<T>>(key, array)
+            return newLength
+        }).immediate()
+    }
+
+
+    /**
+     * Array - Right Push
+     *
+     * @param {string} key
+     * @param {T} values
+     * @returns {number | undefined}
+     *  New length of the list or `undefined` if the old value in the database is not an array.
+     *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#rpush
+     */
+    rPush<T = any>(key: string, ...values: T[]): number | undefined {
+        // @ts-ignore (Transaction returns number, not void.)
+        return this.db.transaction(() => {
+            const array = this.get<Array<T>>(key) ?? new Array<T>()
+            let newLength: number | undefined
+            try {
+                newLength = array.push(...values)
+            } catch (error: any) {
+                if (error.toString().includes("TypeError")) {
+                    return
+                } else {
+                    throw error
+                }
+            }
+            this.set<Array<T>>(key, array)
+            return newLength
+        }).immediate()
+    }
+
+
     // ToDo: lIndex()
     // Inspired by: https://docs.keydb.dev/docs/commands/#lindex
 
@@ -837,10 +911,6 @@ export class BunSqliteKeyValue {
 
     // ToDo: lPop()
     // Inspired by: https://docs.keydb.dev/docs/commands/#lpop
-
-
-    // ToDo: lPush()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#lpush
 
 
     // ToDo: lRange()
@@ -861,10 +931,6 @@ export class BunSqliteKeyValue {
 
     // ToDo: rPopLPush()
     // Inspired by: https://docs.keydb.dev/docs/commands/#rpoplpush
-
-
-    // ToDo: rPush()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#rpush
 
 
     // ToDo: sAdd()

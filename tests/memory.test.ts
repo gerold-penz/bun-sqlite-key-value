@@ -320,6 +320,18 @@ test("Get items as Object", () => {
     store.set<string>(KEY_2, STRING_VALUE_2)
     store.set(KEY_3, null)
 
+    expect(store.getItemsAsObject([
+        KEY_1,
+        KEY_2,
+        KEY_3,
+        "unknown-key"
+    ])).toEqual({
+        [KEY_1]: STRING_VALUE_1,
+        [KEY_2]: STRING_VALUE_2,
+        [KEY_3]: null,
+        "unknown-key": undefined
+    })
+
     expect(store.getItemsObject([
         KEY_1,
         KEY_2,
@@ -341,6 +353,18 @@ test("Get items as Map", () => {
     store.set<string>(KEY_2, STRING_VALUE_2)
     store.set(KEY_3, null)
 
+    expect(store.getItemsAsMap([
+        KEY_1,
+        KEY_2,
+        KEY_3,
+        "unknown-key"
+    ])).toEqual(new Map([
+        [KEY_1, STRING_VALUE_1],
+        [KEY_2, STRING_VALUE_2],
+        [KEY_3, null],
+        ["unknown-key", undefined],
+    ]))
+
     expect(store.getItemsMap([
         KEY_1,
         KEY_2,
@@ -361,6 +385,12 @@ test("Get values as Set", () => {
     store.set<string>(KEY_1, STRING_VALUE_1)
     store.set<string>(KEY_2, STRING_VALUE_2)
     store.set(KEY_3, null)
+
+    expect(store.getValuesAsSet([
+        KEY_1, KEY_2, KEY_3, "unknown-key"
+    ])).toEqual(new Set([
+        STRING_VALUE_1, STRING_VALUE_2, null, undefined
+    ]))
 
     expect(store.getValuesSet([
         KEY_1, KEY_2, KEY_3, "unknown-key"
