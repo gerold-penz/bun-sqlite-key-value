@@ -838,8 +838,9 @@ export class BunSqliteKeyValue {
      *
      * @param {Key} key
      * @returns {T[] | undefined}
-     *  - If the data record (marked with `key`) does not exist, `undefined` is returned.
+     *  If the data record (marked with `key`) does not exist, `undefined` is returned.
      *
+     * @description
      * Use `hmGet()` to read *field names* and *values*.
      *
      * Do not use the hash functions with several very large amounts of data or blobs.
@@ -884,6 +885,7 @@ export class BunSqliteKeyValue {
      *  - `true` if the field existed and was deleted.
      *  - `false` if the field did not exist.
      *
+     * @description
      * Inspired by: https://docs.keydb.dev/docs/commands/#hdel
      */
     hDelete(key: Key, field: Field): boolean | undefined {
@@ -948,6 +950,7 @@ export class BunSqliteKeyValue {
      * @returns {number | undefined}
      *  New length of the list or `undefined` if the old value in the database is not an array.
      *
+     * @description
      * Inspired by: https://docs.keydb.dev/docs/commands/#lpush
      */
     lPush<T = any>(key: Key, ...values: T[]): number | undefined {
@@ -977,6 +980,7 @@ export class BunSqliteKeyValue {
      * @returns {number | undefined}
      *  New length of the list or `undefined` if the old value in the database is not an array.
      *
+     * @description
      * Inspired by: https://docs.keydb.dev/docs/commands/#rpush
      */
     rPush<T = any>(key: Key, ...values: T[]): number | undefined {
@@ -1007,6 +1011,7 @@ export class BunSqliteKeyValue {
      *  If `count` is a positive number, it returns the first `count` elements of the list stored at key.
      *  Returns `undefined` if `key` was not found, the array is empty or the value in the database is not an array.
      *
+     * @description
      * Inspired by: https://docs.keydb.dev/docs/commands/#lpop
      */
     lPop<T = any>(key: Key, count?: number): T | T[] | undefined {
@@ -1044,6 +1049,7 @@ export class BunSqliteKeyValue {
      *  If `count` is a positive number, it returns the last `count` elements of the list stored at key.
      *  Returns `undefined` if `key` was not found, the array is empty or the value in the database is not an array.
      *
+     * @description
      * Inspired by: https://docs.keydb.dev/docs/commands/#rpop
      */
     rPop<T = any>(key: Key, count?: number): T | T[] | undefined {
