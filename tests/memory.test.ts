@@ -6,9 +6,9 @@ import { Statement } from "bun:sqlite"
 const KEY_1: string = "test-key-1"
 const KEY_2: string = "test-key-2"
 const KEY_3: string = "test-key-3"
-const VALUE_1: string = "Hello world!"
-const VALUE_2: string = "Hello moon!"
-const VALUE_3: string = "Hello Tyrol!"
+const VALUE_1: string = "Hello world 1"
+const VALUE_2: string = "Hello moon 2"
+const VALUE_3: string = "Hello Tyrol 3"
 const FIELD_1: string = "test-field-1"
 const FIELD_2: string = "test-field-2"
 const FIELD_3: string = "test-field-3"
@@ -799,3 +799,29 @@ test("lPush(), rPush()", async () => {
     store.set(KEY_2, VALUE_1)
     expect(store.rPush(KEY_2, VALUE_2)).toBeUndefined()
 })
+
+
+test("lPop(), rPop()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    // lPop()
+    store.lPush(KEY_1, VALUE_1, VALUE_2, VALUE_3)
+    expect(store.lPop(KEY_3)).toBeUndefined()
+    expect(() => {
+        store.lPop(KEY_1, -1)
+    }).toThrowError(/must be greater/)
+    expect(store.lPop<string>(KEY_1)).toEqual(VALUE_3)
+    expect(store.lPop<string>(KEY_1, 2)).toEqual([VALUE_2, VALUE_1])
+    expect(store.lPop(KEY_1)).toBeUndefined()
+
+    // rPop()
+    store.rPush(KEY_2, VALUE_1, VALUE_2, VALUE_3)
+    expect(store.rPop(KEY_3)).toBeUndefined()
+    expect(() => {
+        store.rPop(KEY_2, -1)
+    }).toThrowError(/must be greater/)
+    expect(store.rPop<string>(KEY_2)).toEqual(VALUE_3)
+    expect(store.rPop<string>(KEY_2, 2)).toEqual([VALUE_2, VALUE_1])
+    expect(store.rPop(KEY_2)).toBeUndefined()
+})
+
