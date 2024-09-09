@@ -76,11 +76,11 @@ The ideas for the implementation come from
   - `hIncr()` --> Increments the value of a field.
   - `hDecr()` --> Decrements the value of a field.
 - List (Array Object)
-  - `lPush()` --> Insert values at the begin of the list.
-  - `rPush()` --> Insert values at the end of the list.
-  - `lPop()` --> Returns values at the begin of the list and removes them.
-  - `rPop()` --> Returns values at the end of the list and removes them.
-  - `lIndex()` --> Returns the value at the specified index of the list.
+  - `lPush()` --> Insert elements at the begin of the list.
+  - `rPush()` --> Insert elements at the end of the list.
+  - `lPop()` --> Returns elements at the begin of the list and removes them.
+  - `rPop()` --> Returns elements at the end of the list and removes them.
+  - `lIndex()` --> Returns the element at the specified index of the list.
 - Extended database topics
   - [Multiple Databases](#multiple-databases)
   - [Database Transactions](#database-transactions)

@@ -1120,15 +1120,31 @@ export class BunSqliteKeyValue {
 
 
     // ToDo: lLen()
+    // Returns the length of the list stored at `key`.
+    // If key does not exist, it is interpreted as an empty list and 0 is returned.
+    // An error is returned when the value stored at `key` is not an array. --> `Array.isArray()`
+    // Returns: The length of the list.
     // Inspired by: https://docs.keydb.dev/docs/commands/#llen
+
+
+    // ToDo: lSet()
+    // Achtung, wenn ein Index übergeben wird, der nicht im Array enthalten ist, soll ein Fehler ausgelöst werden.
+    // Achtung, es können auch negative Werte wie bei `<array>.at()` als Index verwendet werden.
+    //
+    // function setAt<T = any>(array: Array, index: number, value: T) {
+    //     const len = array.length
+    //     if (index < 0) {
+    //         array[len + index] = value
+    //     } else {
+    //         array[index] = value
+    //     }
+    // }
+    //
+    // Inspired by: https://docs.keydb.dev/docs/commands/#lset
 
 
     // ToDo: lRange()
     // Inspired by: https://docs.keydb.dev/docs/commands/#lrange
-
-
-    // ToDo: lSet()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#lset
 
 
     // ToDo: lTrim()
