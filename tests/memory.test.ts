@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { BunSqliteKeyValue } from "../src"
+import { BunSqliteKeyValue, INVALID_COUNT_ERROR_LABEL, NO_ARRAY_ERROR_LABEL } from "../src"
 import { Statement } from "bun:sqlite"
 
 
@@ -12,6 +12,12 @@ const VALUE_3: string = "Hello Tyrol 3"
 const FIELD_1: string = "test-field-1"
 const FIELD_2: string = "test-field-2"
 const FIELD_3: string = "test-field-3"
+
+
+test("Error labels", () => {
+    expect(INVALID_COUNT_ERROR_LABEL).toEqual("[INVALID_COUNT_ERROR]")
+    expect(NO_ARRAY_ERROR_LABEL).toEqual("[NO_ARRAY_ERROR]")
+})
 
 
 test("Set and get value", () => {
@@ -787,7 +793,9 @@ test("lPush(), rPush()", async () => {
 
     // Not an array
     store.set(KEY_1, VALUE_1)
-    expect(store.lPush(KEY_1, VALUE_2)).toBeUndefined()
+    expect(() => {
+        store.lPush(KEY_1, VALUE_2)
+    }).toThrowError(NO_ARRAY_ERROR_LABEL)
 
     // rPush()
     expect(store.rPush(KEY_2, VALUE_1, VALUE_2)).toEqual(2)
@@ -797,7 +805,9 @@ test("lPush(), rPush()", async () => {
 
     // Not an array
     store.set(KEY_2, VALUE_1)
-    expect(store.rPush(KEY_2, VALUE_2)).toBeUndefined()
+    expect(() => {
+        store.rPush(KEY_2, VALUE_2)
+    }).toThrowError(NO_ARRAY_ERROR_LABEL)
 })
 
 
@@ -809,19 +819,36 @@ test("lPop(), rPop()", async () => {
     expect(store.lPop(KEY_3)).toBeUndefined()
     expect(() => {
         store.lPop(KEY_1, -1)
-    }).toThrowError(/must be greater/)
+    }).toThrowError(INVALID_COUNT_ERROR_LABEL)
     expect(store.lPop<string>(KEY_1)).toEqual(VALUE_3)
     expect(store.lPop<string>(KEY_1, 2)).toEqual([VALUE_2, VALUE_1])
     expect(store.lPop(KEY_1)).toBeUndefined()
+    expect(store.lPop(KEY_1, 2)).toBeUndefined()
 
     // rPop()
     store.rPush(KEY_2, VALUE_1, VALUE_2, VALUE_3)
     expect(store.rPop(KEY_3)).toBeUndefined()
     expect(() => {
         store.rPop(KEY_2, -1)
-    }).toThrowError(/must be greater/)
+    }).toThrowError(INVALID_COUNT_ERROR_LABEL)
     expect(store.rPop<string>(KEY_2)).toEqual(VALUE_3)
     expect(store.rPop<string>(KEY_2, 2)).toEqual([VALUE_2, VALUE_1])
     expect(store.rPop(KEY_2)).toBeUndefined()
+    expect(store.rPop(KEY_2, 2)).toBeUndefined()
+})
+
+
+test("lIndex()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    store.rPush(KEY_1, VALUE_1, VALUE_2, VALUE_3)
+    expect(store.lIndex<string>(KEY_1, 0)).toEqual(VALUE_1)
+    expect(store.lIndex<string>(KEY_1, -1)).toEqual(VALUE_3)
+    expect(store.lIndex<string>(KEY_1, 100)).toBeUndefined()
+
+    store.set(KEY_2, 12345)
+    expect(() => {
+        store.lIndex(KEY_2, 0)
+    }).toThrowError(NO_ARRAY_ERROR_LABEL)
 })
 

@@ -82,6 +82,9 @@ interface DbOptions extends Omit<Options, "ttlMs"> {
 const MIN_UTF8_CHAR: string = String.fromCodePoint(1)
 const MAX_UTF8_CHAR: string = String.fromCodePoint(1_114_111)
 
+export const INVALID_COUNT_ERROR_LABEL: string = "[INVALID_COUNT_ERROR]"
+export const NO_ARRAY_ERROR_LABEL: string = "[NO_ARRAY_ERROR]"
+
 
 export class BunSqliteKeyValue {
 
@@ -947,13 +950,13 @@ export class BunSqliteKeyValue {
      *
      * @param {Key} key
      * @param {T} values
-     * @returns {number | undefined}
-     *  New length of the list or `undefined` if the old value in the database is not an array.
+     * @returns {number}
+     *  New length of the list.
      *
      * @description
      * Inspired by: https://docs.keydb.dev/docs/commands/#lpush
      */
-    lPush<T = any>(key: Key, ...values: T[]): number | undefined {
+    lPush<T = any>(key: Key, ...values: T[]): number {
         // @ts-ignore (Transaction returns number, not void.)
         return this.db.transaction(() => {
             const array = this.get<Array<T>>(key) ?? new Array<T>()
@@ -963,7 +966,9 @@ export class BunSqliteKeyValue {
                     newLength = array.unshift(value)
                 })
             } catch (error: any) {
-                if (error.toString().includes("TypeError")) return
+                if (error.toString().includes("TypeError")) {
+                    throw new Error(NO_ARRAY_ERROR_LABEL + ` Value at "${key.substring(-80)}" is not an array.`)
+                }
                 throw error
             }
             this.set<Array<T>>(key, array)
@@ -977,21 +982,23 @@ export class BunSqliteKeyValue {
      *
      * @param {Key} key
      * @param {T} values
-     * @returns {number | undefined}
-     *  New length of the list or `undefined` if the old value in the database is not an array.
+     * @returns {number}
+     *  New length of the list.
      *
      * @description
      * Inspired by: https://docs.keydb.dev/docs/commands/#rpush
      */
-    rPush<T = any>(key: Key, ...values: T[]): number | undefined {
+    rPush<T = any>(key: Key, ...values: T[]): number {
         // @ts-ignore (Transaction returns number, not void.)
         return this.db.transaction(() => {
             const array = this.get<Array<T>>(key) ?? new Array<T>()
-            let newLength: number | undefined
+            let newLength: number
             try {
                 newLength = array.push(...values)
             } catch (error: any) {
-                if (error.toString().includes("TypeError")) return
+                if (error.toString().includes("TypeError")) {
+                    throw new Error(NO_ARRAY_ERROR_LABEL + ` Value at "${key.substring(-80)}" is not an array.`)
+                }
                 throw error
             }
             this.set<Array<T>>(key, array)
@@ -1009,7 +1016,7 @@ export class BunSqliteKeyValue {
      * @returns { T | T[] | undefined}
      *  If `count` is `undefined`, it returns the first element of the list stored at `key`.
      *  If `count` is a positive number, it returns the first `count` elements of the list stored at key.
-     *  Returns `undefined` if `key` was not found, the array is empty or the value in the database is not an array.
+     *  Returns `undefined` if `key` was not found or the array is empty.
      *
      * @description
      * Inspired by: https://docs.keydb.dev/docs/commands/#lpop
@@ -1025,11 +1032,14 @@ export class BunSqliteKeyValue {
                     result = array.shift() as T
                 } else if (count > 0) {
                     result = array.splice(0, count)
+                    if (!result?.length) return
                 } else {
-                    throw new Error("`count` must be greater then 0.")
+                    throw new Error(INVALID_COUNT_ERROR_LABEL + " `count` must be greater then 0.")
                 }
             } catch (error: any) {
-                if (error.toString().includes("TypeError")) return
+                if (error.toString().includes("TypeError")) {
+                    throw new Error(NO_ARRAY_ERROR_LABEL + ` Value at "${key.substring(-80)}" is not an array.`)
+                }
                 throw error
             }
             this.set<Array<T>>(key, array)
@@ -1047,7 +1057,7 @@ export class BunSqliteKeyValue {
      * @returns {T[] | T | undefined}
      *  If `count` is `undefined`, it returns the last element of the list stored at `key`.
      *  If `count` is a positive number, it returns the last `count` elements of the list stored at key.
-     *  Returns `undefined` if `key` was not found, the array is empty or the value in the database is not an array.
+     *  Returns `undefined` if `key` was not found or the array is empty.
      *
      * @description
      * Inspired by: https://docs.keydb.dev/docs/commands/#rpop
@@ -1063,12 +1073,15 @@ export class BunSqliteKeyValue {
                     result = array.pop() as T
                 } else if (count > 0) {
                     result = array.splice(count * -1, count)
+                    if (!result?.length) return
                     result.reverse()
                 } else {
-                    throw new Error("`count` must be greater then 0.")
+                    throw new Error(INVALID_COUNT_ERROR_LABEL + " `count` must be greater then 0.")
                 }
             } catch (error: any) {
-                if (error.toString().includes("TypeError")) return
+                if (error.toString().includes("TypeError")) {
+                    throw new Error(NO_ARRAY_ERROR_LABEL + ` Value at "${key.substring(-80)}" is not an array.`)
+                }
                 throw error
             }
             this.set<Array<T>>(key, array)
@@ -1077,8 +1090,33 @@ export class BunSqliteKeyValue {
     }
 
 
-    // ToDo: lIndex()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#lindex
+    /**
+     * Returns the element at `index` in the list stored at `key`.
+     *
+     * The index is zero-based, so 0 means the first element, 1 the second element and so on.
+     * Negative indices can be used to designate elements starting at the tail of the list.
+     * Here, -1 means the last element, -2 means the penultimate and so forth.
+     *
+     * @param {Key} key
+     * @param {number} index
+     * @returns {T | undefined}
+     *  When the value at key is not a list, an error is returned.
+     *
+     * @description
+     * Inspired by: https://docs.keydb.dev/docs/commands/#lindex
+     */
+    lIndex<T = any>(key: Key, index: number): T | undefined {
+        const array = this.get<Array<T>>(key)
+        if (array === undefined) return
+        try {
+            return array.at(index)
+        } catch (error: any) {
+            if (error.toString().includes("TypeError")) {
+                throw new Error(NO_ARRAY_ERROR_LABEL + ` Value at "${key.substring(-80)}" is not an array.`)
+            }
+            throw error
+        }
+    }
 
 
     // ToDo: lLen()
