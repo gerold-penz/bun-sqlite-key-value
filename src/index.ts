@@ -570,11 +570,13 @@ export class BunSqliteKeyValue {
     // the oldest items are deleted until there are only `maxExpiringItemsInDb` items with
     // an expiration date in the database.
     deleteOldExpiringItems(maxExpiringItemsInDb: number) {
-        const count = this.getExpiringItemsCount()
-        if (count <= maxExpiringItemsInDb) return
+        this.db.transaction(() => {
+            const count = this.getExpiringItemsCount()
+            if (count <= maxExpiringItemsInDb) return
 
-        const limit = count - maxExpiringItemsInDb
-        this.deleteExpiringStatement.run({limit})
+            const limit = count - maxExpiringItemsInDb
+            this.deleteExpiringStatement.run({limit})
+        })()
     }
 
 
