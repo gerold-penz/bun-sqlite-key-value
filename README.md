@@ -139,8 +139,14 @@ Pass an empty string (`""`) or `":memory:"` or `undefined` for an in-memory data
   Open the database as read-write (default: true).
 
 `ttlMs?: boolean`:
-  Standard time period in milliseconds before
-  an entry written to the DB becomes invalid.
+  Default time span in milliseconds before an entry 
+  written to the DB becomes invalid and is marked for deletion.
+
+`maxExpiringItemsInDb?: number`:
+  Default value that specifies the maximum number of 
+  expiring items that may be in the database.
+  Is used by the `deleteOldExpiringItems()` method as default value.
+
 
 ### Example
 

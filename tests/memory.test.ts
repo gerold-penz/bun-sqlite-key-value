@@ -469,6 +469,23 @@ test("Delete old expiring items", () => {
     store.deleteOldExpiringItems(4)
     store.deleteOldestExpiringItems(4)
     expect(store.getKeys("dynamic:")?.length).toEqual(4)
+
+    // Use default values
+    const store2: BunSqliteKeyValue = new BunSqliteKeyValue(
+        ":memory:",
+        {ttlMs: 500, maxExpiringItemsInDb: 4}
+    )
+    store2.set("static:1", VALUE_1, 0)
+    store2.set("static:2", VALUE_1, 0)
+    store2.set("dynamic:1", VALUE_1)
+    store2.set("dynamic:2", VALUE_1)
+    store2.set("dynamic:3", VALUE_1)
+    store2.set("dynamic:4", VALUE_1)
+    store2.set("dynamic:5", VALUE_1)
+    store2.set("dynamic:6", VALUE_1)
+
+    store2.deleteOldExpiringItems()
+    expect(store2.getKeys("dynamic:")?.length).toEqual(4)
 })
 
 

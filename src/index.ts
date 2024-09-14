@@ -47,6 +47,16 @@ export type TtlMs = number | undefined
 
 
 /**
+ * Specifies the maximum number of expiring entries that may be in the database.
+ *
+ * If there are more expiring items in the database than `MaxExpiringItems`,
+ * the oldest items are deleted until there are only `MaxExpiringItems` items
+ * with an expiration date in the database.
+ */
+export type MaxExpiringItems = number | undefined
+
+
+/**
  * Database options
  */
 export interface Options {
@@ -68,6 +78,12 @@ export interface Options {
      * Standard time period in milliseconds before an entry written to the DB becomes invalid.
      */
     ttlMs?: TtlMs
+    /**
+     * Default value that specifies the maximum number of
+     * expiring items that may be in the database.
+     * Is used by the `deleteOldExpiringItems()` method as default value.
+     */
+    maxExpiringItemsInDb?: MaxExpiringItems
 }
 
 
@@ -90,6 +106,7 @@ export class BunSqliteKeyValue {
 
     db: Database
     ttlMs: TtlMs
+    maxExpiringItemsInDb: MaxExpiringItems
     data = this.getDataObject()
     d = this.data  // Alias for `data`
 
@@ -124,9 +141,11 @@ export class BunSqliteKeyValue {
         // Parse options
         const {
             ttlMs,
+            maxExpiringItemsInDb,
             ...otherOptions
         } = options ?? {}
         this.ttlMs = ttlMs
+        this.maxExpiringItemsInDb = maxExpiringItemsInDb
         const dbOptions: DbOptions = {
             ...otherOptions,
             strict: true,
@@ -206,8 +225,9 @@ export class BunSqliteKeyValue {
         this.setExpiresStatement = this.db.query("UPDATE items SET expires = $expires WHERE key = $key")
         this.getExpiresStatement = this.db.query("SELECT expires FROM items WHERE key = $key")
 
-        // Delete expired items
+        // Delete expired and old expiring items
         this.deleteExpired()
+        this.deleteOldExpiringItems()
     }
 
 
@@ -569,12 +589,15 @@ export class BunSqliteKeyValue {
     // If there are more expiring items in the database than `maxExpiringItemsInDb`,
     // the oldest items are deleted until there are only `maxExpiringItemsInDb` items with
     // an expiration date in the database.
-    deleteOldExpiringItems(maxExpiringItemsInDb: number) {
+    deleteOldExpiringItems(maxExpiringItemsInDb?: number) {
+        let maxExpiringItems: number | undefined = maxExpiringItemsInDb ?? this.maxExpiringItemsInDb
+        if (maxExpiringItems === undefined) return
+
         this.db.transaction(() => {
             const count = this.getExpiringItemsCount()
-            if (count <= maxExpiringItemsInDb) return
+            if (count <= maxExpiringItems) return
 
-            const limit = count - maxExpiringItemsInDb
+            const limit = count - maxExpiringItems
             this.deleteExpiringStatement.run({limit})
         })()
     }
@@ -1212,5 +1235,16 @@ export class BunSqliteKeyValue {
     // ToDo: sUnionStore()
     // Inspired by: https://docs.keydb.dev/docs/commands/#sunionstore
 
+
+    // ToDo: vielleicht...
+    // /**
+    //  * Diese Methode wird nach schreibenden Datenbankzugriffen ausgeführt.
+    //  *
+    //  * Achtung, nicht jede Schreibaktion löst diesen Hook aus. Es werden
+    //  * @private
+    //  */
+    // private onAfterDbWrites() {
+    //
+    // }
 
 }
