@@ -617,7 +617,7 @@ you can do this with `deleteExpired()`.
 ## Delete Old Expiring Items
 
 ```typescript
-deleteOldExpiringItems(maxExpiringItemsInDb: number)
+deleteOldExpiringItems(maxExpiringItemsInDb?: number)
 ```
 
 If there are more expiring items in the database than `maxExpiringItemsInDb`,
