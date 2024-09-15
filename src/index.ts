@@ -49,6 +49,10 @@ export class BunSqliteKeyValue {
     private renameStatement: Statement
     private setExpiresStatement: Statement
     private getExpiresStatement: Statement<{expires: number}>
+    private addTagStatement: Statement
+    private deleteTagStatement: Statement
+    private deleteAllTagsStatement: Statement
+    private getTaggedItemsStatement: Statement<Record>
 
 
     // - `filename`: The full path of the SQLite database to open.
@@ -87,7 +91,7 @@ export class BunSqliteKeyValue {
         this.db.run("PRAGMA journal_mode = WAL")
         this.db.run("PRAGMA foreign_keys = ON")
 
-        // Create items table and indexes
+        // Create items table
         this.db.run(`
         CREATE TABLE IF NOT EXISTS items (
             key TEXT NOT NULL PRIMARY KEY, 
@@ -97,7 +101,7 @@ export class BunSqliteKeyValue {
         // Not required: this.db.run("CREATE UNIQUE INDEX IF NOT EXISTS ix_items_key ON items (key)")
         this.db.run("CREATE INDEX IF NOT EXISTS ix_items_expires ON items (expires)")
 
-        // Create tags table and indexes
+        // Create tags table
         this.db.run(`
         CREATE TABLE IF NOT EXISTS tags (
             tag TEXT NOT NULL,
@@ -160,6 +164,13 @@ export class BunSqliteKeyValue {
         this.renameStatement = this.db.query("UPDATE items SET key = $newKey WHERE key = $oldKey")
         this.setExpiresStatement = this.db.query("UPDATE items SET expires = $expires WHERE key = $key")
         this.getExpiresStatement = this.db.query("SELECT expires FROM items WHERE key = $key")
+
+        this.addTagStatement = this.db.query("INSERT OR IGNORE INTO tags (tag, item_key) VALUES ($tag, $item_key)")
+        this.deleteTagStatement = this.db.query("DELETE FROM tags WHERE tag = $tag AND item_key = $item_key")
+        this.deleteAllTagsStatement = this.db.query("DELETE FROM tags WHERE item_key = $item_key")
+        this.getTaggedItemsStatement = this.db.query(
+            "SELECT key, value, expires FROM items INNER JOIN tags WHERE tags.tag = $tag"
+        )
 
         // Delete expired and old expiring items
         this.deleteExpired()
@@ -1188,7 +1199,15 @@ export class BunSqliteKeyValue {
     // }
 
 
-    // ToDo: setTag(key: Key, tag: Tag)
+    // ToDo: addTag(key: Key, tag: Tag)
+
+    // ToDo: deleteTag(key: Key, tag: Tag)
+
+    // ToDo: deleteTags(key: Key, tags: Tag[] | undefined)
+
+    // ToDo: getTaggedItems(tag: Tag)
+
+    // ToDo: getTaggedValues(tag: Tag) !! maby
 
 
 }
