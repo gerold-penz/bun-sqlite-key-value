@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test"
-import { BunSqliteKeyValue, INVALID_COUNT_ERROR_LABEL, NO_ARRAY_ERROR_LABEL } from "../src"
+import { BunSqliteKeyValue, INVALID_COUNT_ERROR_LABEL, ITEM_NOT_EXISTS, NO_ARRAY_ERROR_LABEL } from "../src"
 import { Statement } from "bun:sqlite"
+import type { Item } from "../src/interfaces.ts"
 
 
 const KEY_1: string = "test-key-1"
@@ -12,6 +13,9 @@ const VALUE_3: string = "Hello Tyrol 3"
 const FIELD_1: string = "test-field-1"
 const FIELD_2: string = "test-field-2"
 const FIELD_3: string = "test-field-3"
+const TAG_1: string = "test-tag-1"
+const TAG_2: string = "test-tag-2"
+const TAG_3: string = "test-tag-3"
 
 
 test("Error labels", () => {
@@ -870,10 +874,128 @@ test("lIndex()", async () => {
 })
 
 
-test("xxx", async () => {
+test("UUID as key", async () => {
     const store = new BunSqliteKeyValue()
 
-    console.log(store.set(KEY_1, VALUE_1))
-    console.log(store.set(undefined, VALUE_1))
+    store.set(KEY_1, VALUE_1)
+    expect(store.set(undefined, VALUE_1)).toHaveLength(36)
 })
 
+
+test("Add tags", async () => {
+    const store = new BunSqliteKeyValue()
+
+    store.set(KEY_1, VALUE_1)
+
+    expect(store.addTag(KEY_1, TAG_1)).toBeTrue()  // Tag added
+    expect(store.addTag(KEY_1, TAG_1)).toBeFalse()  // Tag already exists
+
+    // Item does not exist.
+    expect(() => {
+        store.addTag(KEY_2, TAG_1)
+    }).toThrowError(ITEM_NOT_EXISTS)
+})
+
+
+test("Delete tags", async () => {
+    const store = new BunSqliteKeyValue()
+
+    store.set(KEY_1, VALUE_1)
+    store.set(KEY_2, VALUE_2)
+
+    // Delete tag
+    store.addTag(KEY_1, TAG_1)
+    store.addTag(KEY_1, TAG_3)
+    expect(store.deleteTag(KEY_1, TAG_1)).toBeTrue()
+    expect(store.deleteTag(KEY_1, TAG_1)).toBeFalse()
+
+    // Delete tags (multiple)
+    expect(store.addTag(KEY_1, TAG_3)).toBeFalse()
+    store.deleteTags(KEY_1, [TAG_2, TAG_3])
+    expect(store.addTag(KEY_1, TAG_3)).toBeTrue()
+
+    // Delete tags (all)
+    store.addTag(KEY_1, TAG_1)
+    store.addTag(KEY_1, TAG_2)
+    store.addTag(KEY_1, TAG_3)
+    store.deleteTags(KEY_1)
+    expect(store.addTag(KEY_1, TAG_1)).toBeTrue()
+    expect(store.addTag(KEY_1, TAG_2)).toBeTrue()
+    expect(store.addTag(KEY_1, TAG_3)).toBeTrue()
+})
+
+
+test("Delete tagged items", async () => {
+    const store = new BunSqliteKeyValue()
+
+    const items: Item<string>[] = [
+        {key: KEY_1, value: VALUE_1},
+        {key: KEY_2, value: VALUE_2},
+        {key: KEY_3, value: VALUE_3},
+    ]
+    store.setItems(items)
+
+    store.addTag(KEY_1, TAG_1)
+    store.addTag(KEY_2, TAG_1)
+    store.addTag(KEY_3, TAG_2)
+
+    // Delete tagged items
+    store.deleteTaggedItems(TAG_1)
+    expect(store.has(KEY_1)).toBeFalse()
+    expect(store.has(KEY_2)).toBeFalse()
+    expect(store.has(KEY_3)).toBeTrue()
+})
+
+
+test("Get tagged keys", async () => {
+    const store = new BunSqliteKeyValue()
+
+    const items: Item<string>[] = [
+        {key: KEY_1, value: VALUE_1},
+        {key: KEY_2, value: VALUE_2},
+        {key: KEY_3, value: VALUE_3},
+    ]
+    store.setItems(items)
+
+    store.addTag(KEY_1, TAG_1)
+    store.addTag(KEY_2, TAG_2)
+    store.addTag(KEY_3, TAG_1)
+
+    expect(store.getTaggedKeys(TAG_1)).toEqual([KEY_1, KEY_3])
+})
+
+
+test("Get tagged values", async () => {
+    const store = new BunSqliteKeyValue()
+
+    const items: Item<string>[] = [
+        {key: KEY_1, value: VALUE_1},
+        {key: KEY_2, value: VALUE_2},
+        {key: KEY_3, value: VALUE_3},
+    ]
+    store.setItems(items)
+
+    store.addTag(KEY_1, TAG_1)
+    store.addTag(KEY_2, TAG_2)
+    store.addTag(KEY_3, TAG_1)
+
+    expect(store.getTaggedValues(TAG_1)).toEqual([items[0].value, items[2].value])
+})
+
+
+test("Get tagged items", async () => {
+    const store = new BunSqliteKeyValue()
+
+    const items: Item<string>[] = [
+        {key: KEY_1, value: VALUE_1},
+        {key: KEY_2, value: VALUE_2},
+        {key: KEY_3, value: VALUE_3},
+    ]
+    store.setItems(items)
+
+    store.addTag(KEY_1, TAG_1)
+    store.addTag(KEY_2, TAG_2)
+    store.addTag(KEY_3, TAG_1)
+
+    expect(store.getTaggedItems(TAG_1)).toEqual([items[0], items[2]])
+})

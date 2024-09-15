@@ -3,7 +3,7 @@ import { serialize, deserialize } from "node:v8"
 import { dirname, resolve } from "node:path"
 import { existsSync, mkdirSync } from "node:fs"
 import type {
-    MaxExpiringItems, Options, TtlMs, Record, Key, Item, Field
+    MaxExpiringItems, Options, TtlMs, Record, Key, Item, Field, Tag
 } from "./interfaces.ts"
 
 
@@ -20,6 +20,7 @@ const MAX_UTF8_CHAR: string = String.fromCodePoint(1_114_111)
 
 export const INVALID_COUNT_ERROR_LABEL: string = "[INVALID_COUNT_ERROR]"
 export const NO_ARRAY_ERROR_LABEL: string = "[NO_ARRAY_ERROR]"
+export const ITEM_NOT_EXISTS: string = "[ITEM_NOT_EXISTS]"
 
 
 export class BunSqliteKeyValue {
@@ -52,7 +53,8 @@ export class BunSqliteKeyValue {
     private addTagStatement: Statement
     private deleteTagStatement: Statement
     private deleteAllTagsStatement: Statement
-    private getTaggedItemsStatement: Statement<Record>
+    private getTaggedKeysStatement: Statement<{key: Key}>
+    private deleteTaggedItemsStatement: Statement
 
 
     // - `filename`: The full path of the SQLite database to open.
@@ -165,11 +167,14 @@ export class BunSqliteKeyValue {
         this.setExpiresStatement = this.db.query("UPDATE items SET expires = $expires WHERE key = $key")
         this.getExpiresStatement = this.db.query("SELECT expires FROM items WHERE key = $key")
 
-        this.addTagStatement = this.db.query("INSERT OR IGNORE INTO tags (tag, item_key) VALUES ($tag, $item_key)")
-        this.deleteTagStatement = this.db.query("DELETE FROM tags WHERE tag = $tag AND item_key = $item_key")
-        this.deleteAllTagsStatement = this.db.query("DELETE FROM tags WHERE item_key = $item_key")
-        this.getTaggedItemsStatement = this.db.query(
-            "SELECT key, value, expires FROM items INNER JOIN tags WHERE tags.tag = $tag"
+        this.addTagStatement = this.db.query(
+            "INSERT OR IGNORE INTO tags (tag, item_key) VALUES ($tag, $item_key)"
+        )
+        this.deleteTagStatement = this.db.query("DELETE FROM tags WHERE tag = $tag AND item_key = $key")
+        this.deleteAllTagsStatement = this.db.query("DELETE FROM tags WHERE item_key = $key")
+        this.getTaggedKeysStatement = this.db.query("SELECT item_key AS key FROM tags WHERE tag = $tag")
+        this.deleteTaggedItemsStatement = this.db.query(
+            "DELETE FROM items WHERE key IN (SELECT item_key FROM tags WHERE tag = $tag)"
         )
 
         // Delete expired and old expiring items
@@ -1187,26 +1192,95 @@ export class BunSqliteKeyValue {
     // Inspired by: https://docs.keydb.dev/docs/commands/#sunionstore
 
 
-    // ToDo: vielleicht...
-    // /**
-    //  * Diese Methode wird nach schreibenden Datenbankzugriffen ausgeführt.
-    //  *
-    //  * Achtung, nicht jede Schreibaktion löst diesen Hook aus. Es werden
-    //  * @private
-    //  */
-    // private onAfterDbWrites() {
-    //
-    // }
+    /**
+     * Adds a tag to an item.
+     *
+     * Raises an error if the item key does not exist.
+     *
+     * @param {Key} key
+     * @param {Tag} tag
+     * @returns {boolean}
+     *  Returns `true` if the tag has been added.
+     *  Returns `false` if the tag already exists.
+     */
+    addTag(key: Key, tag: Tag): boolean {
+        try {
+            return this.addTagStatement.run({item_key: key, tag}).changes === 1
+        } catch (error: any) {
+            if (error.toString().includes("FOREIGN KEY constraint failed")) {
+                throw new Error(ITEM_NOT_EXISTS)
+            } else {
+                throw error
+            }
+        }
+    }
 
 
-    // ToDo: addTag(key: Key, tag: Tag)
+    /**
+     * Deletes a tag of an item.
+     *
+     * @param {Key} key
+     * @param {Tag} tag
+     * @returns {boolean}
+     *  Returns `true` if the tag has been deleted.
+     *  Returns `false` if the tag or the item does not exist.
+     */
+    deleteTag(key: Key, tag: Tag): boolean {
+        return this.deleteTagStatement.run({key, tag}).changes === 1
+    }
 
-    // ToDo: deleteTag(key: Key, tag: Tag)
 
-    // ToDo: deleteTags(key: Key, tags: Tag[] | undefined)
+    /**
+     * Deletes multiple tags or all tags of the item.
+     *
+     * @param {Key} key
+     * @param {Tag[] | undefined} tags
+     *  Deletes all tags within the array.
+     *  If `undefined`, all tags of the item are deleted.
+     */
+    deleteTags(key: Key, tags?: Tag[]) {
+        if (tags) {
+            this.db.transaction(() => {
+                tags.forEach((tag) => this.deleteTag(key, tag))
+            })()
+        } else {
+            this.deleteAllTagsStatement.run({key})
+        }
+    }
 
-    // ToDo: getTaggedItems(tag: Tag)
 
-    // ToDo: getTaggedValues(tag: Tag) !! maby
+    /**
+     * Deletes tagged items.
+     *
+     * @param {Tag} tag
+     */
+    deleteTaggedItems(tag: Tag) {
+        this.deleteTaggedItemsStatement.run({tag})
+    }
+
+
+    getTaggedKeys(tag: Tag): Key[] | undefined {
+        const records = this.getTaggedKeysStatement.all({tag})
+        if (!records?.length) return
+        return records.map(record => record.key)
+    }
+
+
+    getTaggedValues<T = any>(tag: Tag): (T | undefined)[] | undefined {
+        return this.db.transaction(() => {
+            const taggedKeys = this.getTaggedKeys(tag)
+            if (!taggedKeys) return
+            return this.getValues<T>(taggedKeys)
+        })()
+    }
+
+
+    getTaggedItems<T>(tag: Tag): Item<T>[] | undefined {
+        return this.db.transaction(() => {
+            const taggedKeys = this.getTaggedKeys(tag)
+            if (!taggedKeys) return
+            return this.getItems<T>(taggedKeys)
+        })()
+    }
 
 }
