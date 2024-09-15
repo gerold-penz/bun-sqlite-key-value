@@ -85,11 +85,27 @@ export class BunSqliteKeyValue {
         // Open database
         this.db = new Database(filename, dbOptions)
         this.db.run("PRAGMA journal_mode = WAL")
+        this.db.run("PRAGMA foreign_keys = ON")
 
-        // Create table and indexes
-        this.db.run("CREATE TABLE IF NOT EXISTS items (key TEXT PRIMARY KEY, value BLOB, expires INT)")
-        this.db.run("CREATE UNIQUE INDEX IF NOT EXISTS ix_items_key ON items (key)")
+        // Create items table and indexes
+        this.db.run(`
+        CREATE TABLE IF NOT EXISTS items (
+            key TEXT NOT NULL PRIMARY KEY, 
+            value BLOB, 
+            expires INT
+        ) STRICT`)
+        // Not required: this.db.run("CREATE UNIQUE INDEX IF NOT EXISTS ix_items_key ON items (key)")
         this.db.run("CREATE INDEX IF NOT EXISTS ix_items_expires ON items (expires)")
+
+        // Create tags table and indexes
+        this.db.run(`
+        CREATE TABLE IF NOT EXISTS tags (
+            tag TEXT NOT NULL,
+            item_key TEXT NOT NULL REFERENCES items ON DELETE CASCADE ON UPDATE CASCADE,
+            PRIMARY KEY (tag, item_key)
+        ) STRICT`)
+        // Not required: this.db.run("CREATE UNIQUE INDEX IF NOT EXISTS ix_tags_unique ON tags (tag, item_key)")
+        this.db.run("CREATE INDEX IF NOT EXISTS ix_tags_item_key ON tags (item_key)")
 
         // Prepare and cache statements
         this.clearStatement = this.db.query("DELETE FROM items")

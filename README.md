@@ -183,8 +183,8 @@ Writes a value into the database and returns the key.
 
 ### key
 
-The key can be a string or `undefined`.
-If the `key` is `undefined`, a UUID is generated as the key.
+The `key` can be a string or `undefined`.
+If the `key` is `undefined`, a UUID is used instead.
 
 ### value
 

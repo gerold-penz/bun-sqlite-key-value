@@ -17,7 +17,3 @@ const targetBuffer = store.get("my-image")
 writeFileSync("<Target File Path>", targetBuffer)
 
 
-
-
-
-
