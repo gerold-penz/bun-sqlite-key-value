@@ -173,17 +173,18 @@ Closes database and removes *.sqlite-shm* and *.sqlite-wal* files.
 ## Write Value
 
 ```typescript
-set(key: string, value: any, ttlMs?: number)
+set(key: string | undefined, value: any, ttlMs?: number): Key
 
 data.<key> = <value>
 data[<key>] = <value>
 ```
 
-Writes a value into the database.
+Writes a value into the database and returns the key.
 
 ### key
 
-The key must be a string.
+The key can be a string or `undefined`.
+If the `key` is `undefined`, a UUID is generated as the key.
 
 ### value
 

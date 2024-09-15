@@ -869,3 +869,11 @@ test("lIndex()", async () => {
     }).toThrowError(NO_ARRAY_ERROR_LABEL)
 })
 
+
+test("xxx", async () => {
+    const store = new BunSqliteKeyValue()
+
+    console.log(store.set(KEY_1, VALUE_1))
+    console.log(store.set(undefined, VALUE_1))
+})
+
