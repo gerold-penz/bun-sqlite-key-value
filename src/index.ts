@@ -23,6 +23,10 @@ export const NO_ARRAY_ERROR_LABEL: string = "[NO_ARRAY_ERROR]"
 export const ITEM_NOT_EXISTS: string = "[ITEM_NOT_EXISTS]"
 
 
+/**
+ * A super fast key-value store with SQLite that uses **bun:sqlite**
+ * and v8 as a fast JSON replacement.
+ */
 export class BunSqliteKeyValue {
 
     db: Database
@@ -252,15 +256,11 @@ export class BunSqliteKeyValue {
     }
 
 
-    /**
-     * Alias for getCount()
-     */
+    // Alias for getCount()
     count = this.getCount
 
 
-    /**
-     * Getter for getCount()
-     */
+    // Getter for getCount()
     get length() {
         return this.getCount()
     }
@@ -301,13 +301,8 @@ export class BunSqliteKeyValue {
     }
 
 
-    /**
-     * Alias for set()
-     */
+    // Alias for set()
     setValue = this.set
-    /**
-     * Alias for set()
-     */
     put = this.set
 
 
