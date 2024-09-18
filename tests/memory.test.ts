@@ -999,3 +999,20 @@ test("Get tagged items", async () => {
 
     expect(store.getTaggedItems(TAG_1)).toEqual([items[0], items[2]])
 })
+
+
+test("lLen()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    const items: Item<any>[] = [
+        {key: KEY_1, value: [VALUE_1, VALUE_2]},
+        {key: KEY_2, value: VALUE_2},
+    ]
+    store.setItems(items)
+
+    expect(store.lLen(KEY_1)).toEqual(2)
+    expect(() => {
+        store.lLen(KEY_2)
+    }).toThrowError(NO_ARRAY_ERROR_LABEL)
+    expect(store.lLen(KEY_3)).toEqual(0)
+})

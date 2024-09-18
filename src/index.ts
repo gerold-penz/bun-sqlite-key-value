@@ -220,9 +220,7 @@ export class BunSqliteKeyValue {
     }
 
 
-    /**
-     * Alias for delete()
-     */
+    // Alias for delete()
     del = this.delete
 
 
@@ -815,11 +813,6 @@ export class BunSqliteKeyValue {
     /**
      * Returns the *values* contained in the hash stored at `key`.
      *
-     * @param {Key} key
-     * @returns {T[] | undefined}
-     *  If the data record (marked with `key`) does not exist, `undefined` is returned.
-     *
-     * @description
      * Use `hmGet()` to read *field names* and *values*.
      *
      * Do not use the hash functions with several very large amounts of data or blobs.
@@ -827,6 +820,10 @@ export class BunSqliteKeyValue {
      * It is better to use `setValues()` and `getValues()` for large amounts of data.
      *
      * Inspired by: https://docs.keydb.dev/docs/commands/#hvals
+     *
+     * @param {Key} key
+     * @returns {T[] | undefined}
+     *  If the data record (marked with `key`) does not exist, `undefined` is returned.
      *
      * @example
      * ```TypeScript
@@ -857,15 +854,14 @@ export class BunSqliteKeyValue {
     /**
      * Hash function: Delete a field of the map object.
      *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#hdel
+     *
      * @param {Key} key - The key of the item.
      * @param {Field} field - The name of the field.
      * @returns {boolean | undefined}
      *  - `undefined` if the key does not exist.
      *  - `true` if the field existed and was deleted.
      *  - `false` if the field did not exist.
-     *
-     * @description
-     * Inspired by: https://docs.keydb.dev/docs/commands/#hdel
      */
     hDelete(key: Key, field: Field): boolean | undefined {
         // @ts-ignore (Transaction returns boolean, not void.)
@@ -924,13 +920,12 @@ export class BunSqliteKeyValue {
     /**
      * Array - Left Push - Adds elements at the begin of the array.
      *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#lpush
+     *
      * @param {Key} key
      * @param {T} values
      * @returns {number}
      *  New length of the list.
-     *
-     * @description
-     * Inspired by: https://docs.keydb.dev/docs/commands/#lpush
      */
     lPush<T = any>(key: Key, ...values: T[]): number {
         // @ts-ignore (Transaction returns number, not void.)
@@ -956,13 +951,12 @@ export class BunSqliteKeyValue {
     /**
      * Array - Right Push - Adds elements at the end of the array.
      *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#rpush
+     *
      * @param {Key} key
      * @param {T} values
      * @returns {number}
      *  New length of the list.
-     *
-     * @description
-     * Inspired by: https://docs.keydb.dev/docs/commands/#rpush
      */
     rPush<T = any>(key: Key, ...values: T[]): number {
         // @ts-ignore (Transaction returns number, not void.)
@@ -987,15 +981,14 @@ export class BunSqliteKeyValue {
      * Removes and returns the first element of the list stored at key.
      * If `count` is specified, returns `count` number of elements.
      *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#lpop
+     *
      * @param {Key} key
      * @param {number} count
      * @returns { T | T[] | undefined}
      *  If `count` is `undefined`, it returns the first element of the list stored at `key`.
      *  If `count` is a positive number, it returns the first `count` elements of the list stored at key.
      *  Returns `undefined` if `key` was not found or the array is empty.
-     *
-     * @description
-     * Inspired by: https://docs.keydb.dev/docs/commands/#lpop
      */
     lPop<T = any>(key: Key, count?: number): T | T[] | undefined {
         // @ts-ignore (Transaction returns array elements, not void.)
@@ -1028,15 +1021,14 @@ export class BunSqliteKeyValue {
      * Removes and returns the last element of the list stored at `key`.
      * If `count` is specified, returns `count` number of elements.
      *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#rpop
+     *
      * @param {Key} key
      * @param {number} count
      * @returns {T[] | T | undefined}
      *  If `count` is `undefined`, it returns the last element of the list stored at `key`.
      *  If `count` is a positive number, it returns the last `count` elements of the list stored at key.
      *  Returns `undefined` if `key` was not found or the array is empty.
-     *
-     * @description
-     * Inspired by: https://docs.keydb.dev/docs/commands/#rpop
      */
     rPop<T = any>(key: Key, count?: number): T | T[] | undefined {
         // @ts-ignore (Transaction returns array elements, not void.)
@@ -1073,13 +1065,12 @@ export class BunSqliteKeyValue {
      * Negative indices can be used to designate elements starting at the tail of the list.
      * Here, -1 means the last element, -2 means the penultimate and so forth.
      *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#lindex
+     *
      * @param {Key} key
      * @param {number} index
      * @returns {T | undefined}
      *  When the value at key is not a list, an error is returned.
-     *
-     * @description
-     * Inspired by: https://docs.keydb.dev/docs/commands/#lindex
      */
     lIndex<T = any>(key: Key, index: number): T | undefined {
         const array = this.get<Array<T>>(key)
@@ -1095,12 +1086,26 @@ export class BunSqliteKeyValue {
     }
 
 
-    // ToDo: lLen()
-    // Returns the length of the list stored at `key`.
-    // If key does not exist, it is interpreted as an empty list and 0 is returned.
-    // An error is returned when the value stored at `key` is not an array. --> `Array.isArray()`
-    // Returns: The length of the list.
-    // Inspired by: https://docs.keydb.dev/docs/commands/#llen
+    /**
+     * Returns the length of the list stored at `key`.
+     *
+     * If `key` does not exist, it is interpreted as an empty list and 0 is returned.
+     * An error is returned when the value stored at `key` is not an array. --> `Array.isArray()`
+     *
+     * Inspired by: https://www.dragonflydb.io/docs/command-reference/lists/llen
+     *
+     * @param {Key} key
+     * @returns {number}
+     *  The length of the list at `key`.
+     */
+    lLen(key: Key): number {
+        const array = this.get<Array<any>>(key)
+        if (array === undefined) return 0
+        if (Array.isArray(array) === false) {
+            throw new Error(NO_ARRAY_ERROR_LABEL + ` Value at "${key.substring(-80)}" is not an array.`)
+        }
+        return array.length
+    }
 
 
     // ToDo: lSet()

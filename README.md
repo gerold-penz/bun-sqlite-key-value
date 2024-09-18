@@ -81,6 +81,7 @@ The ideas for the implementation come from
   - `lPop()` --> Returns elements at the begin of the list and removes them.
   - `rPop()` --> Returns elements at the end of the list and removes them.
   - `lIndex()` --> Returns the element at the specified index of the list.
+  - `lLen()` --> Returns the length of the list.
 - Tags (Labels)
   - `addTag()` --> Adds a tag to an item.
   - `deleteTag()` --> Deletes a tag of an item.
