@@ -148,7 +148,7 @@ Pass an empty string (`""`) or `":memory:"` or `undefined` for an in-memory data
   Open the database as read-write (default: true).
 
 `ttlMs?: boolean`:
-  Default time span in milliseconds before an entry 
+  Default time span in milliseconds before an item 
   written to the DB becomes invalid and is marked for deletion.
 
 `maxExpiringItemsInDb?: number`:
@@ -324,7 +324,7 @@ Reads the data from the database and returns an array with the values.
 
 `string[]`: Array with keys. The returned array is exactly 
   the same size as the passed array.
-  Entries that are not found are returned as `undefined`.
+  Items that are not found are returned as `undefined`.
   Only exact matches with the keys are returned.
 
 ### Example
@@ -417,7 +417,7 @@ Reads the data from the database and returns items in an array as key-value pair
 
 `string[]`: Array with keys. The returned array is exactly 
   the same size as the passed array.
-  Entries that are not found are returned as `undefined`.
+  Items that are not found are returned as `undefined`.
   Only exact matches with the keys are returned.
 
 ### Example
@@ -586,9 +586,9 @@ delete <store>.data.<key>
 
 Deletes all items if no parameter was passed.
 
-`key: string`: Deletes the entry whose key was passed as a string.
+`key: string`: Deletes the item whose key was passed as a string.
 
-`keys: string[]`: Deletes the entries whose keys were passed in an array.
+`keys: string[]`: Deletes the items whose keys were passed in an array.
 
 ### Example
 
@@ -617,10 +617,10 @@ deleteExpired()
 ```
 
 Deletes all expired items. 
-These are entries whose TTL (Time to live) has expired.
-These entries are not deleted continuously, 
+These are items whose TTL (Time to live) has expired.
+These items are not deleted continuously, 
 but only when they are accessed directly or when the database is opened.
-If you want to delete the expired entries in between, 
+If you want to delete the expired items in between, 
 you can do this with `deleteExpired()`.
 
 
@@ -663,7 +663,7 @@ length // --> getter method for `getCount()`
 ```
 
 Returns the number of all items, including those that have already expired.
-The fact that possibly expired entries are also counted is for reasons of speed.
+The fact that possibly expired items are also counted is for reasons of speed.
 Use `getCountValid()` if you want to get the number of items that have not yet expired.
 If you do not use `ttlMs` (time to live), `getCount()` is faster than `getCountValid()`. 
 
@@ -694,11 +694,11 @@ Can also delete the expired items.
 
 ### deleteExpired
 
-If `true` is passed, the expired entries are deleted first 
-before the entries are counted.
+If `true` is passed, the expired items are deleted first 
+before the items are counted.
 
 If the parameter is not specified or `false` is passed, 
-then only the entries that have no expiration date or 
+then only the items that have no expiration date or 
 whose expiration date is in the future are counted.
 
 
