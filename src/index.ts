@@ -44,7 +44,7 @@ export const ITEM_NOT_EXISTS: string = ITEM_NOT_EXISTS_ERROR_LABEL  // Deprecate
 /**
  * This error is raises if the `index` is out of range.
  *
- * @category Error Labels
+ * @category Errors
  */
 export const INDEX_OUT_OF_RANGE_ERROR_LABEL: string = "[INDEX_OUT_OF_RANGE]"
 
