@@ -7,9 +7,7 @@ import type {
 } from "./interfaces.ts"
 
 
-/**
- * Internally used database options
- */
+// Internally used database options
 interface DbOptions extends Omit<Options, "ttlMs"> {
     strict: boolean
 }
@@ -18,9 +16,26 @@ interface DbOptions extends Omit<Options, "ttlMs"> {
 const MIN_UTF8_CHAR: string = String.fromCodePoint(1)
 const MAX_UTF8_CHAR: string = String.fromCodePoint(1_114_111)
 
+/**
+ * This error is raised if the `count` argument is invalid.
+ */
 export const INVALID_COUNT_ERROR_LABEL: string = "[INVALID_COUNT_ERROR]"
+/**
+ * This error is raised if the value is not an array.
+ */
 export const NO_ARRAY_ERROR_LABEL: string = "[NO_ARRAY_ERROR]"
-export const ITEM_NOT_EXISTS: string = "[ITEM_NOT_EXISTS]"
+/**
+ * This error is raised if the item does not exist.
+ */
+export const ITEM_NOT_EXISTS_ERROR_LABEL: string = "[ITEM_NOT_EXISTS]"
+/**
+ * @deprecated Use ITEM_NOT_EXISTS_ERROR_LABEL instead.
+ */
+export const ITEM_NOT_EXISTS: string = ITEM_NOT_EXISTS_ERROR_LABEL  // Deprecated:
+/**
+ * This error is raises if the `index` is out of range.
+ */
+export const INDEX_OUT_OF_RANGE_ERROR_LABEL: string = "[INDEX_OUT_OF_RANGE]"
 
 
 /**
@@ -188,7 +203,7 @@ export class BunSqliteKeyValue {
 
 
     /**
-     * Delete all expired records
+     * Deletes all expired records.
      */
     deleteExpired() {
         this.deleteExpiredStatement.run({now: Date.now()})
@@ -196,7 +211,7 @@ export class BunSqliteKeyValue {
 
 
     /**
-     * Delete one or multiple items
+     * Deletes one or multiple items.
      *
      * Inspired by: https://docs.keydb.dev/docs/commands/#del
      *
@@ -225,7 +240,7 @@ export class BunSqliteKeyValue {
 
 
     /**
-     * Delete all items
+     * Deletes all items
      */
     clear() {
         this.delete()
@@ -712,9 +727,23 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Do not use it with several very large amounts of data or blobs.
-    // This is because the entire data record with all fields is always read and written.
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hset
+    //
+
+    /**
+     * Hash (Map Object) - Write Value
+     *
+     * Do not use it with several very large amounts of data or blobs.
+     * This is because the entire data record with all fields is always read and written.
+     *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#hset
+     *
+     * @category Hash (Map Object)
+     * @param {Key} key
+     * @param {Field} field
+     * @param {T} value
+     * @param {TtlMs} ttlMs
+     * @returns {boolean}
+     */
     hSet<T = any>(key: Key, field: Field, value: T, ttlMs?: TtlMs): boolean {
         // @ts-ignore (Transaction returns boolean, not void.)
         return this.db.transaction(() => {
@@ -727,9 +756,21 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Do not use it with several very large amounts of data or blobs.
-    // This is because the entire data record with all fields is always read and written.
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hget
+
+
+    /**
+     * Hash (Map Object) - Read Value
+     *
+     * Do not use it with several very large amounts of data or blobs.
+     * This is because the entire data record with all fields is always read and written.
+     *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#hget
+     *
+     * @category Hash (Map Object)
+     * @param {Key} key
+     * @param {Field} field
+     * @returns {T | undefined}
+     */
     hGet<T = any>(key: Key, field: Field): T | undefined {
         const map = this.get<Map<string, T>>(key)
         if (map === undefined) return
@@ -737,9 +778,19 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Do not use it with several very large amounts of data or blobs.
-    // This is because the entire data record with all fields is always read and written.
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hmset
+    /**
+     * Hash (Map Object) - Write Multiple Values
+     *
+     * Do not use it with several very large amounts of data or blobs.
+     * This is because the entire data record with all fields is always read and written.
+     *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#hmset
+     *
+     * @category Hash (Map Object)
+     * @param {Key} key
+     * @param {{[p: Field]: T}} fields
+     * @param {TtlMs} ttlMs
+     */
     hmSet<T = any>(key: Key, fields: {[field: Field]: T}, ttlMs?: TtlMs) {
         this.db.transaction(() => {
             const map = this.get<Map<string, T>>(key) ?? new Map<string, T>()
@@ -751,9 +802,19 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Do not use it with several very large amounts of data or blobs.
-    // This is because the entire data record with all fields is always read and written.
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hmget
+    /**
+     * Hash (Map Object) - Read Multiple Values
+     *
+     * Do not use it with several very large amounts of data or blobs.
+     * This is because the entire data record with all fields is always read and written.
+     *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#hmget
+     *
+     * @category Hash (Map Object)
+     * @param {Key} key
+     * @param {string[]} fields
+     * @returns {{[p: Field]: T | undefined} | undefined}
+     */
     hmGet<T = any>(key: Key, fields?: string[]): {[field: Field]: T | undefined} | undefined {
         const map = this.get<Map<string, T>>(key)
         if (map === undefined) return
@@ -769,10 +830,21 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Returns if `field` is an existing field in the hash stored at `key`.
-    // Do not use it with several very large amounts of data or blobs.
-    // This is because the entire data record with all fields is always read.
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hexists
+    /**
+     * Hash (Map Object) - Has Field
+     *
+     * Returns if `field` is an existing field in the hash stored at `key`.
+     *
+     * Do not use it with several very large amounts of data or blobs.
+     * This is because the entire data record with all fields is always read.
+     *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#hexists
+     *
+     * @category Hash (Map Object)
+     * @param {Key} key
+     * @param {Field} field
+     * @returns {boolean | undefined}
+     */
     hHasField(key: Key, field: Field): boolean | undefined {
         const map = this.get<Map<string, any>>(key)
         if (map === undefined) return
@@ -784,7 +856,15 @@ export class BunSqliteKeyValue {
     hExists = this.hHasField
 
 
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hlen
+    /**
+     * Hash (Map Object) - Count Fields
+     *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#hlen
+     *
+     * @category Hash (Map Object)
+     * @param {Key} key
+     * @returns {number | undefined}
+     */
     hGetCount(key: Key): number | undefined {
         const map = this.get<Map<string, any>>(key)
         if (map === undefined) return
@@ -796,7 +876,15 @@ export class BunSqliteKeyValue {
     hLen = this.hGetCount
 
 
-    // Inspired by: https://docs.keydb.dev/docs/commands/#hkeys
+    /**
+     * Hash (Map Object) - Get All Field Names
+     *
+     * Inspired by: https://docs.keydb.dev/docs/commands/#hkeys
+     *
+     * @category Hash (Map Object)
+     * @param {Key} key
+     * @returns {string[] | undefined}
+     */
     hGetFields(key: Key): string[] | undefined {
         const map = this.get<Map<string, any>>(key)
         if (map === undefined) return
@@ -804,9 +892,7 @@ export class BunSqliteKeyValue {
     }
 
 
-    /**
-     * Alias for hGetFields()
-     */
+    // Alias for hGetFields()
     hKeys = this.hGetFields
 
 
@@ -821,6 +907,7 @@ export class BunSqliteKeyValue {
      *
      * Inspired by: https://docs.keydb.dev/docs/commands/#hvals
      *
+     * @category Hash (Map Object)
      * @param {Key} key
      * @returns {T[] | undefined}
      *  If the data record (marked with `key`) does not exist, `undefined` is returned.
@@ -845,17 +932,16 @@ export class BunSqliteKeyValue {
     }
 
 
-    /**
-     * Alias for hGetValues()
-     */
+    // Alias for hGetValues()
     hVals = this.hGetValues
 
 
     /**
-     * Hash function: Delete a field of the map object.
+     * Hash function: Deletes a field of the map object.
      *
      * Inspired by: https://docs.keydb.dev/docs/commands/#hdel
      *
+     * @category Hash (Map Object)
      * @param {Key} key - The key of the item.
      * @param {Field} field - The name of the field.
      * @returns {boolean | undefined}
@@ -878,6 +964,7 @@ export class BunSqliteKeyValue {
     /**
      * Inspired by: https://docs.keydb.dev/docs/commands/#hincrby
      *
+     * @category Hash (Map Object)
      * @param {Key} key
      * @param {Field} field
      * @param {number} incrBy
@@ -906,6 +993,7 @@ export class BunSqliteKeyValue {
     /**
      * Inspired by: https://docs.keydb.dev/docs/commands/#hincrby
      *
+     * @category Hash (Map Object)
      * @param {Key} key
      * @param {Field} field
      * @param {number} decrBy
@@ -922,6 +1010,7 @@ export class BunSqliteKeyValue {
      *
      * Inspired by: https://docs.keydb.dev/docs/commands/#lpush
      *
+     * @category List (Array Object)
      * @param {Key} key
      * @param {T} values
      * @returns {number}
@@ -953,6 +1042,7 @@ export class BunSqliteKeyValue {
      *
      * Inspired by: https://docs.keydb.dev/docs/commands/#rpush
      *
+     * @category List (Array Object)
      * @param {Key} key
      * @param {T} values
      * @returns {number}
@@ -983,6 +1073,7 @@ export class BunSqliteKeyValue {
      *
      * Inspired by: https://docs.keydb.dev/docs/commands/#lpop
      *
+     * @category List (Array Object)
      * @param {Key} key
      * @param {number} count
      * @returns { T | T[] | undefined}
@@ -1023,6 +1114,7 @@ export class BunSqliteKeyValue {
      *
      * Inspired by: https://docs.keydb.dev/docs/commands/#rpop
      *
+     * @category List (Array Object)
      * @param {Key} key
      * @param {number} count
      * @returns {T[] | T | undefined}
@@ -1067,6 +1159,7 @@ export class BunSqliteKeyValue {
      *
      * Inspired by: https://docs.keydb.dev/docs/commands/#lindex
      *
+     * @category List (Array Object)
      * @param {Key} key
      * @param {number} index
      * @returns {T | undefined}
@@ -1094,6 +1187,7 @@ export class BunSqliteKeyValue {
      *
      * Inspired by: https://www.dragonflydb.io/docs/command-reference/lists/llen
      *
+     * @category List (Array Object)
      * @param {Key} key
      * @returns {number}
      *  The length of the list at `key`.
@@ -1108,20 +1202,46 @@ export class BunSqliteKeyValue {
     }
 
 
-    // ToDo: lSet()
-    // Achtung, wenn ein Index übergeben wird, der nicht im Array enthalten ist, soll ein Fehler ausgelöst werden.
-    // Achtung, es können auch negative Werte wie bei `<array>.at()` als Index verwendet werden.
-    //
-    // function setAt<T = any>(array: Array, index: number, value: T) {
-    //     const len = array.length
-    //     if (index < 0) {
-    //         array[len + index] = value
-    //     } else {
-    //         array[index] = value
-    //     }
-    // }
-    //
-    // Inspired by: https://docs.keydb.dev/docs/commands/#lset
+    /**
+     * Updates the list element at `index` to `value`.
+     *
+     * For more information on the index argument, see `lIndex()`.
+     *
+     * An error is returned if the key does not exist.
+     * An error is returned when the value stored at `key` is not an array.
+     * An error is returned for out of range indexes.
+     *
+     * Inspired by: https://www.dragonflydb.io/docs/command-reference/lists/lset
+     *
+     * @category List (Array Object)
+     * @param {Key} key
+     * @param {number} index
+     * @param {T} value
+     * @returns `true` if the `key` exists and the value has been set.
+     */
+    lSet<T = any>(key: Key, index: number, value: T): true {
+        // @ts-ignore (Transaction returns boolean or undefined, not void.)
+        return this.db.transaction(() => {
+            const array = this.get<Array<T>>(key)
+            if (array === undefined) {
+                throw new Error(ITEM_NOT_EXISTS_ERROR_LABEL + ` Key "${key.substring(-80)}" not found.`)
+            }
+            if (Array.isArray(array) === false) {
+                throw new Error(NO_ARRAY_ERROR_LABEL + ` Value at "${key.substring(-80)}" is not an array.`)
+            }
+            const len = array.length
+            if (index >= len || index < (len * -1)) {
+                throw new Error(INDEX_OUT_OF_RANGE_ERROR_LABEL + ` Array length: ${len}`)
+            }
+            if (index < 0) {
+                array[len + index] = value
+            } else {
+                array[index] = value
+            }
+            this.set<Array<T>>(key, array)
+            return true
+        }).immediate()
+    }
 
 
     // ToDo: lRange()
@@ -1197,6 +1317,7 @@ export class BunSqliteKeyValue {
      *
      * Raises an error if the item key does not exist.
      *
+     * @category Tags (Labels)
      * @param {Key} key
      * @param {Tag} tag
      * @returns {boolean}
@@ -1208,7 +1329,7 @@ export class BunSqliteKeyValue {
             return this.addTagStatement.run({item_key: key, tag}).changes === 1
         } catch (error: any) {
             if (error.toString().includes("FOREIGN KEY constraint failed")) {
-                throw new Error(ITEM_NOT_EXISTS)
+                throw new Error(ITEM_NOT_EXISTS_ERROR_LABEL + ` Key "${key.substring(-80)}" not found.`)
             } else {
                 throw error
             }
@@ -1219,6 +1340,7 @@ export class BunSqliteKeyValue {
     /**
      * Deletes a tag of an item.
      *
+     * @category Tags (Labels)
      * @param {Key} key
      * @param {Tag} tag
      * @returns {boolean}
@@ -1233,6 +1355,7 @@ export class BunSqliteKeyValue {
     /**
      * Deletes multiple tags or all tags of the item.
      *
+     * @category Tags (Labels)
      * @param {Key} key
      * @param {Tag[] | undefined} tags
      *  Deletes all tags within the array.
@@ -1252,6 +1375,7 @@ export class BunSqliteKeyValue {
     /**
      * Deletes tagged items.
      *
+     * @category Tags (Labels)
      * @param {Tag} tag
      */
     deleteTaggedItems(tag: Tag) {
@@ -1259,6 +1383,13 @@ export class BunSqliteKeyValue {
     }
 
 
+    /**
+     * Returns tagged keys.
+     *
+     * @category Tags (Labels)
+     * @param {Tag} tag
+     * @returns {Key[] | undefined}
+     */
     getTaggedKeys(tag: Tag): Key[] | undefined {
         const records = this.getTaggedKeysStatement.all({tag})
         if (!records?.length) return
@@ -1266,6 +1397,13 @@ export class BunSqliteKeyValue {
     }
 
 
+    /**
+     * Returns tagged values.
+     *
+     * @category Tags (Labels)
+     * @param {Tag} tag
+     * @returns {(T | undefined)[] | undefined}
+     */
     getTaggedValues<T = any>(tag: Tag): (T | undefined)[] | undefined {
         return this.db.transaction(() => {
             const taggedKeys = this.getTaggedKeys(tag)
@@ -1275,6 +1413,13 @@ export class BunSqliteKeyValue {
     }
 
 
+    /**
+     * Returns tagged items.
+     *
+     * @category Tags (Labels)
+     * @param {Tag} tag
+     * @returns {Item<T>[] | undefined}
+     */
     getTaggedItems<T>(tag: Tag): Item<T>[] | undefined {
         return this.db.transaction(() => {
             const taggedKeys = this.getTaggedKeys(tag)

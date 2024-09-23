@@ -1,21 +1,25 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": [
-    "src/index.ts"
+    "src/*.ts",
+    "src/**/*.ts"
   ],
-  "out": "docs/api",
+  "out": "docs",
   "name": "Bun SQlite Key Value",
   "navigationLinks": {
     "GitHub": "https://github.com/gerold-penz/bun-sqlite-key-value"
   },
-  "exclude": [
-    "./README.md"
-  ],
   "lightHighlightTheme": "github-light",
   "darkHighlightTheme": "github-dark",
   "sourceLinkExternal": true,
   "searchInComments": true,
   "searchInDocuments": true,
-  "excludeNotDocumented": true
+  "excludeNotDocumented": true,
+  "customFooterHtml": "By Gerold Penz - <a href='https://gp-softwaretechnik.at/' target='_blank'>GP-Softwaretechnik</a>.",
+  "hideParameterTypesInTitle": false
+  //  "exclude": [
+  //    "./README.md"
+  //  ],
+  //  "projectDocuments": ["./README.md"],
   //  "readme": "none"
 }

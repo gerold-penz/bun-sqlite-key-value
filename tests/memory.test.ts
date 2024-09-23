@@ -1,8 +1,7 @@
 import { expect, test } from "bun:test"
-import { BunSqliteKeyValue, INVALID_COUNT_ERROR_LABEL, ITEM_NOT_EXISTS, NO_ARRAY_ERROR_LABEL } from "../src"
+import { BunSqliteKeyValue, INDEX_OUT_OF_RANGE_ERROR_LABEL, INVALID_COUNT_ERROR_LABEL, ITEM_NOT_EXISTS_ERROR_LABEL, NO_ARRAY_ERROR_LABEL } from "../src"
 import { Statement } from "bun:sqlite"
 import type { Item } from "../src/interfaces.ts"
-
 
 const KEY_1: string = "test-key-1"
 const KEY_2: string = "test-key-2"
@@ -893,7 +892,7 @@ test("Add tags", async () => {
     // Item does not exist.
     expect(() => {
         store.addTag(KEY_2, TAG_1)
-    }).toThrowError(ITEM_NOT_EXISTS)
+    }).toThrowError(ITEM_NOT_EXISTS_ERROR_LABEL)
 })
 
 
@@ -1015,4 +1014,25 @@ test("lLen()", async () => {
         store.lLen(KEY_2)
     }).toThrowError(NO_ARRAY_ERROR_LABEL)
     expect(store.lLen(KEY_3)).toEqual(0)
+})
+
+
+test("lSet()", async () => {
+    const store = new BunSqliteKeyValue()
+
+    store.rPush(KEY_1, "one", "two", "three")
+
+    expect(store.lSet(KEY_1, 0, "four")).toBeTrue()
+    expect(store.lSet(KEY_1, -2, "five")).toBeTrue()
+    expect(store.get<Array<string>>(KEY_1)).toEqual(["four", "five", "three"])
+    expect(() => {
+        store.lSet(KEY_1, 3, "six")
+    }).toThrowError(INDEX_OUT_OF_RANGE_ERROR_LABEL)
+    expect(() => {
+        store.lSet(KEY_1, -4, "seven")
+    }).toThrowError(INDEX_OUT_OF_RANGE_ERROR_LABEL)
+    expect(() => {
+        store.lSet(KEY_2, 0, "eight")
+    }).toThrowError(ITEM_NOT_EXISTS_ERROR_LABEL)
+
 })
