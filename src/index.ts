@@ -16,24 +16,35 @@ interface DbOptions extends Omit<Options, "ttlMs"> {
 const MIN_UTF8_CHAR: string = String.fromCodePoint(1)
 const MAX_UTF8_CHAR: string = String.fromCodePoint(1_114_111)
 
+
 /**
  * This error is raised if the `count` argument is invalid.
+ *
+ * @category Errors
  */
 export const INVALID_COUNT_ERROR_LABEL: string = "[INVALID_COUNT_ERROR]"
 /**
  * This error is raised if the value is not an array.
+ *
+ * @category Errors
  */
 export const NO_ARRAY_ERROR_LABEL: string = "[NO_ARRAY_ERROR]"
 /**
  * This error is raised if the item does not exist.
+ *
+ * @category Errors
  */
 export const ITEM_NOT_EXISTS_ERROR_LABEL: string = "[ITEM_NOT_EXISTS]"
 /**
  * @deprecated Use ITEM_NOT_EXISTS_ERROR_LABEL instead.
+ *
+ * @category Errors
  */
 export const ITEM_NOT_EXISTS: string = ITEM_NOT_EXISTS_ERROR_LABEL  // Deprecated:
 /**
  * This error is raises if the `index` is out of range.
+ *
+ * @category Error Labels
  */
 export const INDEX_OUT_OF_RANGE_ERROR_LABEL: string = "[INDEX_OUT_OF_RANGE]"
 
@@ -754,8 +765,6 @@ export class BunSqliteKeyValue {
             return isNewField
         }).immediate()
     }
-
-
 
 
     /**

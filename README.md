@@ -1280,7 +1280,7 @@ The key must be a string.
 
 ### Example
 
-```TypeScript#hgetvalues-example.ts
+```TypeScript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 
 const store = new BunSqliteKeyValue()

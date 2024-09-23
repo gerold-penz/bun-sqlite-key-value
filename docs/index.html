@@ -591,15 +591,7 @@ It is better to use <code>setValues()</code> and <code>getValues()</code> for la
 </blockquote>
 <p>Inspired by: <a href="https://docs.keydb.dev/docs/commands/#hvals" target="_blank" class="external">https://docs.keydb.dev/docs/commands/#hvals</a></p>
 <a id="md:key-16" class="tsd-anchor"></a><h3 class="tsd-anchor-link">key<a href="#md:key-16" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>The key must be a string.</p>
-<a id="md:example-27" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Example<a href="#md:example-27" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="TypeScript#hgetvalues-example.ts">import { BunSqliteKeyValue } from "bun-sqlite-key-value"
-
-const store = new BunSqliteKeyValue()
-
-store.hmSet("key-1", {
-    "field-1": "value-1",
-    "field-2": "value-2"
-})
-store.hGetValues("key-1") // --> ["value-1", "value-2"]
+<a id="md:example-27" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Example<a href="#md:example-27" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="TypeScript"><span class="hl-3">import</span><span class="hl-1"> { BunSqliteKeyValue } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-2">&quot;bun-sqlite-key-value&quot;</span><br/><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-4">store</span><span class="hl-1"> </span><span class="hl-3">=</span><span class="hl-1"> </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">BunSqliteKeyValue</span><span class="hl-1">()</span><br/><br/><span class="hl-1">store.</span><span class="hl-0">hmSet</span><span class="hl-1">(</span><span class="hl-2">&quot;key-1&quot;</span><span class="hl-1">, {</span><br/><span class="hl-1">    </span><span class="hl-2">&quot;field-1&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;value-1&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-2">&quot;field-2&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;value-2&quot;</span><br/><span class="hl-1">})</span><br/><span class="hl-1">store.</span><span class="hl-0">hGetValues</span><span class="hl-1">(</span><span class="hl-2">&quot;key-1&quot;</span><span class="hl-1">) </span><span class="hl-5">// --&gt; [&quot;value-1&quot;, &quot;value-2&quot;]</span>
 </code><button type="button">Copy</button></pre>
 
 <a id="md:hash-map-object---delete-field" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Hash (Map Object) - Delete Field<a href="#md:hash-map-object---delete-field" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><pre><code class="typescript"><span class="hl-0">hDelete</span><span class="hl-1">(key: string, field: string)</span>
