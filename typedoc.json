@@ -16,10 +16,14 @@
   "searchInDocuments": true,
   "excludeNotDocumented": true,
   "customFooterHtml": "By Gerold Penz - <a href='https://gp-softwaretechnik.at/' target='_blank'>GP-Softwaretechnik</a>.",
-  "hideParameterTypesInTitle": false
+  "hideParameterTypesInTitle": false,
+  "customCss": "./docs.css"
   //  "exclude": [
   //    "./README.md"
   //  ],
   //  "projectDocuments": ["./README.md"],
   //  "readme": "none"
 }
+
+
+// --plugin typedoc-theme-hierarchy --theme hierarchy

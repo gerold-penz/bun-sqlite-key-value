@@ -1,0 +1,25 @@
+* {
+  scrollbar-width: unset;
+}
+
+code, pre {
+  font-family: monospace;
+  font-size: 0.96rem;
+  border-radius: 0.3em;
+}
+
+code {
+  padding-top: 0.02em;
+  padding-right: 0.1em;
+  padding-bottom: 0.02em;
+  padding-left: 0.1em;
+}
+
+.tsd-index-panel .tsd-index-list {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.tsd-signature {
+  font-family: monospace;
+}
+
