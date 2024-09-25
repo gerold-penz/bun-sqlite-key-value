@@ -15,6 +15,14 @@ code {
   padding-left: 0.1em;
 }
 
+.tsd-page-title h2 {
+  display: none;
+}
+
+h1.tsd-anchor-link {
+  margin-top: 0;
+}
+
 .tsd-index-panel .tsd-index-list {
   grid-template-columns: repeat(2, 1fr);
 }
