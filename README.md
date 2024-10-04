@@ -83,6 +83,7 @@ The ideas for the implementation come from
   - `lIndex()` --> Returns the element at the specified index of the list.
   - `lLen()` --> Returns the length of the list.
   - `lSet()` --> Updates the element at the specified index of the list.
+  - `lRange()` --> Returns the specified elements of the list stored at `key`.
 - Tags (Labels)
   - `addTag()` --> Adds a tag to an item.
   - `deleteTag()` --> Deletes a tag of an item.
