@@ -1,6 +1,6 @@
 {
   "name": "bun-sqlite-key-value",
-  "version": "1.12.1",
+  "version": "1.12.0",
   "author": {
     "name": "Gerold Penz",
     "email": "gerold@gp-softwaretechnik.at",
@@ -54,9 +54,8 @@
     "tsc:dts": "bunx tsc --project ./tsconfigDts.json --declaration",
     "build": "bun run bun:build && bun run tsc:dts",
     "increment_package_version": "npm version patch --no-git-tag-version",
-    "prepublishOnly": "bun run test && bun run build",
-    "npm:publish": "bun run increment_package_version && npm publish --access public",
-    "jsr:publish": "bunx jsr publish",
+    "npm:publish": "bun run test && bun run increment_package_version && bun run build && npm publish --access public",
+    "jsr:publish": "bun run ./update_jsr_version.ts && bunx jsr publish",
     "typedoc": "bunx typedoc"
   },
   "type": "module",
