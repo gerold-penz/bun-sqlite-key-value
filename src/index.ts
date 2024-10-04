@@ -3,7 +3,7 @@ import { serialize, deserialize } from "node:v8"
 import { dirname, resolve } from "node:path"
 import { existsSync, mkdirSync } from "node:fs"
 import type {
-    MaxExpiringItems, Options, TtlMs, Record, Key, Item, Field, Tag
+    MaxExpiringItems, Options, TtlMs, Record, Key, Item, Field, Tag, Value
 } from "./interfaces.ts"
 
 
@@ -87,12 +87,15 @@ export class BunSqliteKeyValue {
     private deleteTaggedItemsStatement: Statement
 
 
-    // - `filename`: The full path of the SQLite database to open.
-    //    Pass an empty string (`""`) or `":memory:"` or undefined for an in-memory database.
-    // - `options`:
-    //    - ...
-    //    - `ttlMs?`: Standard time period in milliseconds before
-    //       an entry written to the DB becomes invalid.
+    /**
+     * Opens and creates the SQLite database either in memory or on the file system.
+     *
+     * @param {string} filename
+     *  The full path of the SQLite database to open.
+     *  Pass an empty string (`""`) or `":memory:"` or `undefined` for an in-memory database.
+     * @param {Options} options
+     *  Database options
+     */
     constructor(filename?: string, options?: Options) {
         // Parse options
         const {
@@ -228,6 +231,7 @@ export class BunSqliteKeyValue {
      * Inspired by: https://docs.keydb.dev/docs/commands/#del
      *
      * @param {Key | Key[]} keyOrKeys
+     *  {@link Key More informations about `key`.}
      */
     delete(keyOrKeys?: Key | Key[]) {
         if (typeof keyOrKeys === "string") {
@@ -312,6 +316,32 @@ export class BunSqliteKeyValue {
     }
 
 
+    /**
+     * Writes a value into the database and returns the key.
+     *
+     * @param {Key | undefined} key
+     *  {@link Key More informations about `key`.}
+     * @param {T} value
+     *  {@link Value More informations about `value`.}
+     * @param {TtlMs} ttlMs
+     * @returns {Key}
+     *  Returns the key.
+     *
+     * @example
+     * import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+     *
+     * const store = new BunSqliteKeyValue()
+     *
+     * // Stays in database
+     * store.set("myKey1", "my-value")
+     *
+     * store.data.myKey2 = "my-value"
+     * store.data["myKey3"] = "my-value"
+     *
+     * // Becomes invalid after 30 seconds
+     * store.set("myKey6", "item-with-ttl", 30000)
+     *
+     */
     set<T = any>(key: Key | undefined, value: T, ttlMs?: TtlMs): Key {
         let expires: number | undefined
         ttlMs = ttlMs ?? this.ttlMs
@@ -759,8 +789,10 @@ export class BunSqliteKeyValue {
      *
      * @category Hash (Map Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {Field} field
      * @param {T} value
+     *  {@link Value More informations about `value`.}
      * @param {TtlMs} ttlMs
      * @returns {boolean}
      *
@@ -787,6 +819,7 @@ export class BunSqliteKeyValue {
      *
      * @category Hash (Map Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {Field} field
      * @returns {T | undefined}
      *
@@ -808,6 +841,7 @@ export class BunSqliteKeyValue {
      *
      * @category Hash (Map Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {{[p: Field]: T}} fields
      * @param {TtlMs} ttlMs
      *
@@ -833,6 +867,7 @@ export class BunSqliteKeyValue {
      *
      * @category Hash (Map Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {string[]} fields
      * @returns {{[p: Field]: T | undefined} | undefined}
      *
@@ -864,6 +899,7 @@ export class BunSqliteKeyValue {
      *
      * @category Hash (Map Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {Field} field
      * @returns {boolean | undefined}
      *
@@ -886,6 +922,7 @@ export class BunSqliteKeyValue {
      *
      * @category Hash (Map Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @returns {number | undefined}
      *
      * @remarks
@@ -907,6 +944,7 @@ export class BunSqliteKeyValue {
      *
      * @category Hash (Map Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @returns {string[] | undefined}
      *
      * @remarks
@@ -934,6 +972,7 @@ export class BunSqliteKeyValue {
      *
      * @category Hash (Map Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @returns {T[] | undefined}
      *  If the data record (marked with `key`) does not exist, `undefined` is returned.
      *
@@ -969,6 +1008,7 @@ export class BunSqliteKeyValue {
      *
      * @category Hash (Map Object)
      * @param {Key} key - The key of the item.
+     *  {@link Key More informations about `key`.}
      * @param {Field} field - The name of the field.
      * @returns {boolean | undefined}
      *  - `undefined` if the key does not exist.
@@ -993,6 +1033,7 @@ export class BunSqliteKeyValue {
     /**
      * @category Hash (Map Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {Field} field
      * @param {number} incrBy
      * @param {TtlMs} ttlMs
@@ -1023,6 +1064,7 @@ export class BunSqliteKeyValue {
     /**
      * @category Hash (Map Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {Field} field
      * @param {number} decrBy
      * @param {TtlMs} ttlMs
@@ -1041,7 +1083,9 @@ export class BunSqliteKeyValue {
      *
      * @category List (Array Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {T} values
+     *  {@link Value More informations about `value`.}
      * @returns {number}
      *  New length of the list.
      *
@@ -1074,7 +1118,9 @@ export class BunSqliteKeyValue {
      *
      * @category List (Array Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {T} values
+     *  {@link Value More informations about `value`.}
      * @returns {number}
      *  New length of the list.
      *
@@ -1106,6 +1152,7 @@ export class BunSqliteKeyValue {
      *
      * @category List (Array Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {number} count
      * @returns { T | T[] | undefined}
      *  If `count` is `undefined`, it returns the first element of the list stored at `key`.
@@ -1148,6 +1195,7 @@ export class BunSqliteKeyValue {
      *
      * @category List (Array Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {number} count
      * @returns {T[] | T | undefined}
      *  If `count` is `undefined`, it returns the last element of the list stored at `key`.
@@ -1194,6 +1242,7 @@ export class BunSqliteKeyValue {
      *
      * @category List (Array Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {number} index
      * @returns {T | undefined}
      *  When the value at key is not a list, an error is returned.
@@ -1223,6 +1272,7 @@ export class BunSqliteKeyValue {
      *
      * @category List (Array Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @returns {number}
      *  The length of the list at `key`.
      *
@@ -1250,8 +1300,10 @@ export class BunSqliteKeyValue {
      *
      * @category List (Array Object)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {number} index
      * @param {T} value
+     *  {@link Value More informations about `value`.}
      * @returns `true` if the `key` exists and the value has been set.
      *
      * @remarks
@@ -1357,6 +1409,7 @@ export class BunSqliteKeyValue {
      *
      * @category Tags (Labels)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {Tag} tag
      * @returns {boolean}
      *  Returns `true` if the tag has been added.
@@ -1380,6 +1433,7 @@ export class BunSqliteKeyValue {
      *
      * @category Tags (Labels)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {Tag} tag
      * @returns {boolean}
      *  Returns `true` if the tag has been deleted.
@@ -1395,6 +1449,7 @@ export class BunSqliteKeyValue {
      *
      * @category Tags (Labels)
      * @param {Key} key
+     *  {@link Key More informations about `key`.}
      * @param {Tag[] | undefined} tags
      *  Deletes all tags within the array.
      *  If `undefined`, all tags of the item are deleted.

@@ -1,6 +1,6 @@
 {
   "name": "bun-sqlite-key-value",
-  "version": "1.12.0",
+  "version": "1.12.2",
   "author": {
     "name": "Gerold Penz",
     "email": "gerold@gp-softwaretechnik.at",
@@ -56,7 +56,8 @@
     "increment_package_version": "npm version patch --no-git-tag-version",
     "npm:publish": "bun run test && bun run increment_package_version && bun run build && npm publish --access public",
     "jsr:publish": "bun run ./update_jsr_version.ts && bunx jsr publish",
-    "typedoc": "bunx typedoc"
+    "typedoc": "bunx typedoc",
+    "typedoc:watch": "bunx typedoc --watch --preserveWatchOutput"
   },
   "type": "module",
   "files": [
