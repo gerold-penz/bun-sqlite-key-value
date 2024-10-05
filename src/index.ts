@@ -1344,47 +1344,6 @@ export class BunSqliteKeyValue {
     }
 
 
-    // Inspired by: https://www.dragonflydb.io/docs/command-reference/lists/lrange
-
-    /**
-     * Returns the specified elements of the list stored at `key`.
-     *
-     * The offsets `startIndex` and `stopIndex` are zero-based indexes,
-     * with 0 being the first element of the list (the head of the list),
-     * 1 being the next element and so on.
-     *
-     * An error is returned if the key does not exist.
-     * An error is returned when the value stored at `key` is not an array.
-     * Out of range indexes will not produce an error.
-     * If `startIndex` is larger than the end of the list, an empty list is returned.
-     * If `stopIndex` is larger than the actual end of the list, it will treat it like the last element of the list.
-     *
-     * @category List (Array Object)
-     * @param {Key} key
-     *  {@link Key More informations about `key`.}
-     * @param {number} startIndex
-     * @param {number} stopIndex
-     * @returns {T[]}
-     *
-     * @remarks
-     * Inspired by: https://www.dragonflydb.io/docs/command-reference/lists/lrange
-     */
-    lRange<T = any>(key: Key, startIndex?: number, stopIndex?: number): T[] {
-        const array = this.get<Array<any>>(key)
-        if (array === undefined) {
-            throw new Error(ITEM_NOT_EXISTS_ERROR_LABEL + ` Key "${key.substring(-80)}" not found.`)
-        }
-        if (Array.isArray(array) === false) {
-            throw new Error(NO_ARRAY_ERROR_LABEL + ` Value at "${key.substring(-80)}" is not an array.`)
-        }
-        return array.slice(startIndex, stopIndex) as T[]
-    }
-
-
-    // ToDo: lTrim()
-    // Inspired by: https://docs.keydb.dev/docs/commands/#ltrim
-
-
     // ToDo: rPopLPush()
     // Inspired by: https://docs.keydb.dev/docs/commands/#rpoplpush
 
