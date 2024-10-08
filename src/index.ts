@@ -189,14 +189,14 @@ export class BunSqliteKeyValue {
      *
      * @example
      *
-     *  import { BunSqliteKeyValue } from "bun-sqlite-key-value"
-     *  const store = new BunSqliteKeyValue()
-     *  // Stays in database
-     *  store.set("myKey1", "my-value")
-     *  store.data.myKey2 = "my-value"
-     *  store.data["myKey3"] = "my-value"
-     *  // Becomes invalid after 30 seconds
-     *  store.set("myKey6", "item-with-ttl", 30000)
+     * import { BunSqliteKeyValue } from "bun-sqlite-key-value"
+     * const store = new BunSqliteKeyValue()
+     * // Stays in database
+     * store.set("myKey1", "my-value")
+     * store.data.myKey2 = "my-value"
+     * store.data["myKey3"] = "my-value"
+     * // Becomes invalid after 30 seconds
+     * store.set("myKey6", "item-with-ttl", 30000)
      *
      */
     set<T = any>(key: Key | undefined, value: T, ttlMs?: TtlMs): Key {
