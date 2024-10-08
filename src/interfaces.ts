@@ -104,6 +104,7 @@ export interface Options {
     maxExpiringItemsInDb?: MaxExpiringItems
 }
 
+
 // Internally used database options
 export interface DbOptions extends Omit<Options, "ttlMs"> {
     strict: boolean
