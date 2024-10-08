@@ -1,52 +1,24 @@
-import { Database, type Statement } from "bun:sqlite"
+import type { Database } from "bun:sqlite"
 import { serialize, deserialize } from "node:v8"
-import { dirname, resolve } from "node:path"
-import { existsSync, mkdirSync } from "node:fs"
 import type {
-    MaxExpiringItems, Options, TtlMs, Record, Key, Item, Field, Tag, Value
+    MaxExpiringItems, Options, TtlMs, Record, Key,
+    Item, Field, Tag, Value, DbOptions
 } from "./interfaces.ts"
+import {
+    INDEX_OUT_OF_RANGE_ERROR_LABEL, INVALID_COUNT_ERROR_LABEL,
+    ITEM_NOT_EXISTS_ERROR_LABEL, NO_ARRAY_ERROR_LABEL
+} from "./errors.ts"
+import { getDatabase, getStatements } from "./database.ts"
 
 
-// Internally used database options
-interface DbOptions extends Omit<Options, "ttlMs"> {
-    strict: boolean
+export {
+    INDEX_OUT_OF_RANGE_ERROR_LABEL, INVALID_COUNT_ERROR_LABEL,
+    ITEM_NOT_EXISTS_ERROR_LABEL, NO_ARRAY_ERROR_LABEL
 }
 
 
 const MIN_UTF8_CHAR: string = String.fromCodePoint(1)
 const MAX_UTF8_CHAR: string = String.fromCodePoint(1_114_111)
-
-
-/**
- * This error is raised if the `count` argument is invalid.
- *
- * @category Errors
- */
-export const INVALID_COUNT_ERROR_LABEL: string = "[INVALID_COUNT_ERROR]"
-/**
- * This error is raised if the value is not an array.
- *
- * @category Errors
- */
-export const NO_ARRAY_ERROR_LABEL: string = "[NO_ARRAY_ERROR]"
-/**
- * This error is raised if the item does not exist.
- *
- * @category Errors
- */
-export const ITEM_NOT_EXISTS_ERROR_LABEL: string = "[ITEM_NOT_EXISTS]"
-/**
- * @deprecated Use ITEM_NOT_EXISTS_ERROR_LABEL instead.
- *
- * @category Errors
- */
-export const ITEM_NOT_EXISTS: string = ITEM_NOT_EXISTS_ERROR_LABEL  // Deprecated:
-/**
- * This error is raises if the `index` is out of range.
- *
- * @category Errors
- */
-export const INDEX_OUT_OF_RANGE_ERROR_LABEL: string = "[INDEX_OUT_OF_RANGE]"
 
 
 /**
@@ -61,30 +33,7 @@ export class BunSqliteKeyValue {
     data = this.getDataObject()
     d = this.data  // Alias for `data`
 
-    private deleteExpiredStatement: Statement
-    private deleteStatement: Statement
-    private clearStatement: Statement
-    private countStatement: Statement<{count: number}>
-    private countValidStatement: Statement<{count: number}>
-    private setItemStatement: Statement
-    private getItemStatement: Statement<Omit<Record, "key">>
-    private getAllItemsStatement: Statement<Record>
-    private getItemsStartsWithStatement: Statement<Record>
-    private getKeyStatement: Statement<Omit<Record, "key" | "value">>
-    private getAllKeysStatement: Statement<Omit<Record, "value">>
-    private getKeysStartsWithStatement: Statement<Omit<Record, "value">>
-    private countExpiringStatement: Statement<{count: number}>
-    private deleteExpiringStatement: Statement
-    private getRandomKeyStatement: Statement<Omit<Record, "value" | "expires">>
-    private getRandomItemStatement: Statement<Omit<Record, "expires">>
-    private renameStatement: Statement
-    private setExpiresStatement: Statement
-    private getExpiresStatement: Statement<{expires: number}>
-    private addTagStatement: Statement
-    private deleteTagStatement: Statement
-    private deleteAllTagsStatement: Statement
-    private getTaggedKeysStatement: Statement<{key: Key}>
-    private deleteTaggedItemsStatement: Statement
+    private statements
 
 
     /**
@@ -112,107 +61,19 @@ export class BunSqliteKeyValue {
             create: otherOptions?.create ?? true,
         }
 
-        // Create database directory
-        if (filename?.length && filename.toLowerCase() !== ":memory:" && dbOptions.create) {
-            const dbDir = dirname(resolve(filename))
-            if (!existsSync(dbDir)) {
-                console.log(`The "${dbDir}" folder is created.`)
-                mkdirSync(dbDir, {recursive: true})
-            }
+        // Open or create database
+        if (filename === undefined || !filename?.length) {
+            filename = ":memory:"
         }
-
-        // Open database
-        this.db = new Database(filename, dbOptions)
-        this.db.run("PRAGMA journal_mode = WAL")
-        this.db.run("PRAGMA foreign_keys = ON")
-
-        // Create items table
-        this.db.run(`
-        CREATE TABLE IF NOT EXISTS items (
-            key TEXT NOT NULL PRIMARY KEY, 
-            value BLOB, 
-            expires INT
-        ) STRICT`)
-        // Not required: this.db.run("CREATE UNIQUE INDEX IF NOT EXISTS ix_items_key ON items (key)")
-        this.db.run("CREATE INDEX IF NOT EXISTS ix_items_expires ON items (expires)")
-
-        // Create tags table
-        this.db.run(`
-        CREATE TABLE IF NOT EXISTS tags (
-            tag TEXT NOT NULL,
-            item_key TEXT NOT NULL REFERENCES items ON DELETE CASCADE ON UPDATE CASCADE,
-            PRIMARY KEY (tag, item_key)
-        ) STRICT`)
-        // Not required: this.db.run("CREATE UNIQUE INDEX IF NOT EXISTS ix_tags_unique ON tags (tag, item_key)")
-        this.db.run("CREATE INDEX IF NOT EXISTS ix_tags_item_key ON tags (item_key)")
+        this.db = getDatabase(filename, dbOptions)
 
         // Prepare and cache statements
-        this.clearStatement = this.db.query("DELETE FROM items")
-        this.deleteStatement = this.db.query("DELETE FROM items WHERE key = $key")
-        this.deleteExpiredStatement = this.db.query("DELETE FROM items WHERE expires < $now")
-
-        this.setItemStatement = this.db.query(
-            "INSERT OR REPLACE INTO items (key, value, expires) VALUES ($key, $value, $expires)"
-        )
-        this.countStatement = this.db.query("SELECT COUNT(*) AS count FROM items")
-        this.countValidStatement = this.db.query(
-            "SELECT COUNT(*) AS count FROM items WHERE expires IS NULL OR expires > $now"
-        )
-
-        this.getAllItemsStatement = this.db.query("SELECT key, value, expires FROM items")
-        this.getItemStatement = this.db.query("SELECT value, expires FROM items WHERE key = $key")
-        this.getItemsStartsWithStatement = this.db.query(
-            "SELECT key, value, expires FROM items WHERE key = $key OR key >= $gte AND key < $lt"
-        )
-        // gte = key + MIN_UTF8_CHAR
-        // lt = key + MAX_UTF8_CHAR
-
-        this.getAllKeysStatement = this.db.query("SELECT key, expires FROM items")
-        this.getKeyStatement = this.db.query("SELECT expires FROM items WHERE key = $key")
-        this.getKeysStartsWithStatement = this.db.query(
-            "SELECT key, expires FROM items WHERE key = $key OR key >= $gte AND key < $lt"
-        )
-        this.countExpiringStatement = this.db.query(
-            "SELECT COUNT(*) as count FROM items WHERE expires IS NOT NULL"
-        )
-        this.deleteExpiringStatement = this.db.query(`
-        DELETE FROM items WHERE key IN (
-            SELECT key FROM items
-            WHERE expires IS NOT NULL
-            ORDER BY expires ASC
-            LIMIT $limit
-        )`)
-        this.getRandomKeyStatement = this.db.query(`
-        SELECT key FROM items 
-        WHERE expires IS NULL OR expires > $now
-        ORDER BY RANDOM() 
-        LIMIT 1
-        `)
-        this.getRandomItemStatement = this.db.query(`
-        SELECT key, value from items
-        WHERE key = (
-            SELECT key FROM items 
-            WHERE expires IS NULL OR expires > $now
-            ORDER BY RANDOM() 
-            LIMIT 1
-        )`)
-        this.renameStatement = this.db.query("UPDATE items SET key = $newKey WHERE key = $oldKey")
-        this.setExpiresStatement = this.db.query("UPDATE items SET expires = $expires WHERE key = $key")
-        this.getExpiresStatement = this.db.query("SELECT expires FROM items WHERE key = $key")
-
-        this.addTagStatement = this.db.query(
-            "INSERT OR IGNORE INTO tags (tag, item_key) VALUES ($tag, $item_key)"
-        )
-        this.deleteTagStatement = this.db.query("DELETE FROM tags WHERE tag = $tag AND item_key = $key")
-        this.deleteAllTagsStatement = this.db.query("DELETE FROM tags WHERE item_key = $key")
-        this.getTaggedKeysStatement = this.db.query("SELECT item_key AS key FROM tags WHERE tag = $tag")
-        this.deleteTaggedItemsStatement = this.db.query(
-            "DELETE FROM items WHERE key IN (SELECT item_key FROM tags WHERE tag = $tag)"
-        )
+        this.statements = getStatements(this.db)
 
         // Delete expired and old expiring items
         this.deleteExpired()
         this.deleteOldExpiringItems()
+
     }
 
 
@@ -220,7 +81,7 @@ export class BunSqliteKeyValue {
      * Deletes all expired records.
      */
     deleteExpired() {
-        this.deleteExpiredStatement.run({now: Date.now()})
+        this.statements.deleteExpired.run({now: Date.now()})
     }
 
 
@@ -236,17 +97,17 @@ export class BunSqliteKeyValue {
     delete(keyOrKeys?: Key | Key[]) {
         if (typeof keyOrKeys === "string") {
             // Delete one
-            this.deleteStatement.run({key: keyOrKeys})
+            this.statements.delete.run({key: keyOrKeys})
         } else if (keyOrKeys?.length) {
             // Delete multiple items
             this.db.transaction(() => {
                 keyOrKeys.forEach((key) => {
-                    this.deleteStatement.run({key})
+                    this.statements.delete.run({key})
                 })
             })()
         } else {
             // Delete all
-            this.clearStatement.run()
+            this.statements.clear.run()
         }
     }
 
@@ -281,7 +142,7 @@ export class BunSqliteKeyValue {
      * @returns {number}
      */
     getCount(): number {
-        return (this.countStatement.get() as {count: number}).count
+        return (this.statements.count.get() as {count: number}).count
     }
 
 
@@ -307,11 +168,11 @@ export class BunSqliteKeyValue {
 
         if (deleteExpired === true) {
             return this.db.transaction(() => {
-                this.deleteExpiredStatement.run({now: Date.now()})
-                return (this.countStatement.get() as {count: number}).count
+                this.statements.deleteExpired.run({now: Date.now()})
+                return (this.statements.count.get() as {count: number}).count
             })()
         } else {
-            return (this.countValidStatement.get({now: Date.now()}) as {count: number}).count
+            return (this.statements.countValid.get({now: Date.now()}) as {count: number}).count
         }
     }
 
@@ -346,7 +207,7 @@ export class BunSqliteKeyValue {
         if (key === undefined) {
             key = crypto.randomUUID()
         }
-        this.setItemStatement.run({key, value: serialize(value), expires})
+        this.statements.setItem.run({key, value: serialize(value), expires})
         return key
     }
 
@@ -388,7 +249,7 @@ export class BunSqliteKeyValue {
      * store.data["myKey"] // --> "my-value"
      */
     get<T = any>(key: Key): T | undefined {
-        const record = this.getItemStatement.get({key})
+        const record = this.statements.getItem.get({key})
         if (!record) return
         const {value, expires} = record
         if (expires) {
@@ -421,18 +282,18 @@ export class BunSqliteKeyValue {
             const key: Key = startsWithOrKeys
             const gte: string = key + MIN_UTF8_CHAR
             const lt: string = key + MAX_UTF8_CHAR
-            records = this.getItemsStartsWithStatement.all({key, gte, lt})
+            records = this.statements.getItemsStartsWith.all({key, gte, lt})
         } else if (startsWithOrKeys) {
             // Filtered items (array with keys)
             records = this.db.transaction(() => {
                 return (startsWithOrKeys as Key[]).map((key: Key) => {
-                    const record = this.getItemStatement.get({key})
+                    const record = this.statements.getItem.get({key})
                     return {...record, key}
                 })
             })()
         } else {
             // All items
-            records = this.getAllItemsStatement.all()
+            records = this.statements.getAllItems.all()
         }
         if (!records?.length) return
         const now = Date.now()
@@ -527,7 +388,7 @@ export class BunSqliteKeyValue {
 
     // Checks if key exists
     has(key: Key): boolean {
-        const record = this.getKeyStatement.get({key})
+        const record = this.statements.getKey.get({key})
         if (!record) return false
         if (record.expires) {
             if (record.expires < Date.now()) {
@@ -551,18 +412,18 @@ export class BunSqliteKeyValue {
             const key: Key = startsWithOrKeys
             const gte: string = key + MIN_UTF8_CHAR
             const lt: string = key + MAX_UTF8_CHAR
-            records = this.getKeysStartsWithStatement.all({key, gte, lt})
+            records = this.statements.getKeysStartsWith.all({key, gte, lt})
         } else if (startsWithOrKeys) {
             // Filtered items (array with keys)
             records = this.db.transaction(() => {
                 return (startsWithOrKeys as Key[]).map((key: Key) => {
-                    const record = this.getKeyStatement.get({key})
+                    const record = this.statements.getKey.get({key})
                     return record ? {...record, key} : undefined
                 })
             })()
         } else {
             // All items
-            records = this.getAllKeysStatement.all()
+            records = this.statements.getAllKeys.all()
         }
         if (!records?.length) return
         const now = Date.now()
@@ -598,7 +459,7 @@ export class BunSqliteKeyValue {
 
 
     getExpiringItemsCount() {
-        return this.countExpiringStatement.get()!.count
+        return this.statements.countExpiring.get()!.count
     }
 
 
@@ -614,7 +475,7 @@ export class BunSqliteKeyValue {
             if (count <= maxExpiringItems) return
 
             const limit = count - maxExpiringItems
-            this.deleteExpiringStatement.run({limit})
+            this.statements.deleteExpiring.run({limit})
         })()
     }
 
@@ -702,7 +563,7 @@ export class BunSqliteKeyValue {
     // @remarks
     // Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
     getRandomKey(): string | undefined {
-        return this.getRandomKeyStatement.get({now: Date.now()})?.key ?? undefined
+        return this.statements.getRandomKey.get({now: Date.now()})?.key ?? undefined
     }
 
 
@@ -713,7 +574,7 @@ export class BunSqliteKeyValue {
     // @remarks
     // Inspired by: https://docs.keydb.dev/docs/commands/#randomkey
     getRandomItem<T = any>(): Item<T> | undefined {
-        const record = this.getRandomItemStatement.get({now: Date.now()})
+        const record = this.statements.getRandomItem.get({now: Date.now()})
         if (!record) return
         return {
             key: record.key,
@@ -747,8 +608,8 @@ export class BunSqliteKeyValue {
         // @ts-ignore (Transaction returns boolean, not void.)
         return this.db.transaction(() => {
             if (this.has(oldKey)) {
-                this.deleteStatement.run({key: newKey})
-                this.renameStatement.run({oldKey, newKey})
+                this.statements.delete.run({key: newKey})
+                this.statements.rename.run({oldKey, newKey})
                 return true
             } else {
                 return false
@@ -767,7 +628,7 @@ export class BunSqliteKeyValue {
         if (ttlMs !== undefined && ttlMs > 0) {
             expires = Date.now() + ttlMs
         }
-        return this.setExpiresStatement.run({key, expires}).changes === 1
+        return this.statements.setExpires.run({key, expires}).changes === 1
     }
 
 
@@ -776,7 +637,7 @@ export class BunSqliteKeyValue {
     // @remarks
     // Inspired by: https://docs.keydb.dev/docs/commands/#ttl
     getTtl(key: Key): number | undefined {
-        const record = this.getExpiresStatement.get({key})
+        const record = this.statements.getExpires.get({key})
         if (!record) return
         const expires = record?.expires
         if (!expires) return
@@ -1419,7 +1280,7 @@ export class BunSqliteKeyValue {
      */
     addTag(key: Key, tag: Tag): boolean {
         try {
-            return this.addTagStatement.run({item_key: key, tag}).changes === 1
+            return this.statements.addTag.run({item_key: key, tag}).changes === 1
         } catch (error: any) {
             if (error.toString().includes("FOREIGN KEY constraint failed")) {
                 throw new Error(ITEM_NOT_EXISTS_ERROR_LABEL + ` Key "${key.substring(-80)}" not found.`)
@@ -1442,7 +1303,7 @@ export class BunSqliteKeyValue {
      *  Returns `false` if the tag or the item does not exist.
      */
     deleteTag(key: Key, tag: Tag): boolean {
-        return this.deleteTagStatement.run({key, tag}).changes === 1
+        return this.statements.deleteTag.run({key, tag}).changes === 1
     }
 
 
@@ -1462,7 +1323,7 @@ export class BunSqliteKeyValue {
                 tags.forEach((tag) => this.deleteTag(key, tag))
             })()
         } else {
-            this.deleteAllTagsStatement.run({key})
+            this.statements.deleteAllTags.run({key})
         }
     }
 
@@ -1474,7 +1335,7 @@ export class BunSqliteKeyValue {
      * @param {Tag} tag
      */
     deleteTaggedItems(tag: Tag) {
-        this.deleteTaggedItemsStatement.run({tag})
+        this.statements.deleteTaggedItems.run({tag})
     }
 
 
@@ -1486,7 +1347,7 @@ export class BunSqliteKeyValue {
      * @returns {Key[] | undefined}
      */
     getTaggedKeys(tag: Tag): Key[] | undefined {
-        const records = this.getTaggedKeysStatement.all({tag})
+        const records = this.statements.getTaggedKeys.all({tag})
         if (!records?.length) return
         return records.map(record => record.key)
     }
@@ -1524,3 +1385,4 @@ export class BunSqliteKeyValue {
     }
 
 }
+
