@@ -1,6 +1,6 @@
 {
   "name": "bun-sqlite-key-value",
-  "version": "1.13.1",
+  "version": "1.13.0-beta.1",
   "author": {
     "name": "Gerold Penz",
     "email": "gerold@gp-softwaretechnik.at",
@@ -53,8 +53,10 @@
     "bun:build": "bun build ./src/index.ts --outdir=./dist --target=node",
     "tsc:dts": "bunx tsc --project ./tsconfigDts.json --declaration",
     "build": "bun run typedoc && bun run bun:build && bun run tsc:dts",
-    "increment_package_version": "npm version patch --no-git-tag-version",
-    "npm:publish": "bun run test && bun run increment_package_version && bun run build && npm publish --access public",
+    "incr_version": "npm version patch --no-git-tag-version",
+    "incr_version:beta": "npm version prerelease --no-git-tag-version --preid beta",
+    "npm:publish": "bun run test && bun run incr_version && bun run build && npm publish --access public",
+    "npm:publish:beta": "bun run test && bun run incr_version:beta && bun run build && npm publish --access public --tag beta",
     "jsr:publish": "bun run ./update_jsr_version.ts && bunx jsr publish",
     "typedoc": "bunx typedoc",
     "typedoc:watch": "bunx typedoc --watch --preserveWatchOutput"
