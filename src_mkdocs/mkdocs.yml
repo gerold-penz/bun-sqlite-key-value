@@ -1,0 +1,12 @@
+site_name: Bun SQLite Key Value
+include_sidebar: false
+nav:
+  - Home: index.md
+plugins:
+  - typedoc:
+      source: "../src/*.ts"
+      tsconfig: "../tsconfig.json"
+      options: "../typedoc.json"
+      name: "Bun SQLite Key Value - API Doc"
+      disable_system_check: False
+      title_link: "/"  # optional, default: '/'
