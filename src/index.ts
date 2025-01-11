@@ -39,8 +39,8 @@ export class BunSqliteKeyValue {
      * Opens and creates the SQLite database either in memory or on the file system.
      *
      * @param {string} filename
-     *  The full path of the SQLite database to open.
-     *  Pass an empty string (`""`) or `":memory:"` or `undefined` for an in-memory database.
+     *  The full path to the SQLite database to open.
+     *  Or pass an empty string (`""`), `":memory:"` or `undefined` for an in-memory database.
      * @param {Options} options
      *  Database options
      */
