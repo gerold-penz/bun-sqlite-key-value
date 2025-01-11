@@ -59,10 +59,7 @@
     "npm:publish:beta": "bun run test && bun run incr_version:beta && bun run build && export npm_config_registry=https://registry.npmjs.org/ npm publish --access public --tag beta",
     "jsr:publish": "bun run ./update_jsr_version.ts && bunx jsr publish",
     "typedoc": "bunx typedoc",
-    "typedoc:watch": "bunx typedoc --watch --preserveWatchOutput",
-    "mkdocs": "python3 -m mkdocs",
-    "mkdocs:build": "bun run mkdocs build --config-file ./src_mkdocs/mkdocs.yml",
-    "mkdocs:serve": "bun run mkdocs serve --config-file ./src_mkdocs/mkdocs.yml --dev-addr localhost:8081"
+    "typedoc:watch": "bunx typedoc --watch --preserveWatchOutput"
   },
   "type": "module",
   "files": [

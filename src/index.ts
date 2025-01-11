@@ -30,8 +30,8 @@ export class BunSqliteKeyValue {
     db: Database
     ttlMs: TtlMs
     maxExpiringItemsInDb: MaxExpiringItems
-    data = this.getDataObject()
-    d = this.data  // Alias for `data`
+    data: {[key: Key]: any} = this.getDataObject()
+    d: {[key: Key]: any} = this.data  // Alias for `data`
     private statements  // Database statements
 
 
@@ -150,7 +150,7 @@ export class BunSqliteKeyValue {
 
 
     // Getter for getCount()
-    get length() {
+    get length(): number {
         return this.getCount()
     }
 
@@ -330,7 +330,7 @@ export class BunSqliteKeyValue {
 
 
     // Alias for getItems
-    get items() {
+    get items(): Item<any>[] | undefined {
         return this.getItems()
     }
 
@@ -346,7 +346,7 @@ export class BunSqliteKeyValue {
 
 
     // Alias for getValues
-    get values() {
+    get values(): (any | undefined)[] | undefined {
         return this.getValues()
     }
 
@@ -454,12 +454,12 @@ export class BunSqliteKeyValue {
 
 
     // Alias for getKeys
-    get keys() {
+    get keys(): string[] | undefined {
         return this.getKeys()
     }
 
 
-    getExpiringItemsCount() {
+    getExpiringItemsCount(): number {
         return this.statements.countExpiring.get()!.count
     }
 
