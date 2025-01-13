@@ -179,3 +179,4 @@ bun.lockb
 .vscode
 filesystemtest.sqlite
 examples/databases
+.npmrc
