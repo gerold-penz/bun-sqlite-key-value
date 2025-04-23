@@ -176,6 +176,8 @@ dist
 
 
 bun.lockb
+bun.lock
+
 .vscode
 filesystemtest.sqlite
 examples/databases
