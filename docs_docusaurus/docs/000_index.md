@@ -39,21 +39,21 @@ myStore.get("myKey") // --> 1234
 
 ## Links to Some Entries in the Documentation
 
-- [Usage](https://gerold-penz.github.io/bun-sqlite-key-value/usage/)
-- [Open and Close Database](https://gerold-penz.github.io/bun-sqlite-key-value/category/database)
-- [Read and Write Values and Items](https://gerold-penz.github.io/bun-sqlite-key-value/category/read-and-write)
-- [Read and Write Binary Files (Images)](https://gerold-penz.github.io/bun-sqlite-key-value/read_write/read_write_binary_files_iImages)
-- [Keys](https://gerold-penz.github.io/bun-sqlite-key-value/category/keys)
-- [Delete Items](https://gerold-penz.github.io/bun-sqlite-key-value/category/delete-items)
-- [Count Items](https://gerold-penz.github.io/bun-sqlite-key-value/category/count-items)
-- [Cache Values with TTL](https://gerold-penz.github.io/bun-sqlite-key-value/ttl/)
-- [Random Values](https://gerold-penz.github.io/bun-sqlite-key-value/category/random)
-- [Math](https://gerold-penz.github.io/bun-sqlite-key-value/category/math)
-- [String](https://gerold-penz.github.io/bun-sqlite-key-value/category/string)
-- [Hash (Map Object)](https://gerold-penz.github.io/bun-sqlite-key-value/category/hash-map-object)
-- [List (Array Object)](https://gerold-penz.github.io/bun-sqlite-key-value/category/list-array-object)
-- [Tags (Labels)](https://gerold-penz.github.io/bun-sqlite-key-value/category/tags-labels)
-- [Database Transactions](https://gerold-penz.github.io/bun-sqlite-key-value/extended_database_topics/database_transactions)
+- [Usage](/bun-sqlite-key-value/usage/)
+- [Open and Close Database](/bun-sqlite-key-value/category/database)
+- [Read and Write Values and Items](/bun-sqlite-key-value/category/read-and-write)
+- [Read and Write Binary Files (Images)](/bun-sqlite-key-value/read_write/read_write_binary_files_iImages)
+- [Keys](/bun-sqlite-key-value/category/keys)
+- [Delete Items](/bun-sqlite-key-value/category/delete-items)
+- [Count Items](/bun-sqlite-key-value/category/count-items)
+- [Cache Values with TTL](/bun-sqlite-key-value/ttl/)
+- [Random Values](/bun-sqlite-key-value/category/random)
+- [Math](/bun-sqlite-key-value/category/math)
+- [String](/bun-sqlite-key-value/category/string)
+- [Hash (Map Object)](/bun-sqlite-key-value/category/hash-map-object)
+- [List (Array Object)](/bun-sqlite-key-value/category/list-array-object)
+- [Tags (Labels)](/bun-sqlite-key-value/category/tags-labels)
+- [Database Transactions](/bun-sqlite-key-value/extended_database_topics/database_transactions)
 
 
 ## GitHub Stars
