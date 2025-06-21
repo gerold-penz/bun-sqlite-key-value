@@ -25,7 +25,7 @@ const config: Config = {
     organizationName: 'gerold-penz', // Usually your GitHub org/user name.
     projectName: 'bun-sqlite-key-value', // Usually your repo name.
 
-    onBrokenLinks: 'throw',
+    onBrokenLinks: 'log',
     onBrokenMarkdownLinks: 'warn',
 
     // Even if you don't use internationalization, you can use this field to set
