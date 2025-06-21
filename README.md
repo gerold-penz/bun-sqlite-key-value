@@ -1,6 +1,6 @@
 # Bun SQLite Key Value
 
-A super fast key-value store with SQLite that uses **bun:sqlite** 
+A superfast key-value store with SQLite that uses **bun:sqlite** 
 and v8 as a fast JSON replacement.
 
 [![license](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
@@ -43,7 +43,7 @@ Follow this link to the full
 [**documentation of Bun-SQLite-Key-Value**](https://gerold-penz.github.io/bun-sqlite-key-value/).
 
 
-### Links to Some Entries of the Documentation
+### Links to Some Entries in the Documentation
 
 - [Full Documentation](https://gerold-penz.github.io/bun-sqlite-key-value/)
 - [Installation](https://gerold-penz.github.io/bun-sqlite-key-value/installation/)

@@ -4,7 +4,7 @@ slug: /
 
 # Bun-SQLite-Key-Value
 
-A super fast key-value store with SQLite that uses **bun:sqlite** 
+A superfast key-value store with SQLite that uses **bun:sqlite** 
 and v8 as a fast JSON replacement.
 
 [![license](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
@@ -18,6 +18,14 @@ and v8 as a fast JSON replacement.
 perfect for a fast and reliable storage and cache solution with TTL support.
 ***You need [Bun](https://bun.sh/) to be able to use this package.***
 
+## Installation
+
+```bash
+bun add bun-sqlite-key-value
+```
+
+## Short Example 
+
 ```typescript
 import { BunSqliteKeyValue } from "bun-sqlite-key-value"
 const myStore = new BunSqliteKeyValue()
@@ -28,4 +36,31 @@ myStore.set("myKey", 1234)
 // Read value
 myStore.get("myKey") // --> 1234
 ```
+
+## Links to Some Entries in the Documentation
+
+- [Usage](https://gerold-penz.github.io/bun-sqlite-key-value/usage/)
+- [Open and Close Database](https://gerold-penz.github.io/bun-sqlite-key-value/category/database)
+- [Read and Write Values and Items](https://gerold-penz.github.io/bun-sqlite-key-value/category/read-and-write)
+- [Read and Write Binary Files (Images)](https://gerold-penz.github.io/bun-sqlite-key-value/read_write/read_write_binary_files_iImages)
+- [Keys](https://gerold-penz.github.io/bun-sqlite-key-value/category/keys)
+- [Delete Items](https://gerold-penz.github.io/bun-sqlite-key-value/category/delete-items)
+- [Count Items](https://gerold-penz.github.io/bun-sqlite-key-value/category/count-items)
+- [Cache Values with TTL](https://gerold-penz.github.io/bun-sqlite-key-value/ttl/)
+- [Random Values](https://gerold-penz.github.io/bun-sqlite-key-value/category/random)
+- [Math](https://gerold-penz.github.io/bun-sqlite-key-value/category/math)
+- [String](https://gerold-penz.github.io/bun-sqlite-key-value/category/string)
+- [Hash (Map Object)](https://gerold-penz.github.io/bun-sqlite-key-value/category/hash-map-object)
+- [List (Array Object)](https://gerold-penz.github.io/bun-sqlite-key-value/category/list-array-object)
+- [Tags (Labels)](https://gerold-penz.github.io/bun-sqlite-key-value/category/tags-labels)
+- [Database Transactions](https://gerold-penz.github.io/bun-sqlite-key-value/extended_database_topics/database_transactions)
+
+
+## GitHub Stars
+
+Please give this [GitHub project](https://github.com/gerold-penz/bun-sqlite-key-value) 
+a ⭐ if this project is useful to you. Thank you very much!
+And if you speak German, here is my business homepage:
+[GP-Softwaretechnik](https://gp-softwaretechnik.at/)
+Maybe you will find something interesting for you there. 😃
 
