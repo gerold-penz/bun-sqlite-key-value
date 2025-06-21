@@ -19,6 +19,16 @@ const config: Config = {
         }
     ],
 
+    headTags: [
+        {
+            tagName: "meta",
+            attributes: {
+                name: "google-site-verification",
+                content: "yfG4uv3Av1cqySJGA0CQUWVGamo14tVNiQWqrqfehU0"
+            },
+        }
+    ],
+
     // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
     future: {
         v4: true, // Improve compatibility with the upcoming Docusaurus v4
