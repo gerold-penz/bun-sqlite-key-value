@@ -58,8 +58,8 @@ Follow this link to the full
 - [Random Values](https://gerold-penz.github.io/bun-sqlite-key-value/category/random)
 - [Math](https://gerold-penz.github.io/bun-sqlite-key-value/category/math)
 - [String](https://gerold-penz.github.io/bun-sqlite-key-value/category/string)
-- [Hash (Map Object)](https://gerold-penz.github.io/bun-sqlite-key-value/category/hash-map-object)
-- [List (Array Object)](https://gerold-penz.github.io/bun-sqlite-key-value/category/list-array-object)
+- [Hash (JavaScript Map)](https://gerold-penz.github.io/bun-sqlite-key-value/category/hash-javascript-map)
+- [List (JavaScript Array)](https://gerold-penz.github.io/bun-sqlite-key-value/category/list-javascript-array)
 - [Tags (Labels)](https://gerold-penz.github.io/bun-sqlite-key-value/category/tags-labels)
 - [Database Transactions](https://gerold-penz.github.io/bun-sqlite-key-value/extended_database_topics/database_transactions)
 
