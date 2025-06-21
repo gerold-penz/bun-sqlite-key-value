@@ -50,8 +50,8 @@ myStore.get("myKey") // --> 1234
 - [Random Values](/bun-sqlite-key-value/category/random)
 - [Math](/bun-sqlite-key-value/category/math)
 - [String](/bun-sqlite-key-value/category/string)
-- [Hash (Map Object)](/bun-sqlite-key-value/category/hash-map-object)
-- [List (Array Object)](/bun-sqlite-key-value/category/list-array-object)
+- [Hash (JavaScript Map)](/bun-sqlite-key-value/category/hash-javascript-map)
+- [List (JavaScript Array)](/bun-sqlite-key-value/category/list-javascript-array)
 - [Tags (Labels)](/bun-sqlite-key-value/category/tags-labels)
 - [Database Transactions](/bun-sqlite-key-value/extended_database_topics/database_transactions)
 
