@@ -28,3 +28,17 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.footer__links {
+  .footer__col {
+    text-align: center;
+  }
+
+  .footer__col:first-child {
+    text-align: left;
+  }
+
+  .footer__col:last-child {
+    text-align: right;
+  }
+}

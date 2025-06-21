@@ -82,48 +82,45 @@ const config: Config = {
         },
         footer: {
             style: 'dark',
-            // links: [
-            //     {
-            //         title: 'Docs',
-            //         items: [
-            //             {
-            //                 label: 'Tutorial',
-            //                 to: '/docs/intro',
-            //             },
-            //         ],
-            //     },
-            //     {
-            //         title: 'Community',
-            //         items: [
-            //             {
-            //                 label: 'Stack Overflow',
-            //                 href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-            //             },
-            //             {
-            //                 label: 'Discord',
-            //                 href: 'https://discordapp.com/invite/docusaurus',
-            //             },
-            //             {
-            //                 label: 'X',
-            //                 href: 'https://x.com/docusaurus',
-            //             },
-            //         ],
-            //     },
-            //     {
-            //         title: 'More',
-            //         items: [
-            //             // {
-            //             //     label: 'Blog',
-            //             //     to: '/blog',
-            //             // },
-            //             {
-            //                 label: "GitHub",
-            //                 href: "https://github.com/gerold-penz/bun-sqlite-key-value",
-            //             },
-            //         ],
-            //     },
-            // ],
-            // copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+            links: [
+                {
+                    items: [
+                        {
+                            label: "Bun",
+                            href: "https://bun.sh/",
+                        },
+                        {
+                            label: "Bun:SQLite",
+                            href: "https://bun.sh/docs/api/sqlite",
+                        },
+                    ],
+                },
+                {
+                    items: [
+                        {
+                            label: "SQLite",
+                            href: "https://sqlite.org/"
+                        }
+                    ],
+                },
+                {
+                    items: [
+                        {
+                            label: "GitHub",
+                            href: "https://github.com/gerold-penz/bun-sqlite-key-value",
+                        },
+                        {
+                            label: "NPM",
+                            href: "https://www.npmjs.com/package/bun-sqlite-key-value",
+                        },
+                    ],
+                },
+            ],
+            copyright: `
+                Bun-SQLite-Key-Value - by Gerold Penz
+                - <a href="https://gp-softwaretechnik.at/" target="_blank">GP-Softwaretechnik</a> - 
+                ${new Date().getFullYear()} - have fun
+            `,
         },
         prism: {
             theme: prismThemes.github,
