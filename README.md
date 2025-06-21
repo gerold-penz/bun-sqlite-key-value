@@ -118,7 +118,7 @@ const store = new BunSqliteKeyValue()
 store.set("myKey", [1, 2, 3, 4])
 store.get("myKey") // --> [ 1, 2, 3, 4 ]
 
-// Or use the `data` object for simple write and read access.
+// Or use the `data` proxy for simple write and read access.
 store.data.myKey = "Hello world!"
 store.data.myKey // --> "Hello World"
 ```
