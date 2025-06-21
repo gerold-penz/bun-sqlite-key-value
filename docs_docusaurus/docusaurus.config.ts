@@ -9,6 +9,16 @@ const config: Config = {
     tagline: 'Dinosaurs are cool',
     favicon: 'img/favicon.ico',
 
+    // Scripts im Head-Bereich der HTML-Seite
+    scripts: [
+        {
+            src: "https://umami.gp-softwaretechnik.at/script.js",
+            defer: true,
+            "data-website-id": "997dec81-b347-4af0-b4dc-8371a6c60077",
+            "data-tag": "bun-sqlite-key-value"
+        }
+    ],
+
     // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
     future: {
         v4: true, // Improve compatibility with the upcoming Docusaurus v4
