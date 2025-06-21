@@ -18,11 +18,16 @@ The ideas for the implementation come from
 [bun-sqlite-cache](https://github.com/notskamr/bun-sqlite-cache) and 
 [bun-kv](https://github.com/kirill-dev-pro/bun-kv). Thank you very much!
 
+## Full Documentation
+
+Follow this link to the full 
+[documentation of Bun-SQLite-Key-Value](https://gerold-penz.github.io/bun-sqlite-key-value/).
+
 
 ## Table of Contents
 
-- [Installation](#installation)
-- [Usage](#usage)
+- [Installation](https://gerold-penz.github.io/bun-sqlite-key-value/installation/)
+- [Usage](https://gerold-penz.github.io/bun-sqlite-key-value/usage/)
 - Database Usage
   - [Open Database](#open-database)
   - [Close Database](#close-database)
