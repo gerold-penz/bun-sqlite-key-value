@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkbun_sqlite_key_value_docs=self.webpackChunkbun_sqlite_key_value_docs||[]).push([[9647],{7121:(e,s,u)=>{u.r(s),u.d(s,{default:()=>_});u(6540);var r=u(4164),a=u(5500),c=u(7559),l=u(2831),n=u(1656),t=u(4848);function _(e){return(0,t.jsx)(a.e3,{className:(0,r.A)(c.G.wrapper.docsPages),children:(0,t.jsx)(n.A,{children:(0,l.v)(e.route.routes)})})}}}]);
