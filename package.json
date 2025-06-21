@@ -13,11 +13,11 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "devDependencies": {
-    "@types/bun": "latest",
-    "typedoc": "^0.26.11"
+    "@types/bun": "^1.2.17",
+    "typedoc": "^0.28.5"
   },
   "peerDependencies": {
-    "typescript": "^5.5.3"
+    "typescript": "^5.8.3"
   },
   "bugs": {
     "url": "https://github.com/gerold-penz/bun-sqlite-key-value/issues"
@@ -49,17 +49,17 @@
   ],
   "license": "MIT",
   "scripts": {
+    "_typedoc": "bunx typedoc",
+    "_typedoc:watch": "bunx typedoc --watch --preserveWatchOutput",
     "test": "bun test",
+    "build": "bun run bun:build && bun run tsc:dts",
     "bun:build": "bun build ./src/index.ts --outdir=./dist --target=node",
     "tsc:dts": "bunx tsc --project ./tsconfigDts.json --declaration",
-    "build": "bun run typedoc && bun run bun:build && bun run tsc:dts",
     "incr_version": "npm version patch --no-git-tag-version",
     "incr_version:beta": "npm version prerelease --no-git-tag-version --preid beta",
     "npm:publish": "bun run test && bun run incr_version && bun run build && npm publish --access public",
     "npm:publish:beta": "bun run test && bun run incr_version:beta && bun run build && npm publish --access public --tag beta",
-    "jsr:publish": "bun run ./update_jsr_version.ts && bunx jsr publish",
-    "typedoc": "bunx typedoc",
-    "typedoc:watch": "bunx typedoc --watch --preserveWatchOutput"
+    "jsr:publish": "bun run ./update_jsr_version.ts && bunx jsr publish"
   },
   "type": "module",
   "files": [
